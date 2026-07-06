@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apple &amp; Rhubarb Crumble — Food Tech Demo</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #8a2b4a;
+    --accent-soft: #f7e7ec;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 4px;
+  }
+  .video-frame {
+    position: relative; width: 100%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame video { width: 100%; display: block; max-height: 62vh; background: #000; }
+  .now-playing {
+    font-size: .78rem; color: var(--muted); padding: 5px 4px 4px; text-align: center;
+  }
+  .now-playing b { color: var(--ink); }
+
+  header.titleblock { padding: 8px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+
+  .chapter {
+    font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent); padding: 18px 4px 8px;
+  }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-photo {
+    margin-top: 10px; border-radius: 10px; max-width: 100%; display: block;
+    border: 1px solid var(--border);
+  }
+  .photo-caption { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame">
+      <video id="player" controls playsinline preload="metadata" poster="media/crumble/IMG_3328.JPEG"></video>
+    </div>
+    <div class="now-playing" id="now-playing">Tap a step below to start — the right clip plays automatically</div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Apple &amp; Rhubarb Crumble, Two Ways</h1>
+    <div class="byline">A Food Tech design-brief demo by <strong>Mrs Forrest</strong>, filmed in her own kitchen in seven short clips — stitched into one guide. Tap a step to play that clip at that moment; tap again to pause. No YouTube involved: these videos live on this site.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 11 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients (the design brief: use what's in your pantry)</h2>
+    <ul>
+      <li><strong>Fruit base:</strong> rhubarb and apples (pears or tinned apples/peaches work too) + a handful of frozen raspberries if you have them</li>
+      <li><strong>Sugars:</strong> caster sugar and raw sugar</li>
+      <li><strong>Topping:</strong> plain flour, oats, butter, nuts (pistachios in the demo)</li>
+      <li><strong>Flavour:</strong> cinnamon and vanilla</li>
+      <li><strong>To serve:</strong> icing sugar, maple syrup, vanilla ice cream</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A saucepan, a large baking tin and/or small ramekins, and (optionally) a food processor</li>
+      <li>Oven at <strong>180°C</strong>; bake <strong>20–30 minutes</strong> — ramekins are ready before a big tin</li>
+      <li>About 20 minutes hands-on, under an hour end to end</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Prototype: interactive multi-clip guide, generated automatically from the filmed clips (AI-transcribed, human-checked).<br>
+    Your ticks are saved on this device. Videos © Mrs Forrest — hosted on this site, not YouTube.
+  </p>
+</div>
+
+<script>
+const MEDIA = "media/crumble/";
+
+// steps map to (clip file, start, end) — clips filmed and narrated by Mrs Forrest
+const STEPS = [
+  { chapter: "Part 1 — The plan", file: "IMG_3316.MP4", t: 0, end: 16, num: "Overview",
+    title: "The design brief",
+    detail: "A fruit crumble made from whatever you've got at home — one big tin, or little individual ones. This demo makes both at once." },
+  { file: "IMG_3316.MP4", t: 16, end: 51, num: "Step 1",
+    title: "Raid the pantry",
+    detail: "Gather your fruit (rhubarb, apples, pears — tinned fruit is fine), caster and raw sugar, flour, oats, nuts, butter, cinnamon and vanilla. Whatever you've got in the house can work — that's the brief." },
+
+  { chapter: "Part 2 — The filling", file: "IMG_3320.MP4", t: 0, end: 17, num: "Step 2",
+    title: "Start the filling on the stove",
+    detail: "Rhubarb, chopped apples and sugar into a saucepan with a splash of water. Onto the stove to cook down gently." },
+  { file: "IMG_3321.MP4", t: 0, end: 37, num: "Step 3",
+    title: "Cook down and add the flavours",
+    detail: "When the fruit has softened to a nice thick consistency, stir in a few frozen raspberries, a shake of cinnamon, and a little vanilla. Mix through — that's the filling done." },
+
+  { chapter: "Part 3 — The topping, two ways", file: "IMG_3322.MP4", t: 0, end: 23, num: "Step 4",
+    title: "Set up the topping — two methods",
+    detail: "Same ingredients, two techniques: by hand (the rub-in method) and in the food processor. Into each: nuts (pistachios here), flour, raw sugar, oats and butter." },
+  { file: "IMG_3323.MP4", t: 0, end: 36, num: "Step 5",
+    title: "The rub-in method (by hand)",
+    detail: "Work the butter in with your fingertips until the mix looks like breadcrumbs. Keep going until the butter has blended through all the dry ingredients.",
+    warn: "Don't add too much butter — the topping stops being crumbly and won't crisp up." },
+  { file: "IMG_3323.MP4", t: 36, end: 48, num: "Step 6",
+    title: "The food-processor method",
+    detail: "Same ingredients into the processor — nuts first, then everything else — and blitz until it comes together as a crumble." },
+  { file: "IMG_3326.MP4", t: 0, end: 16, num: "Step 7",
+    title: "Compare your two toppings",
+    detail: "Side by side they look slightly different — the hand-rubbed one is coarser — but once baked they come out much the same. Use whichever method you prefer." },
+
+  { chapter: "Part 4 — Assemble and bake", file: "IMG_3326.MP4", t: 16, end: 59, num: "Step 8",
+    title: "Fill the tins and top them",
+    detail: "Spoon the filling into the big tin and the little ones. Sprinkle the crumble mixture loosely over the top — keep it nice and crumbly, don't press it down." },
+  { file: "IMG_3326.MP4", t: 59, end: 73, num: "Step 9",
+    title: "Bake at 180°C for 20–30 minutes",
+    detail: "Into the oven at about 180°C until the topping is golden and the filling is bubbling at the edges.",
+    warn: "Little ramekins are ready before a big tin — check the small ones early." },
+
+  { chapter: "Part 5 — Serve", file: "IMG_3327.MP4", t: 0, end: 49, num: "Step 10",
+    title: "Plate up and serve",
+    detail: "Pull a little crumble out (the big one can have a few more minutes), tip it onto a plate, drizzle with a little maple syrup, dust with icing sugar, and add a scoop of vanilla ice cream.",
+    photo: "IMG_3328.JPEG",
+    photoCaption: "The finished plate — crumble, icing-sugar dusting, and ice cream on the side." },
+];
+
+const KEY = "howto-ticks-crumble";
+const FLAGKEY = "howto-flags-crumble";
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+
+const player = document.getElementById("player");
+let currentFile = null;
+const clipNo = {};
+[...new Set(STEPS.map(s => s.file))].forEach((f, i, arr) => { clipNo[f] = `Clip ${i+1} of ${arr.length}`; });
+
+// build the step list (with chapter dividers)
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  if (s.chapter) {
+    const ch = document.createElement("div");
+    ch.className = "chapter";
+    ch.textContent = s.chapter;
+    stepsEl.appendChild(ch);
+  }
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp">▶ ${clipNo[s.file].split(" ")[0]} ${clipNo[s.file].split(" ")[1]} · ${mins}:${secs}</span>
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.photo ? `<img class="step-photo" src="${MEDIA}${s.photo}" alt="" loading="lazy"><div class="photo-caption">📷 ${s.photoCaption || ""}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  div.addEventListener("click", () => jumpTo(s));
+  stepsEl.appendChild(div);
+});
+
+function jumpTo(s) {
+  if (currentFile !== s.file) {
+    currentFile = s.file;
+    player.src = MEDIA + s.file;
+    player.addEventListener("loadedmetadata", () => {
+      player.currentTime = s.t;
+      player.play();
+    }, { once: true });
+    updateNowPlaying(s);
+  } else {
+    const within = player.currentTime >= s.t && player.currentTime < s.end;
+    if (within && !player.paused) { player.pause(); }
+    else if (within && player.paused) { player.play(); }
+    else { player.currentTime = s.t; player.play(); }
+  }
+}
+
+function updateNowPlaying(s) {
+  document.getElementById("now-playing").innerHTML =
+    `Now showing: <b>${clipNo[s.file]}</b> — ${s.num}: ${s.title}`;
+}
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (player.paused || !currentFile) return;
+  const t = player.currentTime;
+  STEPS.forEach((s, i) => {
+    const on = s.file === currentFile && t >= s.t && t < s.end;
+    document.getElementById("step-" + i).classList.toggle("playing", on);
+  });
+}, 800);
+
+render();
+</script>
+</body>
+</html>
