@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Roast Pork with Perfect Crackling — Step-by-Step Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #b3541e;
+    --accent-soft: #fbeee4;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Close this and open the guide with <strong>Open Guide.cmd</strong> in the same folder — it serves the page properly and the video will work.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=eKzQCUq4Xa0" target="_blank" style="color:#f0b48a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Roast Pork with Perfect Crackling</h1>
+    <div class="byline">Guide generated from: <em>“Roast Pork with Perfect Crackling every time — So Easy, just 4 ingredients!”</em> by Katie Home Cook · 5 min 37 s · Tap any step to jump the video there.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 10 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients (just 4)</h2>
+    <ul>
+      <li>A pork joint with good skin — check it in the supermarket; poor skin means poor crackling</li>
+      <li>Rapeseed oil (any neutral oil works)</li>
+      <li>Sea salt flakes</li>
+      <li>Black pepper — just a little</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 You'll also need · ⏱ Timing</h2>
+    <ul>
+      <li>Roasting tin, meat thermometer, pastry brush, kitchen paper</li>
+      <li>Total time about <strong>4½ hours</strong>: 20 min hot + ~3 h slow + 20 min hot + 30 min rest — almost all hands-off</li>
+      <li>No other flavourings needed — pork has plenty of its own</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Prototype: interactive video guide, generated automatically from the YouTube transcript.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=eKzQCUq4Xa0" target="_blank">youtube.com/watch?v=eKzQCUq4Xa0</a>
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "eKzQCUq4Xa0";
+
+// step data extracted from the timed transcript
+const STEPS = [
+  { t: 0,   end: 21,  num: "Overview",
+    title: "What you're making",
+    detail: "A slow-roasted pork joint with crisp, blistered crackling — four ingredients, one tin, and a method that works every time." },
+  { t: 21,  end: 40,  num: "Step 1",
+    title: "Pat the joint dry",
+    detail: "Dry the skin thoroughly with kitchen paper — dry skin is the foundation of good crackling. (This is also why choosing a joint with a good skin at the shop matters.)" },
+  { t: 40,  end: 45,  num: "Step 2",
+    title: "Oil the skin",
+    detail: "Drizzle over a little rapeseed oil, ready to carry the salt and crisp the skin." },
+  { t: 45,  end: 69,  num: "Step 3",
+    title: "Season and rub in",
+    detail: "A generous pinch of sea salt flakes and a little pepper. Rub the oil and salt in, then pat extra salt onto the skin so it stays put. Wash your hands after.",
+    warn: "Go easy on the pepper — it burns in a hot oven." },
+  { t: 69,  end: 78,  num: "Step 4",
+    title: "Blast it: 220°C fan for 20 minutes",
+    detail: "Straight into a very hot oven, uncovered, to get the crackling started." },
+  { t: 78,  end: 93,  num: "Step 5",
+    title: "Turn right down: 140°C fan for ~3 hours",
+    detail: "Drop the oven to 140°C fan and slow-roast. About 3 hours suits a joint this size — adjust for yours. Walk away; this part looks after itself." },
+  { t: 93,  end: 100, num: "Step 6",
+    title: "Check the internal temperature",
+    detail: "Probe the centre with a meat thermometer: you're looking for mid-60s °C (the video reads 66°C — anything over 63°C is safe and still juicy)." },
+  { t: 100, end: 145, num: "Step 7",
+    title: "Crackling finish: back up to 220°C for 20 minutes",
+    detail: "Brush a little more oil over the skin, scatter on more salt, and return to a 220°C fan oven for a final 20 minutes to blister the crackling." },
+  { t: 145, end: 157, num: "Step 8",
+    title: "Rest for 30 minutes",
+    detail: "Lift the joint out of the tin and rest it, uncovered so the crackling stays crisp.",
+    warn: "Don't skip the rest — it's what keeps the meat moist when you carve. Resist temptation!" },
+  { t: 157, end: 246, num: "Step 9",
+    title: "Untie, remove crackling, trim the fat",
+    detail: "Snip off the string ties, lift the crackling away in a piece, and trim off the excess fat underneath it. Break the crackling up and have a taste — you've earned it." },
+  { t: 246, end: 300, num: "Step 10",
+    title: "Carve and serve",
+    detail: "Slice the joint — crispy edges from the hot blasts, succulent slow-cooked meat inside. Perfect Sunday dinner." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+const FLAGKEY = KEY.replace("ticks", "flags");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp">▶ ${mins}:${secs}</span>
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt: a better-matching clip, corrected text, or a check against the manual. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  div.addEventListener("click", () => {
+    if (!ready) return;
+    const state = player.getPlayerState();
+    const now = player.getCurrentTime();
+    const withinStep = now >= s.t && now < s.end;
+    if (withinStep && state === 1) { player.pauseVideo(); }       // tap again to pause
+    else if (withinStep && state === 2) { player.playVideo(); }   // tap to resume
+    else { player.seekTo(s.t, true); player.playVideo(); }        // jump to this step
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = [];
+  localStorage.setItem(KEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

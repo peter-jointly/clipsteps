@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ClipSteps — turn any how-to video into a tickable guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #0b7a4b;
+    --accent-soft: #e3f4ec;
+    --border: #e3e8ee;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.55;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 60px; }
+
+  /* Hero */
+  .hero { text-align: center; padding: 48px 8px 8px; }
+  .logo {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em;
+  }
+  .logo .mark {
+    width: 44px; height: 44px; border-radius: 12px; background: var(--accent);
+    color: #fff; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 1.3rem;
+  }
+  .tagline { font-size: 1.15rem; color: var(--ink); margin-top: 14px; font-weight: 600; }
+  .sub { color: var(--muted); font-size: .95rem; margin-top: 8px; max-width: 540px; margin-left: auto; margin-right: auto; }
+
+  /* How it works */
+  .how { display: flex; gap: 10px; margin: 28px 0 8px; }
+  .how .card {
+    flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 12px; text-align: center;
+  }
+  .how .n {
+    width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff;
+    font-size: .8rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;
+    margin-bottom: 8px;
+  }
+  .how .t { font-weight: 600; font-size: .88rem; }
+  .how .d { color: var(--muted); font-size: .8rem; margin-top: 4px; }
+  @media (max-width: 560px) { .how { flex-direction: column; } }
+
+  h2.section { font-size: 1.05rem; margin: 34px 4px 12px; }
+
+  /* Guide cards */
+  a.guide {
+    display: flex; gap: 14px; align-items: center; text-decoration: none; color: inherit;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 12px; transition: border-color .15s, box-shadow .15s;
+  }
+  a.guide:hover { border-color: var(--accent); box-shadow: 0 2px 10px rgba(0,0,0,.06); }
+  .thumb { flex: none; width: 120px; border-radius: 8px; overflow: hidden; background: #000; }
+  .thumb img { width: 100%; display: block; }
+  .g-title { font-weight: 600; }
+  .g-meta { color: var(--muted); font-size: .82rem; margin-top: 2px; display: block; }
+  .arrow { margin-left: auto; color: var(--muted); font-size: 1.1rem; flex: none; }
+
+  /* Request */
+  .request {
+    background: var(--accent-soft); border: 1px dashed var(--accent); border-radius: 12px;
+    padding: 18px; text-align: center; margin-top: 8px;
+  }
+  .request .big { font-weight: 700; }
+  .request p { font-size: .9rem; color: var(--ink); margin-top: 6px; }
+  .request .note { color: var(--muted); font-size: .8rem; margin-top: 8px; }
+
+  .footer { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="logo"><span class="mark">✓</span>ClipSteps</div>
+    <div class="tagline">The best how-to videos, turned into step-by-step guides you tick off as you go.</div>
+    <div class="sub">YouTube shows you how — then you scrub back and forth trying to find the bit you're up to, with dirty hands. ClipSteps breaks the video into steps: tap a step to play exactly that moment, tick it off when it's done, and pick up where you left off.</div>
+  </div>
+
+  <div class="how">
+    <div class="card">
+      <span class="n">1</span>
+      <div class="t">Tell us the job</div>
+      <div class="d">What you're trying to do, and exactly what gear you have.</div>
+    </div>
+    <div class="card">
+      <span class="n">2</span>
+      <div class="t">We find the best clip</div>
+      <div class="d">The highest-rated video that matches your exact situation — with steps, warnings and a kit list pulled out.</div>
+    </div>
+    <div class="card">
+      <span class="n">3</span>
+      <div class="t">Follow and tick</div>
+      <div class="d">Tap a step to play that moment. Tap to pause. Tick it off. Your progress is saved.</div>
+    </div>
+  </div>
+
+  <h2 class="section">Guides</h2>
+
+  <a class="guide" href="golf-r-tyre-change.html">
+    <span class="thumb"><img src="https://i.ytimg.com/vi/rSSPGUCBEzY/mqdefault.jpg" alt=""></span>
+    <span>
+      <span class="g-title">Change a Tyre on Your 2018 Golf R</span>
+      <span class="g-meta">13 steps · factory jack kit · adapted for the Golf R</span>
+    </span>
+    <span class="arrow">›</span>
+  </a>
+
+  <a class="guide" href="roast-pork-crackling.html">
+    <span class="thumb"><img src="https://i.ytimg.com/vi/eKzQCUq4Xa0/mqdefault.jpg" alt=""></span>
+    <span>
+      <span class="g-title">Roast Pork with Perfect Crackling</span>
+      <span class="g-meta">10 steps · 4 ingredients · ~4½ hours</span>
+    </span>
+    <span class="arrow">›</span>
+  </a>
+
+  <a class="guide" href="thetford-pump-repair.html">
+    <span class="thumb"><img src="https://i.ytimg.com/vi/3Pv535g-Wqo/mqdefault.jpg" alt=""></span>
+    <span>
+      <span class="g-title">Fix a Thetford C402 Toilet Flush Pump</span>
+      <span class="g-meta">10 steps · multimeter + spare fuse · camper van repair</span>
+    </span>
+    <span class="arrow">›</span>
+  </a>
+
+  <h2 class="section">Need a guide that isn't here?</h2>
+  <div class="request">
+    <div class="big">Guides are made to order during the pilot.</div>
+    <p>Tell us what you're trying to do and what equipment you have — we'll find the best clip and build your guide, usually the same day.</p>
+    <div class="note">Request form coming soon — for now, ask the person who sent you this link.</div>
+  </div>
+
+  <div class="footer">
+    ClipSteps is a prototype. Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.<br>
+    Guides are generated with AI from the video and checked by a human. Always put safety first and use your own judgement.
+  </div>
+</div>
+</body>
+</html>

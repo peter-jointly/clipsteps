@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fix a Thetford C402 Toilet Flush Pump — Step-by-Step Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #0b7a4b;
+    --accent-soft: #e3f4ec;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  /* Sticky video */
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+
+  .decision {
+    background: var(--accent-soft); border: 1px dashed var(--accent);
+    border-radius: 12px; padding: 12px 16px; margin: 4px 0 14px;
+    font-size: .88rem;
+  }
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Close this and open the guide with <strong>Open Guide.cmd</strong> in the same folder — it serves the page properly and the video will work.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=3Pv535g-Wqo" target="_blank" style="color:#7fd4a8;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Fix a Thetford C402 Toilet Flush Pump (No Water, No Pump Noise)</h1>
+    <div class="byline">Guide generated from: <em>“Thetford C402 C Bench Toilet Pump Repair in my Camper Van” — Diaries #257</em> · 3 min 24 s · Tap any step to jump the video there.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 9 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Before you start</h2>
+    <ul>
+      <li>Multimeter / voltmeter</li>
+      <li>Spare inline fuse</li>
+      <li>Replacement flush pump (only if diagnosis points to the pump — the video's came from Grasshopper Leisure)</li>
+      <li>Empty and remove the toilet cassette so you can reach the fuse holder</li>
+      <li>Fault this fixes: pressing the blue flush button gives <strong>no water and no pump noise</strong></li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Prototype: interactive video guide, generated automatically from the YouTube transcript.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=3Pv535g-Wqo" target="_blank">youtube.com/watch?v=3Pv535g-Wqo</a>
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "3Pv535g-Wqo";
+
+// step data extracted from the timed transcript
+const STEPS = [
+  { t: 2,   end: 32,  num: "The problem",
+    title: "Confirm the fault",
+    detail: "Press the blue flush button. If there's no swirl of water into the cassette and no pump noise at all, this guide applies — it's an electrical or pump fault, not a blockage." },
+  { t: 32,  end: 38,  num: "Step 1",
+    title: "Check power at the fuse box",
+    detail: "With the multimeter, confirm the van's fuse box is sending power out on the toilet circuit. In the video this checked out fine." },
+  { t: 38,  end: 55,  num: "Step 2",
+    title: "Check power arriving at the flush control circuit",
+    detail: "Remove the flush handle and gently ease the cover out. The control circuit board is on the underside of the cover. Test for incoming power — in the video there was none, pointing to a blown fuse." },
+  { t: 55,  end: 92,  num: "Step 3",
+    title: "Replace the inline fuse",
+    detail: "The inline fuse socket is halfway along the rear wall of the cassette compartment (remove the cassette to reach it). Fit a new fuse, then re-test: power should now arrive at the control board.",
+    warn: "The fuse holder is at arm's length from either end of the cassette cave — awkward by design. Work by feel or use a torch." },
+  { t: 92,  end: 114, num: "Step 4",
+    title: "Check power is leaving the board for the pump",
+    detail: "Hold the voltmeter pins on the pump output terminals while pressing the blue flush button (easier with a helper). Power reaching the pump but no pump action = the pump itself is dead and needs replacing." },
+  { t: 114, end: 118, num: "Step 5",
+    title: "Drain the flush tank reservoir",
+    detail: "Empty the fresh-flush water reservoir before you go digging for the pump." },
+  { t: 118, end: 153, num: "Step 6",
+    title: "Remove the tray and extract the old pump",
+    detail: "Lift out the teardrop-shaped water-seal tray, then work the pump — with its pipe and cable — up out of its nest in the bottom of the reservoir.",
+    warn: "Access is very tight for adult hands; expect scraped knuckles. Go slowly — the pump wires can pull clean out of the control circuit board (they did in the video)." },
+  { t: 153, end: 162, num: "Step 7",
+    title: "Order the replacement pump",
+    detail: "Get a like-for-like Thetford flush pump. The video's part came from Grasshopper Leisure and arrived within days." },
+  { t: 162, end: 181, num: "Step 8",
+    title: "Wire in the new pump",
+    detail: "Connect the new pump's wires to the control circuit board. Straightforward even if the old wires were pulled out — note which terminal each wire goes to." },
+  { t: 181, end: 204, num: "Step 9",
+    title: "Seat the pump and test",
+    detail: "Feed the pump back down into the reservoir (under a minute, minus a little more skin), refill with water, press the blue button — you should get the familiar swirl. Job done." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+const FLAGKEY = KEY.replace("ticks", "flags");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp">▶ ${mins}:${secs}</span>
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt: a better-matching clip, corrected text, or a check against the manual. Tap the flag again to undo.</div>
+    </div>`;
+  // tick toggles done; anywhere else jumps the video
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  div.addEventListener("click", () => {
+    if (!ready) return;
+    const state = player.getPlayerState();
+    const now = player.getCurrentTime();
+    const withinStep = now >= s.t && now < s.end;
+    if (withinStep && state === 1) { player.pauseVideo(); }       // tap again to pause
+    else if (withinStep && state === 2) { player.playVideo(); }   // tap to resume
+    else { player.seekTo(s.t, true); player.playVideo(); }        // jump to this step
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = [];
+  localStorage.setItem(KEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

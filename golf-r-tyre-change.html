@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Change a Tyre on a 2018 Golf R — Step-by-Step Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #00437a;
+    --accent-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.golfr { border-left: 4px solid var(--accent); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+  .step.textonly { cursor: default; }
+  .step.textonly:hover { border-color: var(--border); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.textonly { color: var(--muted); background: var(--border); }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-adapt {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--accent-soft); color: var(--accent); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Close this and open the guide with <strong>Open Guide.cmd</strong> in the same folder — it serves the page properly and the video will work.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=rSSPGUCBEzY" target="_blank" style="color:#8ec3ee;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Change a Tyre on Your 2018 Golf R (Factory Jack Kit)</h1>
+    <div class="byline">Guide generated from: <em>“Complete Mk7 Golf Jacking Points, Tools &amp; Tow Hook Setup”</em> by Ross Perry · 5 min 53 s · Filmed on a Mk7 Golf GTI — the same body, boot, tool kit and jack as your Golf R. Steps the clip doesn't show are marked <strong>📝 text only</strong>. Tap any video step to jump the clip to that moment.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 13 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🚨 Before anything else (roadside safety)</h2>
+    <ul>
+      <li>Pull well off the road onto firm, level ground; hazard lights on</li>
+      <li>Handbrake on, car in P, everyone out of the car and away from traffic</li>
+      <li>Never get any part of your body under a car held only by the factory jack</li>
+      <li>Practise this once at home in the driveway — don't learn it on a dark roadside</li>
+    </ul>
+  </div>
+
+  <div class="panel golfr">
+    <h2>🚗 Your 2018 Golf R specifics <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ checked against the VW Golf owner's manual</span></h2>
+    <ul>
+      <li>Space-saver spare and tool kit live <strong>under the boot floor</strong> — stored already inflated. The correct pressure is printed <strong>on a sticker on the spare wheel itself</strong> (typically 4.2 bar); the manual says to check it as soon as possible after fitting</li>
+      <li>Wheel bolt torque is <strong>120 Nm</strong> (manual-confirmed) — have them torque-checked when the tyre is repaired. <strong>Never grease or oil the bolts</strong>; they can loosen while driving</li>
+      <li>If your wheels have <strong>anti-theft locking bolts</strong>, the adapter socket is in the tool kit or glovebox — check you have it <em>now</em>, not roadside</li>
+      <li>Space-saver limits (manual-confirmed): <strong>80 km/h max</strong>, no hard acceleration, braking or cornering, and <strong>no more than 200 km</strong> on the front (drive) axle</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Prototype: interactive video guide, generated automatically from the YouTube transcript and adapted to the user's car.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=rSSPGUCBEzY" target="_blank">youtube.com/watch?v=rSSPGUCBEzY</a>
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "rSSPGUCBEzY";
+
+// step data extracted from the timed transcript; t=null means the clip doesn't show it (text-only step)
+const STEPS = [
+  { t: 12,  end: 44,  num: "Overview",
+    title: "What you're doing",
+    detail: "Swapping a flat wheel for the space-saver spare using only the factory tool kit. The clip is a Mk7 Golf GTI — same boot layout, tools and jack as your Golf R." },
+  { t: 44,  end: 88,  num: "Step 1",
+    title: "Open the boot and find the kit",
+    detail: "Lift the boot floor panel and prop it on its hooks. The space-saver sits in the wheel trough with the tool kit packed beside it — exactly as in your car." },
+  { t: 88,  end: 135, num: "Step 2",
+    title: "Take out the spare and the tool kit",
+    detail: "Unscrew the central spin-lock and lift the spare out. For the tool kit, undo the strap — the jacking handle holds the package together, so pull it out first.",
+    adapt: "Your spare is stored ready-inflated (4.2 bar). Press it to confirm it's firm before you commit — if it's soft, call roadside assistance rather than fitting it." },
+  { t: 135, end: 213, num: "Step 3",
+    title: "Know your tools",
+    detail: "The kit: the scissor jack, the separate jacking handle with a hook on the end, the wheel wrench (tyre iron), the locking-bolt adapter, a two-in-one screwdriver (also pulls the bolt caps), and the tow hook (not needed today)." },
+  { t: 217, end: 234, num: "Step 4",
+    title: "Secure the car",
+    detail: "Parking brake firmly on and the car in P. If you can, block the wheel diagonally opposite the flat — a rock or a kerb works; the Golf kit has no chocks." },
+  { t: 229, end: 240, num: "Step 5",
+    title: "Loosen the wheel bolts — while the car is on the ground",
+    detail: "Pull the bolt caps off with the puller end of the screwdriver, then crack each of the five bolts just half a turn. Loosening now stops you rocking the car off the jack later.",
+    adapt: "Locking bolt: fit your adapter between the wrench and the bolt." },
+  { t: 240, end: 270, num: "Step 6",
+    title: "Find the jacking point",
+    detail: "Look for the moulded arrows under the sill near each wheel. On cars with side skirts — like your R and the GTI in the clip — the arrows are hidden, so find the wider section of the chassis seam instead. That reinforced section is the lifting point." },
+  { t: 270, end: 306, num: "Step 7",
+    title: "Seat the jack and crank it up",
+    detail: "Wind the jack open by hand until its groove nearly reaches the seam, push it in so the wider section sits snugly in the groove, then thread the hook of the jacking handle through the jack's lever eye and crank.",
+    warn: "This is the step people get wrong, and it's how cars fall off jacks. The base must sit flat on firm ground — on soft ground put a solid board under it." },
+  { t: 306, end: 314, num: "Step 8",
+    title: "Raise the car — just enough",
+    detail: "Crank until the flat tyre is only just clear of the ground, then stop. Higher is not safer." },
+  { t: 312, end: 325, num: "Step 9",
+    title: "Swap the wheel and snug the bolts",
+    detail: "Undo the five bolts fully — before the last one, brace the wheel with your foot and a hand so it can't drop. Lift the flat off, lift the spare on, line up the holes, and start all five bolts by hand before snugging them with the wrench.",
+    warn: "As the clip says: don't crank the bolts hard while the wheel is in the air — it strains the brakes and drivetrain. Firm is enough for now.",
+    adapt: "VWs use bolts, not studs, so there's nothing to hang the wheel on — take its weight and line the holes up carefully. The spare is much lighter than your 19-inch wheel." },
+  { t: 324, end: 335, num: "Step 10",
+    title: "Lower the car and remove the jack",
+    detail: "Crank the jack back down until the spare takes the car's weight, wind it clear, and remove it." },
+  { t: null, end: null, num: "Step 11",
+    title: "Tighten the bolts properly, in a star pattern",
+    detail: "Now the wheel is on the ground, go around the five bolts in a star (criss-cross) pattern — not around the circle — pulling firmly on the wrench for each. The clip mentions this but doesn't demonstrate it.",
+    adapt: "Golf torque spec is 120 Nm (about 89 ft-lb) — confirmed in the owner's manual. Get them properly tight by hand, then have them torque-checked at the tyre shop. Never grease or oil the bolts." },
+  { t: null, end: null, num: "Step 12",
+    title: "Pack everything away",
+    detail: "Wind the jack fully closed and tuck the handle in or it won't fit back in the well. Tools back in their slots, spin-lock back on the well, boot floor down. Not shown in the clip — it's the reverse of steps 1–3.",
+    adapt: "Your full-size wheel won't fit in the space-saver's well — it rides in the boot." },
+  { t: null, end: null, num: "Step 13",
+    title: "Drive gently to a tyre shop",
+    detail: "The space-saver is strictly temporary. Owner's-manual limits: maximum 80 km/h, no hard acceleration, braking or cornering, no more than 200 km if it's on the front (drive) axle, and check its pressure at the first opportunity. Get the proper tyre repaired or replaced as soon as you can." },
+];
+
+const KEY = "howto-ticks-golfr-tyre-v3";
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+const FLAGKEY = KEY.replace("ticks", "flags");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  const textOnly = s.t === null;
+  div.className = "step" + (textOnly ? " textonly" : "");
+  div.id = "step-" + i;
+  let chip;
+  if (textOnly) {
+    chip = `<span class="timestamp textonly">📝 text only — not in clip</span>`;
+  } else {
+    const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+    chip = `<span class="timestamp">▶ ${mins}:${secs}</span>`;
+  }
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        ${chip}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.adapt ? `<div class="step-adapt">🚗 Your Golf R: ${s.adapt}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt: a better-matching clip, corrected text, or a check against the manual. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  if (!textOnly) {
+    div.addEventListener("click", () => {
+      if (!ready) return;
+      const state = player.getPlayerState();
+      const now = player.getCurrentTime();
+      const withinStep = now >= s.t && now < s.end;
+      if (withinStep && state === 1) { player.pauseVideo(); }       // tap again to pause
+      else if (withinStep && state === 2) { player.playVideo(); }   // tap to resume
+      else { player.seekTo(s.t, true); player.playVideo(); }        // jump to this step
+    });
+  }
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = [];
+  localStorage.setItem(KEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    const on = s.t !== null && t >= s.t && t < s.end;
+    document.getElementById("step-" + i).classList.toggle("playing", on);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
