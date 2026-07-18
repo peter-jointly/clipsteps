@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fluffy Pancakes — Step-by-Step Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #a3660a;
+    --accent-soft: #f9efdd;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the ClipSteps website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=vkcHmpKxFwg" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Light, Fluffy Pancakes From Scratch</h1>
+    <div class="byline">Guide generated from: <em>“The Best Pancakes You'll Ever Make | Epicurious 101”</em> — chef Frank Proto · 8 min 27 s · 10M+ views. Tap any step to jump the video there; tap again to pause.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 11 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients (all pantry staples)</h2>
+    <ul>
+      <li><strong>Dry:</strong> plain flour, sugar, salt, baking powder <em>and</em> baking soda (bi-carb) — both, that's the fluff</li>
+      <li><strong>Wet:</strong> milk + a splash of apple cider vinegar (instant "buttermilk"), neutral oil, vanilla, eggs</li>
+      <li><strong>To cook &amp; serve:</strong> salted butter (Frank uses whipped salted) and real maple syrup</li>
+      <li>Frank's exact amounts flash up on screen as he adds each one — pause at that moment to catch them. Typical amounts for this style if you miss them: 2 cups flour · 2 tbsp sugar · 2 tsp baking powder · ½ tsp bi-carb · ½ tsp salt · 2 cups milk + 2 tbsp vinegar · 2 eggs · ¼ cup oil · 1 tsp vanilla</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment</h2>
+    <ul>
+      <li>Two mixing bowls and a whisk</li>
+      <li>Electric griddle if you have one; otherwise a non-stick frying pan or cast-iron griddle works fine</li>
+      <li>A <strong>plastic</strong> spatula (metal scratches non-stick) and a big spoon or ice-cream scoop for the batter</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Prototype: interactive video guide, generated automatically from the YouTube transcript.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=vkcHmpKxFwg" target="_blank">Epicurious — youtube.com/watch?v=vkcHmpKxFwg</a>
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "vkcHmpKxFwg";
+
+// step data extracted from the timed transcript
+const STEPS = [
+  { t: 0,   end: 33,  num: "Overview",
+    title: "What you're making",
+    detail: "Pancakes 101 with a professional chef-instructor: light, fluffy, crispy-edged pancakes from ingredients already in your pantry — and the techniques that stop them coming out flat." },
+  { t: 33,  end: 58,  num: "Step 1",
+    title: "Whisk the dry ingredients",
+    detail: "Flour, sugar, salt, baking powder AND baking soda into a bowl. Whisk so there are no pockets of any one ingredient — the two raising agents are what make the bubbles." },
+  { t: 58,  end: 107, num: "Step 2",
+    title: "Mix the wet ingredients",
+    detail: "Milk plus a splash of apple cider vinegar makes an instant buttermilk (no half-used carton dying in the fridge). Add oil, vanilla and the eggs, then whisk until the yolks are fully broken up and combined." },
+  { t: 107, end: 146, num: "Step 3",
+    title: "Fold together — then STOP",
+    detail: "Pour wet into dry and fold gently — Frank does roughly 20–25 strokes, no more. The liquid is already activating the raising agents. The batter should be thick, and lumps are fine.",
+    warn: "Overmixing is the #1 cause of flat, rubbery pancakes. Once it's combined, do not stir again — not now, not when scooping." },
+  { t: 146, end: 189, num: "Step 4",
+    title: "Heat your griddle or pan, with plenty of butter",
+    detail: "Electric griddle, cast-iron plate or a non-stick pan — all fine. Melt a generous knob of salted butter; if it browns a little, that's flavour, not a problem." },
+  { t: 189, end: 252, num: "Step 5",
+    title: "Scoop the batter — without stirring it",
+    detail: "Scoop from the side of the bowl and pour onto the hot butter, keeping the bubbles in the remaining batter intact. Don't chase perfect circles — chase fluffiness. Get everything you need next to you first; it moves quickly from here." },
+  { t: 252, end: 280, num: "Step 6",
+    title: "Let the edges fry — hands off",
+    detail: "The butter should almost fry the edges crisp. Resist the urge to fiddle or flip early. As Frank says: stop, relax, cleansing breath." },
+  { t: 280, end: 296, num: "Step 7",
+    title: "Watch for the bubbles to pop through",
+    detail: "Flip only when bubbles are popping up through the surface of the pancake and the top looks set — that's the leavening doing its work." },
+  { t: 296, end: 322, num: "Step 8",
+    title: "Flip — quickly, and away from you",
+    detail: "Get the plastic spatula fully under in one quick push (no chasing it around the pan) and flip away from yourself so hot butter can't splatter you." },
+  { t: 322, end: 341, num: "Step 9",
+    title: "Never press down",
+    detail: "Pressing squeezes out the bubbles you've worked to create. The most you should do is slide the pancake around a little to soak up butter.",
+    warn: "No pressing. Ever. That's the whole reason they're fluffy." },
+  { t: 341, end: 369, num: "Step 10",
+    title: "The spring-back doneness test",
+    detail: "Gently press the top: if it springs back, it's done. If it squishes and shows wet batter, give it longer. First batch is usually the best of the day — crispiest edges, best colour." },
+  { t: 369, end: 460, num: "Step 11",
+    title: "Stack, butter every layer, douse in syrup",
+    detail: "Butter on the plate, a knob between every layer, a schmear on top, then real maple syrup — don't be shy. Salt from the butter plus sweet syrup is the combination. Eat while the butter's melting." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp">▶ ${mins}:${secs}</span>
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  div.addEventListener("click", () => {
+    if (!ready) return;
+    const state = player.getPlayerState();
+    const now = player.getCurrentTime();
+    const withinStep = now >= s.t && now < s.end;
+    if (withinStep && state === 1) { player.pauseVideo(); }
+    else if (withinStep && state === 2) { player.playVideo(); }
+    else { player.seekTo(s.t, true); player.playVideo(); }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
