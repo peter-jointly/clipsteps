@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Behringer WING Basics — Beginner's Sound Desk Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #275e9e;
+    --accent-soft: #e5eef8;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.danger { border-left: 4px solid #c0392b; background: #fdf6f5; }
+  .panel.golfr { border-left: 4px solid var(--accent); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-adapt {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--accent-soft); color: var(--accent); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the ClipSteps website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=0eMiWAVb-aQ" target="_blank" style="color:#8ec3ee;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Know Your Sound Desk: Behringer WING Basics</h1>
+    <div class="byline">Guide generated from: <em>“So You Just Got a Behringer Wing? Start Here”</em> by Alan Hamilton Audio · 9 min 48 s. His desk is fresh out of the box; <strong>ours is already set up</strong> — so this guide uses his video to teach the concepts, skips his setup-only sections, and the blue notes map everything to our desk. Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 10 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel danger">
+    <h2>⛔ Read this first — our desk is already configured</h2>
+    <ul>
+      <li>At 0:17 the video taps <strong>Setup → Initialize Console</strong>. He does that because his desk is brand new. <strong>Never do this on ours</strong> — it factory-resets the desk and erases the whole church setup.</li>
+      <li>Stay out of the <strong>Setup</strong> and <strong>Routing</strong> pages entirely. Our mics arrive through a stage box, not the sockets shown in the video, so the routing here doesn't match his anyway.</li>
+      <li>If the desk ever looks wrong, don't reset anything — ask the sound coordinator to reload the Sunday show file.</li>
+      <li>Faders, mutes, gains and sends are your safe playground. That's what this guide covers.</li>
+    </ul>
+  </div>
+
+  <div class="panel golfr">
+    <h2>🎚 Our desk (from the photo of our actual surface)</h2>
+    <ul>
+      <li>Full-size WING with the big touchscreen. Channels are already named: <strong>W'SHIP LDR, MIC 2/4, BASS, ELEC 1/2, ACOUS 1, KEYS, SAX, TRACKS, HOST, PREACH</strong> and more</li>
+      <li>Grouped fader sections: <strong>DRUMS / BAND / TRACKS / VOCAL</strong> and <strong>WORSHIP / SPEECH / MEDIA / REVERB</strong> — one fader moves a whole group</li>
+      <li>Outputs include <strong>MAIN FOH</strong> (the room) and <strong>STREAM</strong> (feeds the YouTube stream on the monitor beside the desk) — if the room sounds fine but the stream is quiet, it's the STREAM fader, not MAIN</li>
+      <li>MEDIA TO STAGE feeds playback to the platform</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Prototype: interactive video guide, generated automatically from the YouTube transcript and adapted to our desk.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=0eMiWAVb-aQ" target="_blank">Alan Hamilton Audio — youtube.com/watch?v=0eMiWAVb-aQ</a>
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "0eMiWAVb-aQ";
+
+// step data extracted from the timed transcript; setup-only sections of the video are deliberately skipped
+const STEPS = [
+  { t: 1,   end: 17,  num: "Overview",
+    title: "What this guide teaches",
+    detail: "How sound travels through the WING: mic → channel → gain → sends → faders → speakers. Learn this chain and the desk stops being scary — everything on the surface is just one of these pieces.",
+    warn: "Skip past 0:17–0:48 of the video — that's the factory reset we never do (see the red box above)." },
+  { t: 48,  end: 107, num: "Step 1",
+    title: "How sound gets in: inputs feed channels",
+    detail: "Every mic or instrument arrives at an input, and each input feeds a numbered channel — the strips with faders you see on the surface. The video shows this on the routing page purely so you understand the idea.",
+    adapt: "On our desk each channel is already named on its little screen (BASS, KEYS, PREACH…) — you never need the routing page to know what's what." },
+  { t: 119, end: 159, num: "Step 2",
+    title: "Select a channel and check its gain",
+    detail: "Press Home, select a channel, and the touchscreen shows its controls — gain is the input volume from the mic itself. Speak into the mic and watch the input meter: you want a strong, steady signal with peaks staying well out of the red (around −18 dBFS average is the usual digital target).",
+    warn: "Clipping (hitting the red) distorts permanently — no fader can fix a clipped input. If a meter is slammed into the red, ease the gain down." },
+  { t: 159, end: 187, num: "Step 3",
+    title: "M1 — the invisible wire to the main speakers",
+    detail: "Each channel has a send called M1, on by default, which feeds the main left/right mix. That's why raising a channel fader makes it louder in the room: channel → M1 → main outputs.",
+    adapt: "On our desk the main mix is the fader labelled MAIN FOH. The STREAM output is a separate mix — a channel can be loud in the room but missing from the stream, and vice versa." },
+  { t: 187, end: 208, num: "Step 4",
+    title: "Fader order: main up first, then the channel",
+    detail: "To hear anything: main fader up to its normal position, then bring the channel fader up. If a channel seems dead, check this chain in order — channel fader, main fader, and the mute buttons on both." },
+  { t: 208, end: 240, num: "Step 5",
+    title: "The Bus Masters layer",
+    detail: "The Bus Master button flips the fader bank to show the bus masters — the overall level of each monitor mix and effects bus. Same faders, different job; press it again to get back to channels.",
+    warn: "If the faders suddenly 'aren't the channels anymore', you're probably on a different layer. Look at the layer buttons and go back — nothing is broken." },
+  { t: 240, end: 262, num: "Step 6",
+    title: "What the buses are for",
+    detail: "Out of the box: buses 1–8 are monitor sends (what the musicians hear in their wedges/ears), 9–10 are subgroups, 11–16 are effects sends like reverb.",
+    adapt: "That's why our desk has a REVERB group — vocals are sent to a reverb bus and that fader controls how much comes back. Pull it down and the vocals go dry." },
+  { t: 445, end: 503, num: "Step 7",
+    title: "Send a channel to a monitor mix",
+    detail: "Home → select the channel → open its sends page → turn on the send for that monitor bus and raise its level. This is how you give the worship leader more of their own vocal without changing the room at all — sends are independent of the main fader.",
+    adapt: "Each musician's 'can I have more X' request is exactly this operation: their monitor bus, the channel they want, raise the send." },
+  { t: 503, end: 527, num: "Step 8",
+    title: "Send it to the room",
+    detail: "Master fader up, channel fader up, and the channel is in the house. Watch the main meters move as you talk — that's your confirmation the whole chain is working." },
+  { t: 527, end: 580, num: "Step 9",
+    title: "The desk is friendlier than it looks",
+    detail: "As the video says: these desks are closer to show-ready than you might think — and ours IS show-ready, every Sunday. Your job on the day is faders, mutes and monitor sends, not configuration. (The video's middle section, 4:00–7:20, is physical output wiring — already done on ours, so this guide skips it.)" },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp">▶ ${mins}:${secs}</span>
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.adapt ? `<div class="step-adapt">🎚 Our desk: ${s.adapt}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match ours” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
