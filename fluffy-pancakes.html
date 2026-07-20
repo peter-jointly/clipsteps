@@ -66,6 +66,7 @@
     background: var(--card); border: 1px solid var(--border); border-radius: 12px;
     padding: 14px; margin-bottom: 10px; cursor: pointer;
     transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
   }
   .step:hover { border-color: var(--accent); }
   .step.playing { background: var(--active); border-color: var(--active-border); }
@@ -110,6 +111,13 @@
 
   .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
   .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
 </style>
 </head>
 <body>
@@ -127,7 +135,7 @@
 
   <header class="titleblock">
     <h1>Light, Fluffy Pancakes From Scratch</h1>
-    <div class="byline">Guide generated from: <em>“The Best Pancakes You'll Ever Make | Epicurious 101”</em> — chef Frank Proto · 8 min 27 s · 10M+ views. Tap any step to jump the video there; tap again to pause.</div>
+    <div class="byline">Guide generated from: <em>“The Best Pancakes You'll Ever Make | Epicurious 101”</em> — chef Frank Proto · 8 min 27 s · 10M+ views. Tap any step to jump the video there; tap again to pause. Double-tap a step's left half to skip back 5 seconds, right half to skip forward.</div>
   </header>
 
   <div class="progress-row">
@@ -244,14 +252,27 @@ STEPS.forEach((s, i) => {
     localStorage.setItem(FLAGKEY, JSON.stringify(flags));
     render();
   });
-  div.addEventListener("click", () => {
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
     if (!ready) return;
-    const state = player.getPlayerState();
-    const now = player.getCurrentTime();
-    const withinStep = now >= s.t && now < s.end;
-    if (withinStep && state === 1) { player.pauseVideo(); }
-    else if (withinStep && state === 2) { player.playVideo(); }
-    else { player.seekTo(s.t, true); player.playVideo(); }
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
   });
   stepsEl.appendChild(div);
 });

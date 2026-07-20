@@ -73,6 +73,7 @@
     background: var(--card); border: 1px solid var(--border); border-radius: 12px;
     padding: 14px; margin-bottom: 10px; cursor: pointer;
     transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
   }
   .step:hover { border-color: var(--accent); }
   .step.playing { background: var(--active); border-color: var(--active-border); }
@@ -122,6 +123,13 @@
 
   .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
   .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
 </style>
 </head>
 <body>
@@ -136,7 +144,7 @@
 
   <header class="titleblock">
     <h1>Apple &amp; Rhubarb Crumble, Two Ways</h1>
-    <div class="byline">A Food Tech design-brief demo by <strong>Mrs Forrest</strong>, filmed in her own kitchen in seven short clips — stitched into one guide. Tap a step to play that clip at that moment; tap again to pause. No YouTube involved: these videos live on this site.</div>
+    <div class="byline">A Food Tech design-brief demo by <strong>Mrs Forrest</strong>, filmed in her own kitchen in seven short clips — stitched into one guide. Tap a step to play that clip at that moment; tap again to pause. Double-tap a step's left/right half to skip back/forward 5 seconds. No YouTube involved: these videos live on this site.</div>
   </header>
 
   <div class="progress-row">
@@ -268,7 +276,21 @@ STEPS.forEach((s, i) => {
     localStorage.setItem(FLAGKEY, JSON.stringify(flags));
     render();
   });
-  div.addEventListener("click", () => jumpTo(s));
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      if (currentFile) {
+        const rect = div.getBoundingClientRect();
+        const back = (e.clientX - rect.left) < rect.width / 2;
+        player.currentTime = Math.max(0, player.currentTime + (back ? -5 : 5));
+        player.play();
+      } else { jumpTo(s); }
+    } else {
+      tapTimer = setTimeout(() => { tapTimer = null; jumpTo(s); }, 280);
+    }
+  });
   stepsEl.appendChild(div);
 });
 

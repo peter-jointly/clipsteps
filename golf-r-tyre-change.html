@@ -67,6 +67,7 @@
     background: var(--card); border: 1px solid var(--border); border-radius: 12px;
     padding: 14px; margin-bottom: 10px; cursor: pointer;
     transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
   }
   .step:hover { border-color: var(--accent); }
   .step.playing { background: var(--active); border-color: var(--active-border); }
@@ -118,6 +119,13 @@
 
   .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
   .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
 </style>
 </head>
 <body>
@@ -135,7 +143,7 @@
 
   <header class="titleblock">
     <h1>Change a Tyre on Your 2018 Golf R (Factory Jack Kit)</h1>
-    <div class="byline">Guide generated from: <em>“Complete Mk7 Golf Jacking Points, Tools &amp; Tow Hook Setup”</em> by Ross Perry · 5 min 53 s · Filmed on a Mk7 Golf GTI — the same body, boot, tool kit and jack as your Golf R. Steps the clip doesn't show are marked <strong>📝 text only</strong>. Tap any video step to jump the clip to that moment.</div>
+    <div class="byline">Guide generated from: <em>“Complete Mk7 Golf Jacking Points, Tools &amp; Tow Hook Setup”</em> by Ross Perry · 5 min 53 s · Filmed on a Mk7 Golf GTI — the same body, boot, tool kit and jack as your Golf R. Steps the clip doesn't show are marked <strong>📝 text only</strong>. Tap any video step to jump the clip to that moment; double-tap left/right halves to skip back/forward 5 seconds.</div>
   </header>
 
   <div class="progress-row">
@@ -273,14 +281,27 @@ STEPS.forEach((s, i) => {
     render();
   });
   if (!textOnly) {
-    div.addEventListener("click", () => {
+    // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+    let tapTimer = null;
+    div.addEventListener("click", (e) => {
       if (!ready) return;
-      const state = player.getPlayerState();
-      const now = player.getCurrentTime();
-      const withinStep = now >= s.t && now < s.end;
-      if (withinStep && state === 1) { player.pauseVideo(); }       // tap again to pause
-      else if (withinStep && state === 2) { player.playVideo(); }   // tap to resume
-      else { player.seekTo(s.t, true); player.playVideo(); }        // jump to this step
+      if (tapTimer) {
+        clearTimeout(tapTimer); tapTimer = null;
+        const rect = div.getBoundingClientRect();
+        const back = (e.clientX - rect.left) < rect.width / 2;
+        player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+        player.playVideo();
+      } else {
+        tapTimer = setTimeout(() => {
+          tapTimer = null;
+          const state = player.getPlayerState();
+          const now = player.getCurrentTime();
+          const withinStep = now >= s.t && now < s.end;
+          if (withinStep && state === 1) { player.pauseVideo(); }
+          else if (withinStep && state === 2) { player.playVideo(); }
+          else { player.seekTo(s.t, true); player.playVideo(); }
+        }, 280);
+      }
     });
   }
   stepsEl.appendChild(div);
