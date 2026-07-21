@@ -96,6 +96,12 @@
     background: #fdf1f1; color: #a33; border-radius: 8px;
   }
 
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+
   .flag-btn {
     margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
     font-size: .9rem; opacity: .35; padding: 2px 4px;
@@ -182,17 +188,17 @@ const STEPS = [
   { t: 33,  end: 58,  num: "Step 1",
     title: "Whisk the dry ingredients",
     detail: "Flour, sugar, salt, baking powder AND baking soda into a bowl. Whisk so there are no pockets of any one ingredient — the two raising agents are what make the bubbles." },
-  { t: 58,  end: 107, num: "Step 2",
+  { t: 58,  end: 107, q: 99, num: "Step 2",
     title: "Mix the wet ingredients",
     detail: "Milk plus a splash of apple cider vinegar makes an instant buttermilk (no half-used carton dying in the fridge). Add oil, vanilla and the eggs, then whisk until the yolks are fully broken up and combined." },
-  { t: 107, end: 146, num: "Step 3",
+  { t: 107, end: 146, q: 122, num: "Step 3",
     title: "Fold together — then STOP",
     detail: "Pour wet into dry and fold gently — Frank does roughly 20–25 strokes, no more. The liquid is already activating the raising agents. The batter should be thick, and lumps are fine.",
     warn: "Overmixing is the #1 cause of flat, rubbery pancakes. Once it's combined, do not stir again — not now, not when scooping." },
-  { t: 146, end: 189, num: "Step 4",
+  { t: 146, end: 189, q: 183, num: "Step 4",
     title: "Heat your griddle or pan, with plenty of butter",
     detail: "Electric griddle, cast-iron plate or a non-stick pan — all fine. Melt a generous knob of salted butter; if it browns a little, that's flavour, not a problem." },
-  { t: 189, end: 252, num: "Step 5",
+  { t: 189, end: 252, q: 218, num: "Step 5",
     title: "Scoop the batter — without stirring it",
     detail: "Scoop from the side of the bowl and pour onto the hot butter, keeping the bubbles in the remaining batter intact. Don't chase perfect circles — chase fluffiness. Get everything you need next to you first; it moves quickly from here." },
   { t: 252, end: 280, num: "Step 6",
@@ -201,17 +207,17 @@ const STEPS = [
   { t: 280, end: 296, num: "Step 7",
     title: "Watch for the bubbles to pop through",
     detail: "Flip only when bubbles are popping up through the surface of the pancake and the top looks set — that's the leavening doing its work." },
-  { t: 296, end: 322, num: "Step 8",
+  { t: 296, end: 322, q: 306, num: "Step 8",
     title: "Flip — quickly, and away from you",
     detail: "Get the plastic spatula fully under in one quick push (no chasing it around the pan) and flip away from yourself so hot butter can't splatter you." },
   { t: 322, end: 341, num: "Step 9",
     title: "Never press down",
     detail: "Pressing squeezes out the bubbles you've worked to create. The most you should do is slide the pancake around a little to soak up butter.",
     warn: "No pressing. Ever. That's the whole reason they're fluffy." },
-  { t: 341, end: 369, num: "Step 10",
+  { t: 341, end: 369, q: 352, num: "Step 10",
     title: "The spring-back doneness test",
     detail: "Gently press the top: if it springs back, it's done. If it squishes and shows wet batter, give it longer. First batch is usually the best of the day — crispiest edges, best colour." },
-  { t: 369, end: 460, num: "Step 11",
+  { t: 369, end: 460, q: 417, num: "Step 11",
     title: "Stack, butter every layer, douse in syrup",
     detail: "Butter on the plate, a knob between every layer, a schmear on top, then real maple syrup — don't be shy. Salt from the butter plus sweet syrup is the combination. Eat while the butter's melting." },
 ];
@@ -235,6 +241,7 @@ STEPS.forEach((s, i) => {
       <div class="step-head">
         <span class="step-num">${s.num}</span>
         <span class="timestamp">▶ ${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
         <button class="flag-btn" title="This doesn't match what I have">🚩</button>
       </div>
       <div class="step-title">${s.title}</div>
@@ -251,6 +258,13 @@ STEPS.forEach((s, i) => {
     flags[i] = !flags[i];
     localStorage.setItem(FLAGKEY, JSON.stringify(flags));
     render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
   });
   // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
   let tapTimer = null;

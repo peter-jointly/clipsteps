@@ -104,6 +104,12 @@
     background: var(--accent-soft); color: var(--accent); border-radius: 8px;
   }
 
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+
   .flag-btn {
     margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
     font-size: .9rem; opacity: .35; padding: 2px 4px;
@@ -195,7 +201,7 @@ const STEPS = [
     title: "Take out the spare and the tool kit",
     detail: "Unscrew the central spin-lock and lift the spare out. For the tool kit, undo the strap — the jacking handle holds the package together, so pull it out first.",
     adapt: "Your spare is stored ready-inflated (4.2 bar). Press it to confirm it's firm before you commit — if it's soft, call roadside assistance rather than fitting it." },
-  { t: 135, end: 213, num: "Step 3",
+  { t: 135, end: 213, q: 176, num: "Step 3",
     title: "Know your tools",
     detail: "The kit: the scissor jack, the separate jacking handle with a hook on the end, the wheel wrench (tyre iron), the locking-bolt adapter, a two-in-one screwdriver (also pulls the bolt caps), and the tow hook (not needed today)." },
   { t: 217, end: 234, num: "Step 4",
@@ -205,7 +211,7 @@ const STEPS = [
     title: "Loosen the wheel bolts — while the car is on the ground",
     detail: "Pull the bolt caps off with the puller end of the screwdriver, then crack each of the five bolts just half a turn. Loosening now stops you rocking the car off the jack later.",
     adapt: "Locking bolt: fit your adapter between the wrench and the bolt." },
-  { t: 240, end: 270, num: "Step 6",
+  { t: 240, end: 270, q: 255, num: "Step 6",
     title: "Find the jacking point",
     detail: "Look for the moulded arrows under the sill near each wheel. On cars with side skirts — like your R and the GTI in the clip — the arrows are hidden, so find the wider section of the chassis seam instead. That reinforced section is the lifting point." },
   { t: 270, end: 306, num: "Step 7",
@@ -262,6 +268,7 @@ STEPS.forEach((s, i) => {
       <div class="step-head">
         <span class="step-num">${s.num}</span>
         ${chip}
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
         <button class="flag-btn" title="This doesn't match what I have">🚩</button>
       </div>
       <div class="step-title">${s.title}</div>
@@ -279,6 +286,13 @@ STEPS.forEach((s, i) => {
     flags[i] = !flags[i];
     localStorage.setItem(FLAGKEY, JSON.stringify(flags));
     render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
   });
   if (!textOnly) {
     // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
