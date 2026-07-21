@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Steak Night — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #7a3620;          /* seared-crust brown-red */
+    --accent-soft: #f3e3dc;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    YouTube's caption service was rate-limiting all requests when this draft was built, so no transcript could be pulled for this video.
+    Every <em>▶ ~time</em> below is spread across Andy's own on-screen chapter markers (Intro / Temps / Pan seared / Grilling / Reverse seared — these five are real), but the exact seconds within each chapter are estimates.
+    A manual timing pass against the video is needed before this goes live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=rgXtLVFzFmo" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Steak Night — Pan-Seared, Basted &amp; Rested</h1>
+    <div class="byline">Guide generated from: <em>“The Perfect Steak Every Time With These 3 Techniques”</em> — Andy Cooks (Andy Hearnden, Melbourne) · 13 min 45 s · This guide follows the first of his three techniques (pan-seared). Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds. Timestamps marked <span class="timestamp approx" style="font-size:.72rem">▶ ~m:ss</span> are approximate — needs manual timing.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 8 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— serves 2, scale up for the family</span></h2>
+    <ul>
+      <li>2 steaks — scotch fillet or porterhouse, at least 2.5–3 cm thick, out of the fridge 20–30 min before cooking</li>
+      <li>A little neutral oil (for the pan) and olive oil (for rubbing the steaks)</li>
+      <li>Flaky salt and cracked black pepper — season generously, both sides and the edges</li>
+      <li>30–40 g butter, 2–3 garlic cloves (smashed, skin on), a few sprigs thyme or rosemary — for the baste</li>
+      <li>Sides: 500 g–1 kg small potatoes, 4–6 truss or field tomatoes, a bunch of green beans or broccolini, 200–250 g cup mushrooms</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Mushrooms - Cups</strong> — our #3 veg by volume, and a classic steak partner: sliced and pan-fried in the resting butter (Step 5)</li>
+      <li><strong>Potatoes - Chats (small) - 5kg bags</strong> — halved and roasted alongside</li>
+      <li><strong>Truss Tomatoes</strong> or <strong>Tomatoes - Field</strong> — roasted on the same tray</li>
+      <li><strong>Beans - Green</strong> or <strong>Broccolini (bunch)</strong> — quick-steamed while the butter's foaming</li>
+      <li><strong>Garlic - Imported</strong> (or Peeled Garlic 1kg) — for the baste and the mushrooms</li>
+      <li><strong>Our beef</strong> — Beef - Scotch Fillet 2-pack, or the T-bone Steak 2-pack (the porterhouse portion, on the bone) — grass-fed &amp; finished on the Mornington Peninsula, sold as monthly pre-order packs</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A heavy pan (cast iron is ideal), tongs, a spoon for basting, a roasting tray, a meat thermometer if you have one</li>
+      <li><strong>Start the oven first</strong> — the veg sides take 35–40 minutes; the steak itself is only about 15 minutes hands-on including the rest</li>
+      <li>Serves 2 as written — the beef packs come in 2s, so grab a second pack (or ask your butcher for more) for a bigger table</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide built from Andy Cooks' on-screen chapter markers (no transcript available today — YouTube's caption service was rate-limiting requests).<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=rgXtLVFzFmo" target="_blank">Andy Cooks — youtube.com/watch?v=rgXtLVFzFmo</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "rgXtLVFzFmo";
+
+// DRAFT: transcript unavailable (YouTube rate-limited every fetch attempt today) — every step is built from
+// Andy's own on-screen chapter markers (0:00 Intro / 0:42 Temps / 1:25 Pan seared / 4:52 Grilling / 8:40 Reverse
+// seared — these five ARE real, taken from the video description) plus standard, widely-known steak technique
+// for the content in between. Every timestamp below is approximate (approx: true) except the five chapter starts.
+// No `q` (quick-step) fields are set anywhere: the addendum requires transcript evidence to ground a q, and none
+// was retrievable — see the notes.md "Quick-steps" section.
+const STEPS = [
+  { t: 0,   end: 42,  num: "Overview", approx: true,
+    title: "What you're making",
+    detail: "Andy Cooks' side-by-side class on 3 ways to cook a steak — pan-seared, grilled, and reverse-seared. This guide is built around the FIRST technique (Steps 1–5): a screaming-hot pan, a butter baste, and a proper rest. Andy's other two methods are still here too (Steps 6–7) if you'd rather grill or reverse-sear.",
+    ours: "Half the plate is veg here — garlicky pan-fried mushrooms, roasted chats and tomatoes, and beans or broccolini — so this is as much a veg-box dinner as a steak one. Serves 2 as written; scale up for the family table." },
+  { t: 42,  end: 85,  num: "Step 1", approx: true,
+    title: "Know your doneness — by temp or by feel",
+    detail: "Andy runs through his target temperatures in this chapter. Standard chef reference if you don't catch his exact numbers: rare ~50°C, medium-rare ~55°C, medium ~60°C, medium-well ~65°C, well done 70°C+. A steak keeps climbing 3–5°C after it comes off the heat, so pull it before your target. No thermometer? The classic feel test works too: press the steak with a finger — soft and giving is rare, a firm push-back is well done, medium-rare sits in between.",
+    ours: "Get your sides going now — they take longer than the steak. Oven to 200°C (fan): halve the Potatoes - Chats (small), toss in oil and salt, and roast for 35–40 minutes; add halved Truss Tomatoes (or Tomatoes - Field) to the tray for the last 15–20 minutes." },
+  { t: 85,  end: 130, num: "Step 2", approx: true,
+    title: "Season it hard",
+    detail: "Rub the steaks with a little oil, then season both sides — and the edges — generously with salt and cracked pepper. Let them sit until they're at room temperature before they hit the pan; a cold steak straight from the fridge cooks unevenly.",
+    ours: "Use your steaks from the Jointly beef pack — scotch fillet or porterhouse (the T-bone Steak 2-pack carries the porterhouse portion, on the bone) — or ask your butcher for 2 scotch fillet or porterhouse steaks, at least 2.5–3 cm thick." },
+  { t: 130, end: 200, num: "Step 3", approx: true,
+    title: "Into the hot pan — build the crust",
+    detail: "Get a heavy pan (cast iron is ideal) properly hot with a splash of neutral oil. Lay the steaks in away from you and leave them alone — a deep golden-brown crust needs to form before you even think about flipping.",
+    warn: "Have your exhaust fan on and a window open — a pan this hot will smoke. Don't move the steak early or you'll tear the crust that's just starting to form." },
+  { t: 200, end: 250, num: "Step 4", approx: true,
+    title: "Baste in foaming butter",
+    detail: "Once both sides are seared, drop in a knob of butter, the smashed garlic and the thyme or rosemary. Tilt the pan and continuously spoon the foaming butter back over the steak for the last minute or two of cooking.",
+    ours: "Beans - Green or Broccolini are the quick side — steam or blanch for 3–4 minutes while the butter's foaming, then toss through a little of that same butter before serving." },
+  { t: 250, end: 292, num: "Step 5", approx: true,
+    title: "Off the heat — REST",
+    detail: "Move the steak to a warm plate or board and rest for at least 5–10 minutes before slicing. This isn't optional: cut into it straight away and all the juice runs out onto the board instead of staying in the meat.",
+    warn: "Don't skip the rest, and don't cut it early to check — trust the time (or the thermometer reading from Step 1) instead.",
+    ours: "Don't waste that pan. Off the heat (or on the lowest heat), throw sliced Mushrooms - Cups into the leftover butter and fond with a touch more garlic — a few minutes is all they need to pick up all that steak flavour while it rests. Plate up: sliced steak, the pan mushrooms, the roasted chats and tomatoes from Step 1, and the beans or broccolini from Step 4 — that's your half-veg plate." },
+  { t: 292, end: 520, num: "Step 6", approx: true,
+    title: "Andy's alternate method: fire up the grill",
+    detail: "This chapter switches to a ribeye on the grill/barbecue — a different method to the pan above, for anyone who'd rather cook outside. Worth a watch, but this guide's box pairings and steps are built around the pan method in Steps 2–5." },
+  { t: 520, end: 825, num: "Step 7", approx: true,
+    title: "Andy's alternate method: reverse-seared tomahawk",
+    detail: "Andy's third technique: a low, slow oven (or indirect barbecue heat) brings a big tomahawk almost to temperature, then a hard, fast sear right at the end builds the crust. A great method for a thick, impressive cut, but a different process to the quick pan-sear this guide is built around." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

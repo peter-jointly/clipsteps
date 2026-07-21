@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Taco Night — Beef &amp; Chorizo Tacos — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #b04a17;          /* charred-salsa terracotta */
+    --accent-soft: #f9ece5;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #eef2f7; border: 1px dashed #8aa0b8; color: #40546b;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Timestamps are real (taken from the video's own transcript) — pending one human watch-through before this goes live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=gU2kb7vIqkI" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Taco Night: Beef &amp; Chorizo Tacos</h1>
+    <div class="byline">Guide generated from: <em>“The Beef &amp; Chorizo Tacos I Make On Repeat”</em> — Marion's Kitchen (Marion Grasby) · 8 min 33 s · Step timestamps come from the video's own transcript; quantities checked against Marion's written recipe on marionskitchen.com. Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 12 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Marion's written recipe (serves 4)</span></h2>
+    <ul>
+      <li><strong>Green pico de gallo:</strong> 250 g (about 2 large) green tomatoes, finely chopped — <strong>we use red Truss or Field Tomatoes</strong>, see Step 1 · ½ small onion, finely chopped · 1 green jalapeño, finely chopped · 1 garlic clove, finely grated · juice of 1 lime (about 2 tbsp) · 1 tsp sea salt · 3 tbsp finely chopped coriander</li>
+      <li><strong>Sour cream ‘crema’:</strong> ¼ cup sour cream · ¼ cup water</li>
+      <li><strong>Taco filling:</strong> 2 fresh chorizo sausages (or keep it all-beef — see Step 3) · 1 tbsp vegetable oil · 300 g beef mince · ½ can chickpeas, drained (about 125 g) · 1 tsp smoked paprika · 2 tsp ground cumin · 1 tsp garlic powder · ½ tsp sea salt</li>
+      <li><strong>To serve:</strong> 12 warm corn tortillas or hard taco shells · ½ iceberg lettuce, finely sliced · 1 cup grated cheddar · your favourite hot sauce (optional) · extra coriander (optional) · lime wedges</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Truss Tomatoes</strong> / <strong>Tomatoes - Field</strong>, <strong>Onion - Brown</strong>, <strong>Garlic - Imported</strong>, <strong>Chillies - Green - long</strong>, <strong>Coriander (bunch)</strong> (or <strong>Mint</strong> for the coriander-averse), <strong>Limes - 5 pack</strong>, <strong>Iceberg Lettuce - Local</strong> — the salsa and serving heroes, all in the shop</li>
+      <li><strong>Build-your-own extras:</strong> <strong>Avocado - Hass</strong> (smashed), <strong>Corn Cobb - Local</strong> (charred), <strong>Capsicum - Red</strong> (strips), <strong>Cucumber - Lebanese</strong> (sticks — the kids' plate)</li>
+      <li><strong>Our beef</strong> — grass-fed &amp; finished on the Mornington Peninsula, sold as monthly pre-order packs: the mince comes from your pack</li>
+      <li><strong>Mumma Made Smokey Tomato &amp; Chilli Chutney</strong> — the grown-ups' hot-sauce stand-in, made locally</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A wok (or your biggest, heaviest frying pan) and a spatula — plus a <strong>potato masher</strong> for the chickpea smoosh, and two small bowls for salsa and crema</li>
+      <li>About <strong>25–30 minutes end to end</strong>: salsa and crema first, then roughly 10 minutes of hot-wok work (Marion's page doesn't list times — this is our estimate)</li>
+      <li>Serves 4 — about 12 tacos. Leftover filling keeps 2–3 days in the fridge and reheats brilliantly: next-day nachos or a lunch wrap</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide generated from the video transcript, quantities checked against Marion's written recipe.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=gU2kb7vIqkI" target="_blank">Marion's Kitchen — youtube.com/watch?v=gU2kb7vIqkI</a> · Written recipe: <a href="https://www.marionskitchen.com/beef-and-chorizo-tacos/" target="_blank">marionskitchen.com</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "gU2kb7vIqkI";
+
+// Step data from the video's timed transcript (auto-captions, 199 entries) — timestamps are real.
+// Quantities cross-checked against Marion's written recipe at marionskitchen.com/beef-and-chorizo-tacos/.
+// Video runtime 8:33 (513 s); steps are contiguous 0 → 513.
+const STEPS = [
+  { t: 0,   end: 36,  num: "Overview",
+    title: "What you're making",
+    detail: "Marion Grasby's Tex-Mex-style weeknight tacos: beef and chorizo charred hard in a screaming-hot wok, a fresh tomato salsa, a two-ingredient crema — then the whole lot goes to the middle of the table and everyone builds their own. Serves 4, about 12 tacos. Her universal stir-fry rules do the heavy lifting even though it's not technically a stir-fry." },
+  { t: 36,  end: 194, num: "Step 1",
+    title: "Make the salsa (pico de gallo)",
+    detail: "Finely chop 250 g green tomatoes (about 2 large), ½ small onion and 1 green jalapeño. Grate in 1 garlic clove, then add the juice of 1 lime (about 2 tbsp), 1 tsp sea salt and 3 tbsp finely chopped coriander. Mix and set aside — something light and fresh to cut through the rich filling. Marion keeps the chilli mild so her kids eat it too, and if anyone at your table calls coriander the devil herb, she says mint works just as well. (There's book chat through the middle of this section — the salsa itself is a five-minute job.)",
+    ours: "Green tomatoes are a specialty item — swap in ripe Truss Tomatoes or Field Tomatoes from your box (about 250 g — a couple of tomatoes) for a classic red pico. No jalapeños in the shop, but one long green chilli (Chillies - Green) sits in the same gentle heat range. Coriander, Mint and Limes (5 pack) are all in the shop this week." },
+  { t: 194, end: 207, num: "Step 2",
+    title: "Mix the crema",
+    detail: "Stir ¼ cup sour cream with ¼ cup water in a small bowl until it's a pourable, drizzle-able crema. Set it aside next to the salsa. Done." },
+  { t: 207, end: 240, q: 220, num: "Step 3",
+    title: "Squeeze out the chorizo",
+    detail: "Squeeze the meat from 2 fresh chorizo sausages out of their casings into a bowl and bin the casings — hands get a little dirty, that's fine. All the seasoning someone else already packed into that sausage becomes free flavour for the filling: Marion's cheat for Tex-Mex depth without a long spice list.",
+    ours: "We don't stock chorizo — grab two fresh ones from your butcher, or keep it all-beef: bump the beef mince to about 500 g total and be generous with the spices in Step 9. The beef stays the hero either way." },
+  { t: 240, end: 283, q: 269, num: "Step 4",
+    title: "Get the wok scary-hot",
+    detail: "Empty wok (or your biggest frying pan) over the highest heat until it's genuinely smoking — Marion waits for smoke that looks a bit alarming before anything goes in. Then, and only then, swirl in 1 tbsp vegetable oil. This is her rule for any minced meat in a wok: ripping heat gives you charred and caramelised; timid heat gives you grey and sweaty.",
+    warn: "Crank the rangehood and crack a window before you start — a proper hard sear makes real smoke." },
+  { t: 283, end: 317, num: "Step 5",
+    title: "Beef in — spread it out, don't touch",
+    detail: "Add the 300 g beef mince and spread it into one layer so as much meat as possible is against the hot metal. Then leave it completely alone for 4–5 minutes while the juices evaporate and the underside chars. (Order note: Marion's written recipe colours the chorizo for a minute before the beef goes in; in the video she sears the beef first and adds the chorizo after the flip. Either order works — these steps follow the video.)",
+    warn: "Resist the stir. Move it early and the mince steams instead of searing — the patience IS the technique.",
+    ours: "Use the mince from your Jointly beef pack — grass-fed &amp; finished on the Mornington Peninsula, sold as monthly pre-order packs — or from your butcher." },
+  { t: 317, end: 347, num: "Step 6",
+    title: "The flip — colour is flavour",
+    detail: "When the smell turns properly burger-like — her written cue is “deliciously spiced hamburgers” — flip it over and admire the deep brown crust. That's the Maillard reaction: proteins and amino acids caramelising into aromas and flavours you only get by having waited." },
+  { t: 347, end: 372, num: "Step 7",
+    title: "Chorizo in — break it all up",
+    detail: "Add the chorizo and toss everything together, using the spatula to break the beef into chunky bits while the chorizo takes on colour. Done right there's no moisture pooling in the wok — just dry, crusty, caramelised meat, and you haven't even added the spices yet." },
+  { t: 372, end: 405, q: 389, num: "Step 8",
+    title: "Smoosh in the chickpeas",
+    detail: "Add ½ can of drained chickpeas (about 125 g) and crush them gently into the meat with a potato masher — or the back of the spatula — so they break down, mingle in and soak up all that flavour. It's Marion's add-something-healthy move: the chickpeas stretch the meat further and make the whole filling feel a bit more virtuous. Keep stir-frying until the meat is cooked through and charred at the edges." },
+  { t: 405, end: 416, num: "Step 9",
+    title: "Season",
+    detail: "Stir through 1 tsp smoked paprika, 2 tsp ground cumin, 1 tsp garlic powder and ½ tsp sea salt. Heat off — the filling keeps warm in the wok while you set the table." },
+  { t: 416, end: 473, q: 435, num: "Step 10",
+    title: "Build-your-own taco bar",
+    detail: "Warm 12 corn tortillas (or hard taco shells — both naturally gluten-free, check the packet) and shred ½ an iceberg. Everything goes to the middle of the table: lettuce, the filling, salsa, 1 cup grated cheddar, the crema, extra coriander. Marion's layer order: lettuce, beef, salsa, cheese, a drizzle of crema. She's upfront that this is Tex-Mex rather than traditional Mexican — it's the taco a weeknight actually needs.",
+    ours: "This is the family-ritual bit: everyone builds their own, kids included. Round out the spread from your box — smashed Avocado - Hass, charred Corn Cobb - Local kernels, Capsicum - Red strips, and Cucumber - Lebanese sticks for the kids' plate. Grown-ups: a spoonful of Mumma Made Smokey Tomato &amp; Chilli Chutney stands in for hot sauce — either way you're supporting our makers." },
+  { t: 473, end: 513, num: "Step 11",
+    title: "Lime, then eat",
+    detail: "A good squeeze of lime over the finished tacos is non-negotiable in Marion's book — then it's the best part: crusty seared beef, chorizo, chickpeas and spice, in a warm tortilla you built yourself. Weeknight tacos on repeat.",
+    ours: "Wedge a couple of limes from your Limes - 5 pack and leave them on the table — squeezers gonna squeeze." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Roast Chicken with Winter Tray Vegetables — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #a86b1c;          /* roast-gravy gold */
+    --accent-soft: #f7eddc;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Step timestamps are real — taken from this video's own transcript — but the guide still needs
+    its human watch-through and product sign-off before going live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=Vs_FDwBcUck" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Roast Chicken with Winter Tray Vegetables</h1>
+    <div class="byline">Guide generated from: <em>“One Pan Roast Chicken you can cook anywhere!”</em> — Andy Cooks (chef Andy Hearnden), filmed in a Melbourne rental kitchen · 10 min 31 s · Timestamps come straight from the video's transcript; quantities from Andy's written recipe (in the video description). Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 15 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Andy's written recipe (with our winter swaps)</span></h2>
+    <ul>
+      <li>1 whole chicken — <strong>from your butcher</strong> (we don't stock chicken)</li>
+      <li>1 kg baby potatoes → <strong>our Chat potatoes (small)</strong> — exactly Andy's spud, they go in whole; the 5 kg bag covers this roast plus the week's spuds</li>
+      <li>1 bunch Dutch carrots → <strong>our local carrots (1 kg bag)</strong> in thick batons — or grab our Dutch carrot bunch for Andy's exact look</li>
+      <li>300 g baby peppers → <strong>our winter tray: Brussels sprouts (250 g punnet), a broccoli in big florets, a brown onion in fat wedges</strong></li>
+      <li>2 tbsp olive oil · salt to taste (Andy adds black pepper in the video too)</li>
+      <li>1 bunch thyme · ¼ bunch tarragon · ¼ bunch chives</li>
+      <li>For the gravy: 2 tbsp flour (cornflour works for gluten-free) + 500 ml chicken stock</li>
+      <li>Video-only flourish: a pinch of fennel pollen — optional, see the final steps</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Potatoes - Chats (small) - 5kg bags</strong> — little Hawkes-grown roasters that go in the tray whole, no chopping</li>
+      <li><strong>Carrots - Local - bag (1kg)</strong> — or <strong>Carrots - Dutch (bunch)</strong>, the very carrot Andy uses</li>
+      <li><strong>Brussels Sprouts (250g punnet)</strong>, <strong>Broccoli - Regular (ea)</strong>, <strong>Onion - Brown (ea)</strong> — our winter stand-ins for his summery baby peppers</li>
+      <li><strong>Thyme (bunch)</strong> and <strong>Chives (bunch)</strong> — both in the shop; no tarragon this winter, so finish the gravy with <strong>Parsley - Continental (bunch)</strong> or extra chives</li>
+      <li><strong>Fennel (ea)</strong> — optional wedges on the tray stand in for Andy's fancy fennel pollen</li>
+      <li><strong>Lievito sourdough</strong> (Peasant S/Dough or White Sour batard) — from our baker, for the pan juices</li>
+      <li>The chicken is the guest — <strong>our veg is the hero of this tray</strong></li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>One big metal roasting tray (it goes on the stove later for the gravy), a medium pot, a whisk, a board and a sharp knife — plus a paper towel under the board</li>
+      <li>A meat probe is handy (<strong>70°C</strong> in the thickest thigh) but Andy proves you can go old-school without one</li>
+      <li>Oven <strong>180°C fan-forced (200°C no fan)</strong> · about <strong>60 minutes</strong> roasting with check-ins every 15 · rest the bird ~10 minutes while the gravy and carving happen — roughly <strong>1½ hours</strong> all-in, ~15 minutes of it hands-on</li>
+      <li>Feeds 3 hungry adults generously — call it 4 at the family table. Leftover win: cold-chicken sandwiches on the Lievito tomorrow, and the carcass makes next week's stock</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide generated from the video's transcript and checked against Andy's written recipe (published in the video description).<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=Vs_FDwBcUck" target="_blank">Andy Cooks — youtube.com/watch?v=Vs_FDwBcUck</a> · All Andy's recipes: <a href="https://www.andy-cooks.com/" target="_blank">andy-cooks.com</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "Vs_FDwBcUck";
+
+// Timestamps are REAL: taken from the video's own transcript (auto-generated captions, full 10:31
+// coverage). Quantities and oven temps come verbatim from Andy's written recipe in the video
+// description. Where the written recipe and the video differ, the written recipe wins and the
+// step says so. No approx flags needed on this guide.
+const STEPS = [
+  { t: 0,   end: 30,  num: "Overview",
+    title: "The Sunday ritual — one tray, any oven",
+    detail: "Andy's in a Melbourne rental kitchen after a massive shoot day, and the whole crew is sick of eating out. The point of this one: a proper roast chicken with golden tray veg and real gravy needs one tray, one pot and a working oven — not your kitchen, not your fancy gear. If it works here, it works anywhere.",
+    ours: "Our winter version: the chicken comes from your butcher — everything else on the tray comes from your box. This is the Sunday ritual, Peninsula-style." },
+  { t: 30,  end: 53,  num: "Step 1",
+    title: "First, make sure your oven is telling the truth",
+    detail: "The written recipe says 180°C fan-forced, or 200°C with no fan. Andy's holiday-house oven runs hot — the dial says 150 but his hand says more — so he sets it low to compensate. If you bake at home you already know your oven's personality; trust the food, not the dial.",
+    warn: "An oven that secretly runs hot is the number-one way a roast chicken burns outside before it cooks through. If in doubt, a cheap oven thermometer settles the argument." },
+  { t: 53,  end: 76,  num: "Step 2",
+    title: "The lineup — and the game plan",
+    detail: "Carrots, potatoes, sweet little peppers, thyme, salt, pepper and olive oil — plus Andy's “pretty bougie” fennel pollen, which waits until the very end. The plan: season everything on one tray, roast, then carve the bird and turn the drippings into a simple pan gravy.",
+    ours: "Our winter tray: Chat potatoes in whole — they're exactly Andy's baby spuds, so no chopping (halve any big ones) — local carrots in thick batons — or a Dutch carrot bunch for Andy's exact look — Brussels sprouts halved, broccoli in big florets, and a brown onion in fat wedges." },
+  { t: 76,  end: 116, num: "Step 3",
+    title: "Oil and season the chicken — everywhere",
+    detail: "Be generous with the olive oil — the skin never touches a pan, so the oil is what crisps it. One hand for the chicken, one hand kept clean for the seasoning. Salt all over, especially the legs (“that's a big piece of meat”) and the undersides, then black pepper — and don't forget salt inside the cavity. Andy forgot, went back in, and washed his hands twice. Be like Andy.",
+    warn: "Raw-chicken rules: one hand touches the bird, the other touches the salt — and wash up before you grab anything else.",
+    ours: "We don't stock chicken — grab a good free-range bird from your butcher and let our winter veg do the showing off." },
+  { t: 116, end: 192, num: "Step 4",
+    title: "Build the tray and herb it — hold the fancy stuff",
+    detail: "Chicken in the centre. Potatoes cut in half (written recipe — in the video his tiny salad spuds go in whole) and scattered around with the carrots; the quick-cooking peppers get tucked under the bigger veg. Good drizzle of olive oil over everything, a proper sprinkle of salt, then run a knife through the young thyme and scatter it over the veg — keeping it off the chicken skin if you can. The fennel pollen is delicate, so it stays in the tin until the end.",
+    ours: "Winter staging: sprouts and broccoli are this tray's “baby peppers” — the quick ones. Tuck them under bigger veg like Andy does, or easier: keep them aside and add them for the last 25 minutes. Spuds, carrots and onion wedges go the full distance from the start." },
+  { t: 192, end: 223, q: 208, num: "Step 5",
+    title: "Into the oven, rack down low",
+    detail: "Rack set low so the tray sits in the middle of the heat, crown (the breast end) facing the front. Andy's dial reads 140 but the oven feels like 180–200 — the compensation game from Step 1 in action. First check is about 10–15 minutes in, which tells you quickly whether you've judged your oven right. And as always: Celsius only — “sorry to all my North American friends”." },
+  { t: 223, end: 309, num: "Step 6",
+    title: "Check every 15 — rescue whatever's done first",
+    detail: "The written recipe says check every 15 minutes and don't be afraid to pull veg out early — you can reheat it before serving. In the video the little peppers come out first with great colour, everything else gets spread out, the carrots follow, and at the 45-minute mark the spuds are done and out — leaving the chicken another 10–15 on its own. (Running our winter tray? This middle stretch is when the sprouts and broccoli go in.)",
+    warn: "Hot veg, bare hands — don't. Andy has “chef fingers”; use tongs." },
+  { t: 309, end: 337, q: 323, num: "Step 7",
+    title: "About 60 minutes: rest the bird, keep every drop",
+    detail: "Pretty much on the hour the chicken's done — written-recipe target: 70°C internal in the thickest part if you've got a probe (Andy hasn't, and goes old-school on intuition). Let the tray sit 5 minutes so you don't destroy your fingers, then lift the bird, tipping it up so the juices in the cavity pour back into the tray — that liquid is the backbone of the gravy. Onto a plate to rest while you work." },
+  { t: 337, end: 374, num: "Step 8",
+    title: "Gravy part 1 — pour off, then deglaze the tray",
+    detail: "Pour all the fat and roasting juices from the tray into a medium pot. Then the empty tray goes over a burner; once it's hot, in with about 200 ml of the chicken stock, and scrape every browned bit (the fond) off the bottom with a spatula. That's not mess — that's the flavour.",
+    warn: "A thin roasting tray will complain and warp a little over a direct flame — keep the heat moderate and keep things moving." },
+  { t: 374, end: 411, num: "Step 9",
+    title: "Gravy part 2 — the roux, the juices, the stock",
+    detail: "Pot with the chicken fat over medium heat. Whisk in the 2 tbsp flour and cook it out — 3–4 minutes per the written recipe, so there's no raw-flour taste. Then carefully whisk in the deglazed tray juices and the rest of the 500 ml stock, and cook 6–7 minutes, stirring often — Andy lets his blip away about 10 while he carves. A few lumps? “This isn't a restaurant jus, this is homemade gravy” — nobody's checking. (Gluten-free: swap the flour for cornflour slaked in cold stock — everything else in this dish is already GF.)" },
+  { t: 411, end: 442, q: 420, num: "Step 10",
+    title: "Veg back in — then set up the carving board",
+    detail: "The veg goes back into the oven to reheat while you carve. Fold a paper towel under your board so it can't skate around. Nick through the skin between leg and breast on both sides, then tip the bird up — only a little juice should escape; a flood means it's overcooked or under-rested. Whatever pools on the board, keep — it goes into the gravy." },
+  { t: 442, end: 479, num: "Step 11",
+    title: "Carve 1: legs off, then split at the joint",
+    detail: "Run your knife down between the leg and the breast carcass, find the hip joint and push — the thigh bone pops straight out of its socket — then run your blade through and the leg is off. Same on the other side. To split drumstick from thigh, run your knife down to the joint and cut straight through it. No sawing anywhere: find the joint and the knife barely works." },
+  { t: 479, end: 518, num: "Step 12",
+    title: "Carve 2: breasts off the crown, cut into three",
+    detail: "Find the centre of the crown, start just off-centre and run your blade down the breastbone, peeling the breast back as you go. Follow down around the wishbone so you keep all that meat, then feel for the wing joint and cut straight through it — the breast comes away with the wing attached. Leave it whole if you like; Andy slices each breast into three fat pieces. Repeat on the other side, because “these guys are getting hungry.”" },
+  { t: 518, end: 564, num: "Step 13",
+    title: "Dress the veg — herbs make the meal",
+    detail: "Hot spuds into a bowl, finely sliced chives over the top, toss. The carrots and peppers get a pinch of fennel pollen — potent stuff, a little goes a long way — and a dust lands on the chicken too, “because why not.” All optional, but as Andy says: herbs take a good meal and make it a great one.",
+    ours: "Thyme (bunch) and Chives (bunch) are both in the shop. Fennel pollen is Andy's bougie flourish — skip it guilt-free, or get the same aniseed note the winter way: roast fat wedges of fresh fennel (Fennel — ea, in the shop) on the tray from the start." },
+  { t: 564, end: 631, num: "Step 14",
+    title: "Tarragon through the gravy — plate up with lashings",
+    detail: "Chop a nice amount of tarragon through the finished gravy, then build the plates: golden veg, carved chicken, and lots of gravy — “a roast is not a roast without lashings of delicious gravy.” One pot, one tray, a board and some crockery: dinner for three hungry adults with breakfast to spare. Holiday house, rental, anywhere — check your temperatures and the Sunday ritual travels with you.",
+    ours: "No tarragon in the shop this winter — chopped Parsley - Continental (bunch) or extra chives finish the gravy just as happily. And put a warm Lievito batard (Peasant S/Dough or White Sour) on the table for the pan juices: that's the Sunday ritual done properly." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

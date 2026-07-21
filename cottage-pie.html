@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Cottage Pie — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #a2661c;          /* golden mash crust */
+    --accent-soft: #f7eedd;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Step timings come from the video's own captions, so they're real (rounded to the second) —
+    one spot-check watch-through plus a product/wording sign-off is needed before this goes live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=wSCOHIll1rM" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Cottage Pie — The Ultimate Comfort Food</h1>
+    <div class="byline">Guide generated from: <em>“Cottage Pie | The Ultimate Comfort Food”</em> — Chef Jack Ovens (Adelaide) · 8 min 00 s · Steps timed from the video's own captions; quantities from Jack's written recipe in the video description. Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 13 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Jack's written recipe (feeds 6–8)</span></h2>
+    <ul>
+      <li><strong>Mash:</strong> 1 kg potatoes, peeled &amp; halved — Jack lists Kestrel, Russet or Yukon Gold; our spud note is at Step 2</li>
+      <li><strong>Mash:</strong> 100 g unsalted butter (softened) + 150 ml full-fat milk (warmed) + 2 free-range egg yolks; 4 Tbsp (30 g) parmesan for the top — on camera Jack skips the cheese</li>
+      <li><strong>Filling:</strong> 2 Tbsp olive oil + 1 kg beef mince (90% lean in the video)</li>
+      <li><strong>Filling:</strong> 1 carrot, 1 brown onion and 1 large celery rib — all grated — plus 3 cloves garlic, grated (Jack grabs 4 on camera)</li>
+      <li><strong>Filling:</strong> 3 g flat-leaf parsley + the leaves of 3 thyme sprigs, finely chopped; 3 g rosemary optional</li>
+      <li><strong>Filling:</strong> 2 Tbsp (50 g) concentrated tomato paste + 2 Tbsp (30 ml) Worcestershire sauce</li>
+      <li><strong>Filling:</strong> 1 cup (250 ml) red wine (or an extra cup of stock — Jack's alcohol-free swap) + 1 cup (250 ml) vegetable or chicken stock + 1 cup frozen peas + seasoning to taste</li>
+      <li><strong>Gluten-free?</strong> There's no flour in this recipe — pick a GF-labelled Worcestershire and stock and the whole pie is gluten-free (just skip the sourdough side)</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Hawkes Sabego Potatoes - washed (1kg)</strong> — our local grower's classic Aussie mashing spud, and one bag is the exact kilo the recipe needs</li>
+      <li><strong>Onion - Brown</strong>, <strong>Carrots - Local - bag (1kg)</strong>, <strong>Celery - Half</strong>, <strong>Garlic - Imported</strong>, <strong>Beans - Green - Premium hand-picked</strong> — all in the shop</li>
+      <li><strong>Parsley - Continental (bunch)</strong>, <strong>Thyme (bunch)</strong>, <strong>Rosemary (bunch)</strong> — fresh herb bunches, all stocked this week</li>
+      <li><strong>Free-range Eggs - Somerville Egg Farm (12 eggs)</strong> — for the yolks that make the crust</li>
+      <li><strong>Our beef</strong> — grass-fed &amp; finished on the Mornington Peninsula, sold as monthly pre-order packs: use the mince from your pack, or from your butcher</li>
+      <li><strong>Truffet Emp - Asiago style cheese (140 g)</strong> — the local stand-in if you want the parmesan crust</li>
+      <li><strong>Lievito sourdough</strong> (Peasant or White Sour batard) — from our baker, for mopping the plate</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A big pot (potatoes), a small saucepan (milk &amp; butter), a large high-rimmed pan or pot (filling), a <strong>box grater</strong> + fine grater, a potato ricer or masher, and a roughly 26–30 cm baking dish</li>
+      <li>Oven 180 °C. About 40 minutes of relaxed hands-on (the potatoes boil while the filling builds), a 20–25 minute bake, then a 10–15 minute rest — about 1¼ hours end to end</li>
+      <li><strong>Feeds 6–8</strong> — the family freeze-half win: bake it in two smaller dishes and freeze one, or freeze cooled leftover portions; it reheats brilliantly on a school night</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide generated from the YouTube captions and checked against Jack's written recipe (published in the video description).<br>
+    Your ticks are saved on this device. Original video &amp; written recipe: <a href="https://www.youtube.com/watch?v=wSCOHIll1rM" target="_blank">Chef Jack Ovens — youtube.com/watch?v=wSCOHIll1rM</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "wSCOHIll1rM";
+
+// Step data timed from the video's auto-captions (real timestamps, rounded to the second);
+// quantities cross-checked against Jack's written recipe in the video description.
+// Written-vs-video differences are noted in the step text (garlic 3 vs 4, parmesan top, peas timing, dish size).
+const STEPS = [
+  { t: 0,   end: 10,  num: "Overview", approx: false,
+    title: "What you're making",
+    detail: "Jack's childhood comfort food: rich beef-and-veg gravy under a golden, crispy-topped mash — proper Melbourne-winter dinner. Feeds 6 to 8, and it freezes beautifully. Fun fact from the video: beef makes it cottage pie; lamb would make it shepherd's pie." },
+  { t: 10,  end: 42,  num: "Step 1", approx: false,
+    title: "Grate the veg, chop the herbs",
+    detail: "Top, tail and halve 1 brown onion and run it down the big side of a box grater, along with 1 large celery rib and 1 peeled carrot — grating pulls the most flavour out of them. Grate 3 cloves of garlic to a paste on a fine grater (Jack grabs 4 on camera — cook's call). Finely chop 3 g flat-leaf parsley and the leaves of 3 thyme sprigs, no woody stems; the written recipe adds 3 g rosemary as an optional extra.",
+    ours: "Onion - Brown, Carrots - Local, Celery - Half and Garlic - Imported are all in the shop, and so are Parsley - Continental, Thyme and Rosemary bunches. The grater is the secret: the veg melts into the gravy — nobody under 10 will ever find it." },
+  { t: 42,  end: 74,  q: 54,  num: "Step 2", approx: false,
+    title: "Boil the potatoes",
+    detail: "Peel 1 kg of potatoes (halve the big ones) and drop them into a pot of cold water, covered by about an inch. Onto high heat, bring to the boil and cook 22–24 minutes until fork-tender, seasoning the water generously with salt. A lid speeds it up — and Jack's bonus tip: roast the peels into crispy potato skins.",
+    ours: "Jack lists Kestrel, Russet or Yukon Gold — not spuds you'll find here. Hawkes Sabego Potatoes - washed (1kg), from our local grower, are the classic Aussie mashing potato — and one bag is exactly the kilo you need." },
+  { t: 74,  end: 97,  num: "Step 3", approx: false,
+    title: "Warm the milk and butter",
+    detail: "In a small saucepan over medium-high: 150 ml full-fat milk, 100 g unsalted butter and a small pinch of salt. You're only melting the butter and warming the milk — don't let it simmer. (Unsalted butter so you stay in charge of the seasoning.)" },
+  { t: 97,  end: 132, num: "Step 4", approx: false,
+    title: "Brown the beef",
+    detail: "A large high-rimmed pan or pot over high heat with 2 Tbsp olive oil until properly hot, then in goes 1 kg beef mince (Jack's is 90% lean). Season generously with salt and cracked black pepper, let it sit a couple of minutes to build a crust, then break it up and cook 5–6 minutes until no pink remains and the water starts to evaporate.",
+    ours: "Use the mince from your Jointly beef pack — grass-fed & finished right here on the Mornington Peninsula, sold as monthly pre-order packs — or from your butcher. This recipe is all-beef already, exactly how we'd make it." },
+  { t: 132, end: 153, num: "Step 5", approx: false,
+    title: "Veg, tomato paste & Worcestershire in",
+    detail: "Add the grated vegetables and garlic, 2 Tbsp (50 g) concentrated tomato paste, the chopped herbs and 2 Tbsp (30 ml) Worcestershire sauce. Mix well and cook for about 5 minutes, until the veg softens and the garlic works its way through." },
+  { t: 153, end: 171, num: "Step 6", approx: false,
+    title: "Deglaze with red wine",
+    detail: "Pour in 1 cup (250 ml) red wine — Jack uses a shiraz — and season to taste (he gives it about 20 cracks of pepper). Reduce by roughly half, 3–5 minutes, scraping everything up off the bottom of the pan. Not cooking with alcohol? Swap the wine for an extra cup of stock, as Jack suggests." },
+  { t: 171, end: 179, num: "Step 7", approx: false,
+    title: "Stock in — simmer 15 minutes",
+    detail: "Add 1 cup (250 ml) stock — vegetable or chicken in the written recipe; Jack says beef works too. Mix, drop the heat to medium-low and let it cook down for 15 minutes while you deal with the mash." },
+  { t: 179, end: 234, num: "Step 8", approx: false,
+    title: "Mash: ricer, butter-milk, egg yolks",
+    detail: "Drain the fork-tender potatoes and mash — Jack uses a potato ricer, a hand masher is fine, and passing it through a fine sieve makes it silkier still. Stir through the warm milk-and-butter, then 2 free-range egg yolks — they're what turn the top into a proper crispy crust. Season with salt and (Jack's preference) ground white pepper until light, fluffy and tasty.",
+    warn: "Don't mash in a blender or food processor — the starch overworks and you get glue, not mash.",
+    ours: "For the yolks: Free-range Eggs from Somerville Egg Farm are in the shop (12-pack). Save the whites for tomorrow's omelette." },
+  { t: 234, end: 251, num: "Step 9", approx: false,
+    title: "Final check + peas",
+    detail: "Back to the beef: give it a mix, check the moisture (a splash more stock if it's dried out — it shouldn't need it) and check the seasoning. Stir through 1 cup of frozen peas — straight from the freezer; they only need to defrost. (Jack's written recipe adds them earlier, with the stock — both work.)",
+    ours: "No frozen peas in a fresh box — they're a freezer staple. Our winter twist: chop a couple of handfuls of Beans - Green (premium hand-picked) into pea-sized pieces and stir them through too — add them back at the stock step if you like them soft, or here for a little bite." },
+  { t: 251, end: 298, num: "Step 10", approx: false,
+    title: "Into the dish, mash on top",
+    detail: "Spread the filling into a large baking dish (Jack's is about 26 cm; the written recipe says roughly 30 cm) and gently compress it so no liquid pools. Spoon all the mash over and spread it to seal, then drag a fork across the top — those ridges plus the egg yolks are the crust. Wipe the dish edges clean so nothing burns, then finish the top: the written recipe grates over the 4 Tbsp (30 g) parmesan; on camera Jack skips it and goes sea salt flakes + cracked pepper instead. Either way works.",
+    warn: "Be gentle pressing the mash down — push too hard and the gravy pulls up through the top. A little colour bleeding at the edges is fine, even good.",
+    ours: "Want the cheesy crust, localised? Truffet Emp Asiago-style (140 g) from our cheese makers stands in beautifully for the parmesan." },
+  { t: 298, end: 404, num: "Step 11", approx: false,
+    title: "Bake 20–25 minutes at 180 °C",
+    detail: "Into a 180 °C (350 °F) oven until the top is golden and crispy — 25 minutes for Jack. While it bakes, Jack shares the story of why this dish matters to him — a candid word about his mental health — followed by a message from the video's sponsor. Cooking on the clock? Tap ahead to Step 12 when your timer goes." },
+  { t: 404, end: 480, num: "Step 12", approx: false,
+    title: "Rest, then serve",
+    detail: "Out of the oven, then let it cool for 10–15 minutes before portioning. Serve it on its own or with a simple salad, garnished with flat-leaf parsley and cracked black pepper. Feeds 6–8, depending on how generous the scoops are.",
+    warn: "Straight from the oven it's delicate — the rest is what lets it serve in neat slabs instead of collapsing.",
+    ours: "Mop-up duty: warm Lievito sourdough from our baker — the Peasant or White Sour batard. And the freezer win: stash cooled portions (or that second small dish) for a zero-effort dinner next week." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

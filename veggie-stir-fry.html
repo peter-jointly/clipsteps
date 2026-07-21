@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Veggie-Loaded Stir-Fry — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #1e7a46;          /* wok greens */
+    --accent-soft: #e5f3ea;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .upgrade-note {
+    background: var(--ours-soft); border-left: 4px solid var(--ours); color: var(--ours);
+    border-radius: 10px; padding: 12px 14px; margin: 10px 0 0;
+    font-size: .9rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel ul ul { margin-top: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+  .step.textonly { cursor: default; }
+  .step.textonly:hover { border-color: var(--border); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .timestamp.textonly { color: var(--muted); background: var(--border); }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Step timings were matched frame-by-frame against the video's 1-second preview frames; one normal watch-through to confirm them is the only timing check left.
+  </div>
+
+  <div class="upgrade-note">
+    🎬 <strong>Our own filmed version is coming — this guide upgrades in place when it lands.</strong>
+    Until then, Nagi's 1:48 demo is your quick watch-through before you start; the written steps carry every detail on their own.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=M06onbYNfVo" target="_blank" style="color:#8ec3ee;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Veggie-Loaded Stir-Fry</h1>
+    <div class="byline">Guide generated from: <em>“Simple, Tasty Vegetable Stir fry”</em> — RecipeTin Eats: TONIGHT cookbook channel (Nagi, Sydney) · 1 min 48 s quick demo, no narration · <strong>This is a text-first guide</strong> — every step reads fully on its own; the demo is a 108-second preview, not the teacher. Quantities and method are from Nagi's written Vegetable Stir Fry recipe on recipetineats.com. Steps the demo doesn't show are marked <strong>📝 text only</strong>. Tap any video step to jump the demo to that moment; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 8 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Nagi's written recipe (serves 4)</span></h2>
+    <ul>
+      <li>1 tbsp vegetable oil</li>
+      <li>2 garlic cloves, finely chopped · 1 tbsp ginger, finely sliced (optional)</li>
+      <li>½ onion, peeled and sliced</li>
+      <li>1 large carrot · 1 capsicum, sliced ½ cm · 1 cup mushrooms, sliced 3 mm</li>
+      <li>3 medium buk choy or other leafy greens of choice — <strong>our version swaps this slot for the box's best sellers</strong>: broccoli, green beans and snowpeas (see the box panel and Steps 4–5)</li>
+      <li><strong>Sauce</strong> (all pantry):
+        <ul>
+          <li>1 tbsp cornflour / corn starch</li>
+          <li>1½ tbsp light or all-purpose soy sauce (not dark soy · gluten-free: use tamari)</li>
+          <li>2 tsp oyster sauce</li>
+          <li>1 tbsp Chinese cooking wine or Mirin (subs: dry sherry, cooking sake; non-alcoholic — swap the water for low-sodium stock)</li>
+          <li>½ tsp sesame oil (optional) · dash of white pepper (or black)</li>
+          <li>¾ cup (185 ml) water</li>
+        </ul>
+      </li>
+      <li>To serve: finely sliced green onions, sesame seeds, rice</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>This is the box-showcase dish</strong> — seven of our best-selling veg in one wok:</li>
+      <li><strong>Mushrooms - Cups</strong> · <strong>Capsicum - Red</strong> · <strong>Beans - Green - Premium hand-picked</strong> · <strong>Broccoli - Regular</strong> (or <strong>Broccolini bunch</strong>) · <strong>Snowpeas</strong> · <strong>Carrots - Local</strong> · <strong>Onion - Brown</strong> — all in the shop</li>
+      <li>Aromatics: <strong>Garlic - Imported</strong> and <strong>Ginger - New Season</strong></li>
+      <li>Garnish: <strong>Spring Onion (bunch)</strong> · optional extra crunch: <strong>Peninsula Nut Co. Salted Cashews</strong></li>
+      <li>Optional leafy extra: <strong>Pak Choy (bunch)</strong> — the leafy green Nagi's written recipe uses</li>
+      <li>The sauce is pure pantry — nothing extra to add to your box order</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li><strong>Wok optional</strong> — the written recipe calls for a wok <em>or</em> a large heavy-based frypan; your biggest pan on your hottest burner works</li>
+      <li>A sharp knife and board, plus a jug or bowl to mix the sauce in</li>
+      <li><strong>10 minutes prep + 5 minutes cooking</strong> (from the written recipe) — the wok part moves fast, so chop everything before the heat goes on</li>
+      <li>Serves 4 — as a main over rice, or as a veggie side with anything Asian</li>
+      <li>Kitchen win: the sauce mixes in 60 seconds from bottles you keep in the pantry — double the dry-ingredients shop once and this becomes your fastest repeat dinner</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: text-first interactive guide. The 1:48 demo has no narration (music only), so the steps are drafted from Nagi's written recipe and the demo timings were verified against the video's preview frames.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=M06onbYNfVo" target="_blank">RecipeTin Eats: TONIGHT — youtube.com/watch?v=M06onbYNfVo</a> · Written recipe: <a href="https://www.recipetineats.com/vegetable-stir-fry/" target="_blank">recipetineats.com/vegetable-stir-fry</a> · The demo's own recipe is p.162 of Nagi's cookbook <a href="https://www.recipetineats.com/tonight-cookbook/" target="_blank">TONIGHT</a>.<br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "M06onbYNfVo";
+
+// TEXT-FIRST GUIDE: the 1:48 demo is a quick watch-through, not the teacher.
+// Every step below stands alone; t/end are real video moments verified against the
+// storyboard preview frames (1 frame/second). t: null = the demo doesn't show it (📝 text only).
+// Quantities are verbatim from Nagi's written recipe at recipetineats.com/vegetable-stir-fry.
+const STEPS = [
+  { t: 0,   end: 17,  num: "Overview",
+    title: "What you're making — watch the demo once first",
+    detail: "A big wok of just-cooked, still-crisp vegetables coated in a glossy Chinese restaurant-style sauce, served over rice. Ten minutes of chopping, five minutes of cooking. The full demo is only 1:48 — watch it through once before you pick up a knife, then cook from the written steps below. The demo is Nagi's TONIGHT cookbook version of the dish (page 162); quantities in this guide are from her website recipe for the same stir-fry.",
+    ours: "Our version: this is the dish we built to show off the box — seven of our best-selling vegetables in one pan. As Nagi puts it: “Use any veg you want – just add them according to the cook time”." },
+  { t: 17,  end: 54,  num: "Step 1",
+    title: "Chop everything first — the wok waits for no one",
+    detail: "Once the heat goes on this recipe moves fast, so all chopping happens now. Broccoli: small bite-size florets (small matters — see Step 4). Carrot: halve lengthwise, then slice thinly on the diagonal (about 2 mm). Capsicum: deseed and slice into strips about ½ cm wide. Mushrooms: slice about 3 mm thick. Green beans: top them, then snap or cut in half. Snowpeas: pull the string off the straight edge. Onion: peel and slice the half into wedges. Garlic: finely chop 2 cloves. Ginger: finely slice about 1 tbsp worth. The demo shows the first four cuts in order — broccoli 0:17, carrot 0:24, capsicum 0:32, mushrooms 0:45.",
+    warn: "Don't start cooking with chopping left to do — 30 seconds hunting for a bean while the wok is on high heat is how veg burns.",
+    ours: "Straight from your box: Broccoli - Regular (or Broccolini — see Step 4), Carrots - Local, Capsicum - Red, Mushrooms - Cups, Beans - Green Premium hand-picked, Snowpeas, Onion - Brown, plus Garlic - Imported and Ginger - New Season. Beans and snowpeas aren't in the 1:48 demo — they're our box additions, slotted in by cook time in Steps 4–5." },
+  { t: 54,  end: 66,  num: "Step 2",
+    title: "Mix the sauce in a jug",
+    detail: "Put 1 tbsp cornflour and 1½ tbsp light soy sauce in a jug or bowl and stir until the cornflour has fully dissolved. Then stir in 2 tsp oyster sauce, 1 tbsp Chinese cooking wine (or Mirin), ½ tsp sesame oil, a dash of white pepper and ¾ cup (185 ml) water. Done — set it next to the stove. (In the demo Nagi uses a jar of her make-ahead all-purpose stir-fry sauce — she calls it “Charlie” — topped up with water: same sauce family, zero difference to your result.)",
+    warn: "Use light or all-purpose soy sauce, not the bottle labelled “dark soy sauce” — dark soy is far more intense and will overpower everything.",
+    ours: "All pantry — nothing to add to your box order. Gluten-free: swap the soy for tamari and check your oyster-sauce label (many contain wheat). Vegetarian/vegan: use vegetarian “oyster” sauce (mushroom-based, regular Asian aisle). Skipping the cooking wine? Swap the ¾ cup water for low-sodium stock — vegetable stock keeps it vegan." },
+  { t: null, end: null, num: "Step 3",
+    title: "Start the rice now (if it's dinner)",
+    detail: "Serving this as a main? Get your rice cooking now, whichever way you usually make it — the stir-fry itself takes only about 5 minutes once the wok is hot, and the generous sauce is made for soaking into rice. Low-carb option straight from the written recipe: cauliflower rice. Serving it as a veggie side instead, tick this and move on." },
+  { t: 66,  end: 75,  num: "Step 4",
+    title: "Ripping hot wok: oil, then the slowest things first",
+    detail: "Get the wok (or your biggest frypan) on the highest heat until it's properly hot, then add 1 tbsp vegetable oil. Written-recipe order: garlic and ginger in first — stir just 10 seconds — then the onion for 30 seconds. Then move to Step 5's firm veg. The broccoli exception: florets take longest of everything, so either keep them truly small (bite-size, per Step 1), or give them a 1-minute blanch in boiling water while you chop, or do what the demo does — throw the broccoli in first for a head start before anything else. Any of the three routes lands it perfectly crisp-tender.",
+    warn: "The demo's order differs from the written recipe here (broccoli gets the wok first, garlic is pressed in later). Both work — the one rule that never changes: hardest veg gets the most time, delicate veg the least. If your garlic is in early, keep it moving so it doesn't scorch.",
+    ours: "Going the Broccolini bunch route instead of Broccoli - Regular? Broccolini is thinner — skip the blanch/head start, halve the stems lengthwise and treat them as firm veg in Step 5." },
+  { t: 75,  end: 81,  num: "Step 5",
+    title: "The rest of the veg, hardest to softest",
+    detail: "Firm veg next: carrot, capsicum and the green beans — stir-fry for 1 minute. Then the mushrooms and snowpeas — keep everything moving for 2 to 3 minutes more, until the veg is almost cooked but still bright and firm. Keep the pieces tumbling; on a home burner that means tossing or stirring more or less constantly. (In the demo the mushrooms, carrot and capsicum tumble in around 1:17 — the beans and snowpeas are our additions, slotted into their cook-time groups.)",
+    ours: "This ordering comes straight from Nagi's own cook-time guide: firm veg (carrot, capsicum, beans) before quick-cooking veg (snowpeas), leafy things last. Adding the optional Pak Choy? Stems go in with the firm veg, leaves right at the end of Step 6." },
+  { t: 81,  end: 90,  num: "Step 6",
+    title: "Sauce in — one glossy minute",
+    detail: "Give the sauce a quick re-stir in its jug (the cornflour settles), pour it over the veg, and toss for about 1 minute. It will bubble, thicken and turn glossy, coating every piece. The moment it's thick and everything is shiny, it's done — take the wok off the heat.",
+    warn: "The written recipe's golden rule: stop while the veg is crisp-tender — just cooked, still vibrant, with a bit of bite left. Floppy grey veg means it went a minute too long." },
+  { t: 90,  end: 108, num: "Step 7",
+    title: "Serve",
+    detail: "Pile it over steamed rice and spoon the extra sauce from the wok over the top — there's deliberately plenty of it. Scatter with finely sliced green onions and sesame seeds. The written recipe's parting suggestion: a dollop of chilli sauce on the side wouldn't go astray.",
+    ours: "Spring Onion (bunch) from the shop is your garnish. Want crunch? A small handful of Peninsula Nut Co. Salted Cashews tossed through at the end turns it into a veggie-cashew stir-fry (skip for nut-free)." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  const textOnly = s.t === null;
+  div.className = "step" + (textOnly ? " textonly" : "");
+  div.id = "step-" + i;
+  let chip;
+  if (textOnly) {
+    chip = `<span class="timestamp textonly">📝 text only — not in clip</span>`;
+  } else {
+    const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+    chip = `<span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>`;
+  }
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        ${chip}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  if (!textOnly) {
+    // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+    let tapTimer = null;
+    div.addEventListener("click", (e) => {
+      if (!ready) return;
+      if (tapTimer) {
+        clearTimeout(tapTimer); tapTimer = null;
+        const rect = div.getBoundingClientRect();
+        const back = (e.clientX - rect.left) < rect.width / 2;
+        player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+        player.playVideo();
+      } else {
+        tapTimer = setTimeout(() => {
+          tapTimer = null;
+          const state = player.getPlayerState();
+          const now = player.getCurrentTime();
+          const withinStep = now >= s.t && now < s.end;
+          if (withinStep && state === 1) { player.pauseVideo(); }
+          else if (withinStep && state === 2) { player.playVideo(); }
+          else { player.seekTo(s.t, true); player.playVideo(); }
+        }, 280);
+      }
+    });
+  }
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    const on = s.t !== null && t >= s.t && t < s.end;
+    document.getElementById("step-" + i).classList.toggle("playing", on);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

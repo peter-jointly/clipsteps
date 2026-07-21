@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Hunan-Style Grilled Lamb Cutlets — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #8a3a1e;          /* seared-crust red-brown */
+    --accent-soft: #f6e8e0;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    This video does have captions, but YouTube rate-limited transcript fetches this session (not a captions-disabled video) — so every <em>▶ ~time</em> below is an estimate, anchored to the video's own storyboard preview frames rather than a blind guess, spread across the 8:56 runtime. A manual timing pass — or simply re-fetching the transcript once the rate limit clears — is needed before this goes live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=Wf00WOiNtps" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Hunan-Style Grilled Lamb Cutlets — with Roast Chats &amp; Greens</h1>
+    <div class="byline">Guide generated from: <em>“I'm obsessed with these spicy grilled lamb cutlets”</em> — Marion's Kitchen (Marion Grasby) · 8 min 56 s · Quantities and method checked against Marion's written recipe. Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds. Timestamps marked <span class="timestamp approx" style="font-size:.72rem">▶ ~m:ss</span> are approximate — needs manual timing.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 9 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Marion's written recipe (serves 4)</span></h2>
+    <ul>
+      <li>2 tsp cumin seeds</li>
+      <li>2 tbsp light soy sauce, 1 tbsp Chinese Shaoxing wine, 1 tbsp hoisin sauce, 1 tsp dark soy sauce</li>
+      <li>12 lamb cutlets or lamb chops — from your butcher for now (French-trimmed cutlets if you can get them); <strong>our own Cape Schank lamb</strong> is coming soon, and this'll be the first guide updated the moment it lands</li>
+      <li>1 tsp chilli flakes, 1 tsp sea salt flakes, 1 tsp sesame oil</li>
+      <li>To serve: thinly sliced spring onion and coriander</li>
+      <li><strong>To serve alongside (our addition — not in Marion's recipe):</strong> whole-roasted Potatoes - Chats, steamed green beans or broccolini, and a simple winter salad or minted peas</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Cape Schank lamb</strong> — our own grass-fed &amp; finished lamb from the Mornington Peninsula, coming soon as packs just like our beef. For now, this recipe works beautifully with lamb from your butcher — we'll update this guide the moment ours lands.</li>
+      <li><strong>Spring Onion (bunch)</strong> and <strong>Coriander (bunch)</strong> — both in the shop this week, and both already in Marion's recipe</li>
+      <li><strong>Potatoes - Chats (small) - 5kg bags</strong> — whole-roasted, the veg star of this plate</li>
+      <li><strong>Beans - Green</strong> or <strong>Broccolini (bunch)</strong> — pick whichever's looking best this week</li>
+      <li><strong>Mint (bunch)</strong> — if you're going the minted-peas route (peas themselves are a pantry/freezer item — we don't stock fresh peas)</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A small frying pan (toasting cumin), a mortar and pestle (a rolling pin over a snap-lock bag works too), a large frying pan / chargrill pan / BBQ plate, and a glass or ceramic dish for marinating</li>
+      <li>For the sides: a baking tray (potatoes) and a saucepan or steamer (greens)</li>
+      <li>Video: 8 min 56 s · Hands-on: about 15 minutes · Marinate 10 min – 2 hr (do this ahead if you can) · Rest 2–3 min</li>
+      <li><strong>Running order that actually works:</strong> get the Chats potatoes into the oven first (whole, skin on, oil + salt, ~200°C for 35–40 minutes) — they take far longer than the lamb. Marinate the lamb while the oven heats. Start your greens with about 10 minutes of oven time left. The lamb itself cooks and rests in well under 10 minutes, so it should be the very last thing you do.</li>
+      <li>Serves 4 (12 cutlets) — the veg sides easily stretch further; a 5kg bag of Chats is a big-batch buy, so roast what you need (roughly 750g–1kg for 4) and keep the rest raw in the fridge for next time</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide drafted from Marion's Kitchen's written recipe (transcript fetch was rate-limited this session; timestamps are storyboard-anchored estimates, not word-level).<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=Wf00WOiNtps" target="_blank">Marion's Kitchen — youtube.com/watch?v=Wf00WOiNtps</a> · Written recipe: <a href="https://www.marionskitchen.com/hunan-style-grilled-lamb-cutlets/" target="_blank">marionskitchen.com</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "Wf00WOiNtps";
+
+// DRAFT: transcript fetch was rate-limited this session (captions DO exist on this video — unlike
+// a genuinely caption-less upload). Every step below is drafted from Marion's written recipe on
+// marionskitchen.com, with phase boundaries cross-checked against the video's own storyboard preview
+// frames (5-second-resolution seek thumbnails) rather than a blind proportional split. Every
+// timestamp is still approximate (approx: true) and needs a manual timing pass, or a transcript
+// re-fetch once YouTube's rate limit clears.
+const STEPS = [
+  { t: 0,   end: 38,  num: "Overview", approx: true,
+    title: "What you're making",
+    detail: "Marion Grasby's Hunan-style grilled lamb cutlets: a bold Chinese-inspired marinade (cumin, soy, Shaoxing wine, hoisin, chilli), seared hard for a crust, finished with a crunchy cumin-salt sprinkle. Serves 4, about 15 minutes hands-on plus marinating time.",
+    ours: "A sneak peek for our own Cape Schank lamb, coming soon — use your butcher's for now. Since this plate is all about the veg sides, get your Chats potatoes into the oven before you even start the lamb — see Equipment & Timing for the full running order." },
+  { t: 38,  end: 75,  num: "Step 1", approx: true,
+    title: "Toast and crush the cumin seeds",
+    detail: "Toast 2 tsp cumin seeds in a small frying pan until aromatic. Tip into a mortar and crush lightly with a pestle. Split the crushed cumin in half — one half for the marinade (next step), the other half set aside for the finishing salt (Step 4)." },
+  { t: 75,  end: 140, num: "Step 2", approx: true,
+    title: "Mix the marinade",
+    detail: "In a glass or ceramic dish, stir together 2 tbsp light soy sauce, 1 tbsp Chinese Shaoxing wine, 1 tbsp hoisin sauce, 1 tsp dark soy sauce and half the crushed cumin." },
+  { t: 140, end: 170, num: "Step 3", approx: true,
+    title: "Coat the lamb and marinate",
+    detail: "Add the lamb cutlets and turn to coat well. Cover and refrigerate for at least 10 minutes, up to 2 hours.",
+    warn: "Cutlets are thin, so 10 minutes is genuinely enough — don't go much past 2 hours, or the salt in the marinade starts drawing out too much moisture.",
+    ours: "Ask your butcher for 12 cutlets or chops, French-trimmed if you can. We're finishing off our own Cape Schank lamb — grass-fed, right here on the Mornington Peninsula — and can't wait to bring it to your box. This'll be the first guide we update the moment it lands." },
+  { t: 170, end: 195, num: "Step 4", approx: true,
+    title: "Make the cumin-salt-chilli finish",
+    detail: "Combine the remaining crushed cumin with 1 tsp chilli flakes and 1 tsp sea salt flakes. Set this aside — it's sprinkled on at the end, not used in the cooking." },
+  { t: 195, end: 270, q: 213, num: "Step 5", approx: true,
+    title: "Sear the lamb — build the crust",
+    detail: "Preheat a large frying pan, chargrill pan or BBQ plate on high. Lift the lamb from the marinade and cook for a minute each side, or until a proper crust forms, basting with any leftover marinade as you go.",
+    warn: "This is where the fat renders — if your cutlets have a decent fat cap along the edge, stand them up on that edge for 30–60 seconds first to crisp it before laying them flat. Most of the flavour lives in that fat." },
+  { t: 270, end: 395, num: "Step 6", approx: true,
+    title: "Finish low and slow",
+    detail: "Turn the heat down to low and keep cooking, turning often, for another 3–4 minutes for medium — or however you like it.",
+    ours: "Meanwhile: get your Beans - Green or Broccolini into a steamer or a pot of boiling water now — 5–6 minutes and they'll land on the plate hot, right alongside the rested lamb." },
+  { t: 395, end: 475, num: "Step 7", approx: true,
+    title: "Rest, then dress",
+    detail: "Transfer to a plate and rest for 2–3 minutes. Sprinkle generously with the cumin-salt-chilli mix, drizzle with 1 tsp sesame oil, and scatter with thinly sliced spring onion and coriander.",
+    warn: "Don't skip the rest — even 2–3 minutes lets the juices settle back through the meat instead of pooling straight onto the plate. That's the difference between \"done\" and \"done properly\"." },
+  { t: 475, end: 536, num: "Step 8", approx: true,
+    title: "Serve",
+    detail: "Plate the cutlets up. The last half-minute of the video is Marion's sign-off and subscribe prompt — nothing left to cook after this.",
+    ours: "The full plate: cutlets, whole-roasted Potatoes - Chats, steamed Beans - Green or Broccolini, and a simple winter salad or minted peas on the side." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

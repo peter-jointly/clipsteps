@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Classic Roast Beef with Gravy — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #7c3a21;          /* seared-beef brown */
+    --accent-soft: #f5e7de;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Step timestamps are real — taken from this video's own transcript — but the guide still needs
+    its human watch-through and product sign-off before going live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=lh40UrH35sk" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Classic Roast Beef with Gravy</h1>
+    <div class="byline">Guide generated from: <em>“Perfect? Roast Beef with Crispy Wagyu Fat Potatoes and Gravy”</em> — Andy Cooks (chef Andy Hearnden) · 14 min 07 s · Timestamps come straight from the video's transcript; the gravy quantities are verbatim from Andy's written recipe (in the video description). Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 15 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— gravy ✓ from Andy's written recipe; the rest as stated in the video</span></h2>
+    <ul>
+      <li>A roasting joint of beef — topside (leanest, most economical), sirloin, or a rib roast (Andy's pick today). He gives no weight: <strong>“at the end of the day it's all about temperature”</strong></li>
+      <li>Neutral high-temperature oil — grapeseed, avocado, or peanut (“if no one's got any allergies”)</li>
+      <li>Good-quality rock salt · black pepper (added <strong>after</strong> cooking, never before — Step 4 explains)</li>
+      <li>Roasting potatoes — a floury type (Andy uses Royal Blues; no weight given)</li>
+      <li>Beef tallow for the potatoes — supermarkets and butchers carry it; Andy rates it above duck fat</li>
+      <li>The gravy (verbatim from the written recipe): 2 carrots · 2 onions · 3 celery sticks · 4 rosemary sprigs · 200 ml red wine · 700 ml beef stock · 2 heaped tbsp flour · salt and pepper</li>
+      <li>Garnishes are your call, says Andy: Yorkshire puddings, cauliflower cheese, honey-glazed carrots, watercress, horseradish cream, bread sauce…</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Beef - Girello Roast 2.75kg</strong> or <strong>Beef - Silverside Roast 1.5kg</strong> — our grass-fed Mornington Peninsula roasting cuts, monthly pre-order — the roast cut from your Jointly beef pack, or from your butcher</li>
+      <li><strong>Potatoes - Chats (small) - 5kg bags</strong> — little roasters that go in the tray whole: no peeling, no par-boil (the easy road; Step 8 has Andy's crispy road too)</li>
+      <li><strong>Potatoes - Red Desiree - washed (1kg)</strong> — the closest floury spud we stock to Andy's Royal Blues, if you're doing his peel-and-fluff method (our Sebago/Hawkes brushed line is the shop's mash potato — save that one for mash, not roasting)</li>
+      <li><strong>Onion - Brown (ea)</strong>, <strong>Carrots - Local - bag (1kg)</strong>, <strong>Celery - Half</strong>, <strong>Rosemary (bunch)</strong> — the written gravy's veg bed, all four in the shop</li>
+      <li><strong>Brussels Sprouts (250g punnet)</strong> and <strong>Broccoli - Regular (ea)</strong> — the winter tray sides that turn a roast into dinner</li>
+      <li><strong>Lievito sourdough</strong> (Peasant S/Dough or White Sour batard) — from our baker, for the gravy</li>
+      <li>The beef is the centrepiece — <strong>the tray of winter veg is what makes it Sunday</strong></li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A heavy oven-proof pan or metal roasting tray (it goes on the stove later for the gravy), a pot and colander for the spuds, a whisk, a sieve, a board and a sharp knife</li>
+      <li>A meat thermometer is the tool Andy really wants you to own — pull the beef at <strong>55°C</strong> core for medium</li>
+      <li>Oven <strong>180°C fan-forced</strong> (Andy quotes ~190°C for a non-fan oven) · beef about <strong>40 minutes</strong>, then trust the probe, not the clock · potatoes: ~25 min boil, then into hot fat with a flip at 10 · the beef rests while the potatoes finish and the gravy comes together — about <strong>1½ hours</strong> all-in (optional day-before dry-brine)</li>
+      <li>Serves: Andy doesn't say — our estimate: the Silverside 1.5kg does a family Sunday table, with cold-roast-beef sandwiches on the Lievito tomorrow as the leftover win</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide generated from the video's transcript; gravy quantities checked against Andy's written recipe (published in the video description).<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=lh40UrH35sk" target="_blank">Andy Cooks — youtube.com/watch?v=lh40UrH35sk</a> · All Andy's recipes: <a href="https://www.andy-cooks.com/" target="_blank">andy-cooks.com</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "lh40UrH35sk";
+
+// Timestamps are REAL: taken from the video's own transcript (auto-generated captions, full
+// 0:00 - 14:07 coverage; every step's t sits on a caption start). Gravy quantities are verbatim
+// from Andy's written recipe in the video description; where the video differs (red wine
+// "about a cup" vs written 200 ml) the written recipe wins and the step says so. Everything
+// else quoted from the video itself. No approx flags needed on this guide.
+const STEPS = [
+  { t: 0,   end: 115, num: "Overview",
+    title: "Why the Sunday roast earns 25 million views",
+    detail: "Andy's chef-learns-home-cooking series arrives at his most viral dish: the Sunday roast beef, nearly 25 million views on TikTok. Everyone — the English especially — grew up on this and has opinions, and Andy cooked years of pub Sunday roasts himself. The tradition: family and friends around one table, one roast. And the most iconic version, “for good reason — it's delicious”, is beef.",
+    ours: "This is the beef pack's Sunday dish — the roast cut from your Jointly beef pack, or from your butcher, with our winter veg doing the heavy lifting around it." },
+  { t: 115, end: 174, num: "Step 1",
+    title: "The three things that matter (the rest is your call)",
+    detail: "Andy's three most critical parts of a Sunday roast: the beef, the roast potatoes, and the gravy. Every other garnish is personal territory he's staying out of — Yorkshire puddings (“kind of a must for a lot of people”), cauliflower cheese, honey-glazed carrots, watercress, horseradish cream, bread sauce. This video nails the big three; you choose the rest.",
+    ours: "Our call on “the rest”: a winter tray. Chat potatoes, local carrots, Brussels sprouts and broccoli — the box is the rest of the plate. Staging for the tray is in Step 6." },
+  { t: 174, end: 209, num: "Step 2",
+    title: "Pick your cut — topside, sirloin or rib",
+    detail: "The three classic roasting cuts: topside — the leanest and probably the most economical; sirloin — what the 25-million-view TikTok used; and today's rib roast (ribeye). All of them roast beautifully — the difference is fat and price. His is a grain-finished Blue Diamond rib roast.",
+    ours: "Your beef pack's roasts — the Girello (2.75 kg) and the Silverside (1.5 kg) — are proper lean roasting cuts in the topside family, grass-fed and finished on the Mornington Peninsula. Lean cuts love Andy's two rules: pull at 55°C (Step 7) and carve thin (Step 13)." },
+  { t: 209, end: 267, num: "Step 3",
+    title: "The room-temperature debate, settled sensibly",
+    detail: "Should the meat come to room temp first? For a 300 g steak Andy reckons it barely matters. For a big joint like this there's some merit: the oven time shortens and the meat doesn't tense up as much. But “if you forget to do it, it's really no big deal — your lunch isn't ruined.” If you remember: out of the fridge an hour before cooking." },
+  { t: 267, end: 353, num: "Step 4",
+    title: "Dry it, oil it, salt it properly — pepper waits",
+    detail: "Out of the packet and patted properly dry — bag moisture is the enemy of browning. A thin coat of neutral high-temperature oil (grapeseed, avocado, or peanut) — it's only there for the salt to adhere to. Then season generously with good rock salt, all over: “it's a pretty big piece of meat.” Extra credit: dry-brine — salt it the day before and leave it in the fridge overnight so the seasoning penetrates (nice, not essential). And Andy's pepper rule: pepper burns during a hot sear, so he peppers after cooking, never during.",
+    warn: "Peanut oil is a genuine allergen — Andy's own caveat (“if no one's got any allergies”). Grapeseed or avocado oil sidestep it entirely." },
+  { t: 353, end: 397, q: 383, num: "Step 5",
+    title: "Sear it hard on all sides — fat cap first",
+    detail: "A heavy cast-iron pan on medium-high with a little extra oil, so the joint isn't hitting dry metal. Let the pan get properly hot first — Andy's commercial stove runs hotter than most home cookers, so give yours a head start. Fat-cap side down first, then roll it to colour every side. You're not cooking it through here — you're building the crust." },
+  { t: 397, end: 433, num: "Step 6",
+    title: "The veg bed: gravy starts now",
+    detail: "Beef out of the pan. In goes the cut veg — “this is the base for our gravy, and also lifts the meat off the bottom of the pan.” No real sautéing needed: spread it out evenly, sit the seared beef on top, and the whole thing goes into the oven. (The written recipe's bed: 2 carrots, 2 onions, 3 celery sticks and the rosemary sprigs.)",
+    ours: "All four bed players are in the shop: Onion - Brown, Carrots - Local, Celery - Half and a Rosemary bunch. Meanwhile, the winter tray: whole Chats onto their own oiled tray now — halved Brussels sprouts and big broccoli florets join that tray for the last 25 minutes, so everything lands hot together." },
+  { t: 433, end: 464, num: "Step 7",
+    title: "Oven maths: 180° fan, 40 minutes, live by the probe",
+    detail: "Into a 180°C fan-forced oven (about 190 if yours has no fan). Start with 40 minutes — but “at the end of the day it's all about temperature”: the real target is 55°C in the core, then out to rest. That lands a nice medium — the crowd-pleasing point when some of the table want it rarer and some want it more done.",
+    warn: "Spoiler from Andy's own ending: his hit 60°C because he checked too late — the core “shot up really quickly”. Start checking from 30 minutes; the last few degrees arrive fast." },
+  { t: 464, end: 508, q: 478, num: "Step 8",
+    title: "Spuds: floury, peeled, halved, cold salted water",
+    detail: "You want a floury (“flowery”) roasting potato — Andy's using Royal Blues. Peel, halve to roughly even size, and start them in cold, well-salted water. His rule of thumb: grows under the ground, start from cold water; grows above the ground, start from boiling.",
+    ours: "Two roads here. Andy's road: our Red Desiree (washed, 1 kg) is the closest floury spud we stock to his Royal Blues — peel, halve, boil, fluff, hot fat. (Leave the Sebago/Hawkes brushed line out of this one — that's the shop's mash potato.) The easy road: skip this step entirely — whole Chats from the 5 kg bag straight onto an oiled tray (they're already roaster-sized), into the same oven. They'll still disappear first." },
+  { t: 508, end: 572, q: 539, num: "Step 9",
+    title: "Boil about 25, knife test, drain and steam-dry",
+    detail: "While they boil, the fat call: Andy roasts his potatoes in beef tallow — wagyu tallow here — which most supermarkets and butcher shops now carry, and he rates it even better than the traditional duck fat. About 25 minutes in, a knife should slide through without the potato falling apart. Drain, then just leave them in the colander in the sink: the escaping steam dries the outsides, and dry outsides are what crisp.",
+    ours: "No tallow, no drama — olive oil crisps a potato just fine. But beef fat on beef-pack Sunday is very on-theme if you spot tallow at the butcher." },
+  { t: 572, end: 593, num: "Step 10",
+    title: "Beef out — 60 on the probe, straight to rest",
+    detail: "Temp check: 60°C — “hotter than I would have liked” (he owns it properly at the end of the video). Out of the pan and onto a tray to rest, the veg staying behind for the gravy. Resting isn't optional: the joint finishes evening out and the juices settle back in while you turn to potatoes and gravy." },
+  { t: 593, end: 633, num: "Step 11",
+    title: "Fluff the spuds, into screaming-hot fat",
+    detail: "Resting time is potato time. Get the tallow properly hot, and rough the boiled spuds up first — “little crinkly bits on the ends” are future crunch. In they go, a season and a shake, then into the 180° oven. Flip them after 10 minutes and keep going until deep gold all over.",
+    warn: "Andy's caution, seconded: “that oil is really hot — it might be better to use tongs if you're not feeling confident.” Lower them in; never drop from height." },
+  { t: 633, end: 706, q: 648, num: "Step 12",
+    title: "The gravy: roux in the roasting pan, wine, stock",
+    detail: "The roasting pan — veg, fat, juices and all — goes back over the heat. (You can mush the veg up for a bit more flavour, but Andy finds it turns the gravy cloudy.) Two heaped tablespoons of flour in, cooked out so it soaks up the beef fat into a roux. Then the red wine — 200 ml in the written recipe (the video pours “about a cup”, and stout works too) — cooked for around 5 minutes, then roughly 700 ml of beef stock, whisked smooth. Pass it through a sieve — “you don't want a super fine sieve” — season, taste: “yeah… it's pretty good.” He flips the potatoes mid-simmer.",
+    ours: "Gluten-free table? Swap the flour for cornflour slaked in a little cold stock and add it at the end — with that one change the whole roast is GF. And the Rosemary bunch from the shop is exactly what the written recipe wants in this pan." },
+  { t: 706, end: 738, num: "Step 13",
+    title: "Carve thin, plate up, lots of gravy",
+    detail: "The carving trick: relatively thin slices, “especially with the leaner cuts” — thin slices of a lean roast eat tender. Then the plate: roast beef, crispy potatoes, and “lots of gravy — gotta have lots of gravy.”",
+    ours: "Girello and Silverside are exactly the leaner cuts he means — carve them thin and they're silk. Winter tray in the middle of the table, warm Lievito batard alongside for the gravy, and Sunday is done properly." },
+  { t: 738, end: 847, num: "Step 14",
+    title: "The honest ending: he overcooked it — and it's fine",
+    detail: "Andy comes clean: the plan said pull at 55°C, the probe said 60. It was only 47–48 a couple of minutes earlier and shot up while he wasn't looking — “I should have checked it earlier.” He nearly reshot the whole video, then kept it: these things happen in real life. The beef is “certainly kind of medium–medium-well”, but still pink, not dry, tasty. The lesson to steal: near the end, check often — and if you do overshoot, dinner is not ruined. “Just have a crack. You're going to make mistakes. I make mistakes all the time.”" },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

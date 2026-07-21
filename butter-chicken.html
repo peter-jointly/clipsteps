@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Butter Chicken from Scratch — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #b4501b;          /* butter-chicken orange */
+    --accent-soft: #f9ecdf;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Steps and ▶ times come from the video's own transcript, and quantities from Andy's written list in the video description — needs one human watch-through before going live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=9mpPyy_257I" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Butter Chicken from Scratch</h1>
+    <div class="byline">Guide generated from: <em>“How To Make Easy Butter Chicken At Home”</em> — Andy Cooks · 8 min 34 s · Steps and ▶ times built from the video's transcript; quantities checked against Andy's written ingredient list in the video description. Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 18 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Andy's written list (serves 4 on the 2-thighs-each maths)</span></h2>
+    <ul>
+      <li>8 chicken thighs (2 each), cut into strips — breast works well too</li>
+      <li>Marinade spices: 1 tsp ground turmeric · 1½ tsp ground cumin · 1½ tsp ground coriander · 1 tsp garam masala · 1 tsp chilli powder · 1 tsp kosher salt</li>
+      <li>Juice of 1 lemon · 120 ml Greek yoghurt</li>
+      <li>One garlic-ginger paste, split between marinade and gravy: 1 thumb-size piece of fresh ginger + 6 cloves garlic</li>
+      <li>Gravy fats &amp; whole spices: 6 tbsp unsalted butter (used in halves) · 2 tbsp olive oil · 4 cardamom pods · 2 dried bay leaves · 4 whole cloves (the video adds cinnamon sticks too — see Step 7)</li>
+      <li>Gravy ground spices: ½ tsp turmeric · 1½ tsp cumin · 1 tbsp garam masala · 1 tsp chilli powder · 1½ tsp ground coriander</li>
+      <li>1 large brown onion · 1 green chilli (optional, deseeded)</li>
+      <li>1 can crushed tomatoes — or 6 fresh ripe tomatoes (see Step 10) · 60 g cashews</li>
+      <li>240 ml (1 cup) water · 1–2 tbsp sugar (taste before it all goes in) · kosher salt to taste · 100 ml thickened cream</li>
+      <li>Coriander for garnish · steamed basmati rice or naan to serve (from the video)</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Onion - Brown</strong>, <strong>Tomatoes - Field</strong> (or <strong>Truss Tomatoes</strong>), <strong>Garlic - Imported</strong> (or <strong>Peeled Garlic 1kg</strong>), <strong>Ginger - New Season (140g)</strong>, <strong>Chillies - Green - long</strong>, <strong>Lemons - 5 pack</strong>, <strong>Coriander (bunch)</strong> — all in the shop</li>
+      <li><strong>Peninsula Nut Co. Salted Cashews (250g)</strong> — local roasters; see the rinse tip in Step 9</li>
+      <li><strong>Chicken</strong> — from your butcher (we don't stock chicken; our veg and makers are the heroes here)</li>
+      <li><strong>Lievito Turkish Rolls (4 pack)</strong> or <strong>White Sour Batard</strong> — our baker's answer when there's no naan in the house</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>Big bowl, microplane or fine grater, a heavy-based pot, an oven tray + your grill (broiler), any blender — and a <strong>fine sieve</strong> (non-negotiable, see Step 14)</li>
+      <li>Marinate <strong>3 hours minimum</strong> (overnight is better) · about <strong>40 minutes hands-on</strong> · sauce simmer 20–45 minutes (Andy went the full 45)</li>
+      <li>Serves 4 (2 thighs each) — even better the next day, and the sieved sauce base (end of Step 14) freezes brilliantly, so bank a batch</li>
+      <li>Naturally gluten-free served on rice (skip the naan and check your spice blends) · contains dairy and cashews</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide built from the video's transcript and Andy's written ingredient list in the video description.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=9mpPyy_257I" target="_blank">Andy Cooks — youtube.com/watch?v=9mpPyy_257I</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "9mpPyy_257I";
+
+// Timestamps are REAL: taken from the video's auto-generated transcript (youtube-transcript-api,
+// 259 snippets, runtime 514 s). Quantities are verbatim from the written ingredient list in the
+// video description. approx stays false throughout; the dashed approx style is kept for reuse.
+const STEPS = [
+  { t: 0,   end: 44,  num: "Overview", approx: false,
+    title: "What you're making",
+    detail: "Andy's from-scratch butter chicken — the first Indian dish he ever ate (a Wellington food court, 1995) and the one he came back to after years of eating his way around East London's curry houses. Marinated chicken, grilled hot, folded through a silky spiced tomato-and-cashew gravy. Sweet, tangy, mildly spicy — and none of it is hard; it just likes a bit of time." },
+  { t: 44,  end: 111, num: "Step 1", approx: false,
+    title: "Line up the ingredients",
+    detail: "Two teams: a spiced yoghurt marinade for the chicken, and the gravy. The ground spices double up across both — turmeric, cumin, coriander, chilli powder, garam masala — plus whole cardamom, bay and cloves for the pot, cashews and cream for the silk, and one garlic-ginger paste that gets split between the two. Don't bother jotting it down — the full list is in the panel above." },
+  { t: 111, end: 134, num: "Step 2", approx: false,
+    title: "Grate the garlic and ginger into a paste",
+    detail: "First job: microplane a thumb-size piece of ginger and 6 cloves of garlic into a bowl, and set it aside. Don't fuss about grating the garlic right down to your fingertips — the chunky ends go into the gravy, which gets blended anyway.",
+    ours: "Ginger - New Season (140g) and Garlic - Imported are both in the shop — or grab the Peeled Garlic (1kg) if curries are a regular in your house." },
+  { t: 134, end: 148, q: 143, num: "Step 3", approx: false,
+    title: "Cut the chicken into strips",
+    detail: "8 chicken thighs, cut into strips. Andy's pick is thigh — juicier and tastier — but breast works well too, cut the same way.",
+    ours: "We don't stock chicken — get your thighs from your butcher, and let our veg carry the gravy." },
+  { t: 148, end: 172, num: "Step 4", approx: false,
+    title: "Mix the marinade",
+    detail: "Into the bowl with the chicken: 1 tsp turmeric, 1½ tsp ground cumin, 1½ tsp ground coriander, 1 tsp garam masala, 1 tsp chilli powder, the juice of 1 lemon and 120 ml Greek yoghurt. Roll the lemon on the bench first — the juice comes out much easier. Then really mix it — take your time and get it fully incorporated.",
+    ours: "Lemons - 5 pack in the shop covers the marinade with change for the week's cooking." },
+  { t: 172, end: 193, num: "Step 5", approx: false,
+    title: "Fridge time — 3 hours, better overnight",
+    detail: "Cover the bowl and refrigerate: 3 hours minimum, though Andy suggests getting ahead and marinating overnight. Then comes his honest moment — he realises he's “been a peanut” and forgotten two things. Pull the bowl back out, fix it (see below), remix, and back in the fridge.",
+    warn: "Don't be a peanut: the 1 tsp salt and HALF the garlic-ginger paste go into the marinade now. The other half of the paste is for the gravy." },
+  { t: 193, end: 213, q: 199, num: "Step 6", approx: false,
+    title: "Prep the gravy vegetables",
+    detail: "Three hours later (or next day): dice 1 large brown onion. If you're using the green chilli, slice it down the middle and scrape out the seeds and pith — Andy finds the pith a little bitter. Skipping the chilli entirely keeps the curry mild.",
+    ours: "Onion - Brown (approx. 180g each) and Chillies - Green - long are both in the shop. The chilli is genuinely optional — without it this is a properly family-friendly curry." },
+  { t: 213, end: 229, num: "Step 7", approx: false,
+    title: "Bloom the whole spices",
+    detail: "Heavy-based pot, medium-high heat. In goes half the butter (3 of the 6 tbsp) and the 2 tbsp olive oil, then the whole spices — 4 cardamom pods, 2 bay leaves, 4 cloves — for 3 to 5 minutes, so they perfume the fat before anything else cooks. (In the video Andy also drops in cinnamon sticks here, though they're not on his written list — add a stick if you like; everything gets fished out at 5:51.)" },
+  { t: 229, end: 250, num: "Step 8", approx: false,
+    title: "Sweat the onion with the ground spices",
+    detail: "Add the gravy's ground spices — ½ tsp turmeric, 1½ tsp cumin, 1 tbsp garam masala, 1 tsp chilli powder, 1½ tsp ground coriander — plus the diced onion and a good season of salt. Sweat it for about 5 minutes, keeping everything moving around the pan.",
+    warn: "No colour on the onion — soft and translucent, not brown. Andy's rule: temperature control is everything, so turn it down rather than let it catch." },
+  { t: 250, end: 274, num: "Step 9", approx: false,
+    title: "Paste, chilli and cashews go in",
+    detail: "Add the remaining half of the garlic-ginger paste and let it cook out 2–3 minutes. Once the whole kitchen smells amazing, in with the sliced green chilli and the 60 g cashews. Keep it moving — cooking the cashews out now, rather than tossing them in at the end, is what makes the sauce properly smooth and creamy.",
+    ours: "Peninsula Nut Co. Salted Cashews (250g) are roasted just up the road — 60 g is about a quarter of the bag. They are salted though, so give them a quick rinse or hold back on the added salt." },
+  { t: 274, end: 294, num: "Step 10", approx: false,
+    title: "Water and tomatoes — the fresh-tomato moment",
+    detail: "Add the 240 ml water to deglaze the pan, then the tin of crushed tomatoes. Andy's own tip: if you've got half a dozen deliciously ripe tomatoes hanging around, grate them straight in instead of opening a tin — it's right there on his written list as “or 6 fresh ripe tomatoes”.",
+    ours: "Do it the fresh way with 6 Tomatoes - Field (approx. 150g each) — or Truss Tomatoes when you want them extra ripe — grated straight into the pot. We don't carry tinned tomatoes, so the can stays a pantry item; the fresh swap is Andy-approved." },
+  { t: 294, end: 318, q: 308, num: "Step 11", approx: false,
+    title: "Grill the chicken",
+    detail: "Tandoori chicken without the tandoor: lay the marinated strips out flat on a tray and slide them under the grill (broiler) on its highest setting for 10–15 minutes, until the tops pick up some really nice colour." },
+  { t: 318, end: 351, num: "Step 12", approx: false,
+    title: "Let the sauce go low and slow",
+    detail: "The sauce has had about 20 minutes by now. Andy stirs in roughly another 100 ml of water as it starts to dry out, turns the heat low, and stirs every now and then so it doesn't catch on the bottom. He gave it the best part of 45 minutes — halve that if you need to, but if you've got nothing to rush for, don't rush it." },
+  { t: 351, end: 380, num: "Step 13", approx: false,
+    title: "Fish out the whole spices, then blend",
+    detail: "Pull out the hard spices — the cinnamon if you used it, bay leaves, cloves and the cardamom pods if you can find them (don't stress about strays — the sieve catches them next step). Then blend the sauce until completely smooth in whatever blender you've got, scraping down the sides about halfway." },
+  { t: 380, end: 413, num: "Step 14", approx: false,
+    title: "Sieve it — don't skip this",
+    detail: "Pass the blended sauce through a fine sieve back into the pot. This is what takes it from a great sauce to an excellent one — tomato skins, stray spice bits and anything the blender missed stay behind, and the sauce turns silky. Scrape the underside of the sieve too; a surprising amount of good sauce hangs out under there." },
+  { t: 413, end: 432, num: "Step 15", approx: false,
+    title: "Season, then the chicken goes in",
+    detail: "Almost home. Taste, then add the sugar — 1 to 2 tbsp depending on how sour your tomatoes are (taste before it all goes in) — and salt. In with the grilled chicken: it's already pretty much cooked through, you're just marrying it with the sauce now. Stir it through." },
+  { t: 432, end: 446, num: "Step 16", approx: false,
+    title: "Cream and the last of the butter",
+    detail: "Pour in the 100 ml thickened cream and drop in the remaining 3 tbsp butter. Stir until the sauce is glossy, creamy and properly hot." },
+  { t: 446, end: 514, num: "Step 17", approx: false,
+    title: "Serve — the sauce is the hero",
+    detail: "Serve over steamed basmati rice and lay the sauce on nice and thick — with a curry like this the sauce, not the chicken, is the star. Coriander over the top to finish. Andy's verdict: sweet, tangy, mildly spicy, great aromats — “I don't know why we don't make it more.”",
+    ours: "Coriander (bunch) is in the shop. No naan in the house? Warm Lievito Turkish Rolls (4 pack) — or a White Sour Batard — from our baker were made for mopping up this gravy." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Homestyle Spaghetti Bolognese — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #a83226;          /* ragù red */
+    --accent-soft: #f8e9e6;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    This video has no captions/transcript, so every <em>▶ ~time</em> below is an estimate spread across the 8:16 runtime.
+    A manual timing pass against the video is needed before this goes live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=jGN_Ar8VqTk" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Homestyle Spaghetti Bolognese</h1>
+    <div class="byline">Guide generated from: <em>“Adam Liaw's homestyle spaghetti bolognese | Family favourite recipe”</em> — SBS Food, The Cook Up · 8 min 16 s · Quantities and method checked against Adam's written recipe on SBS Food. Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds. Timestamps marked <span class="timestamp approx" style="font-size:.72rem">▶ ~m:ss</span> are approximate — needs manual timing.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 9 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Adam's written recipe (serves 6)</span></h2>
+    <ul>
+      <li>2 tbsp extra virgin olive oil, plus extra to finish</li>
+      <li>2 celery stalks, 2 carrots, 2 large brown onions — all finely chopped; 4 garlic cloves, roughly chopped</li>
+      <li>500 g mixed vegetables (broccoli stems, mushrooms, zucchini etc.), finely chopped — <strong>we grate ours</strong>, see Step 1</li>
+      <li>Use the mince from your Jointly beef pack — or 1 kg beef mince from your butcher (Adam's original: 500 g beef + 500 g pork — add butcher pork if you fancy it)</li>
+      <li>3 × 500 g jars Island Pasta Salsa di Pomodoro (≈1.5 L — a touch richer than Adam's 1.4 L of passata, no bad thing) + 2 tbsp tomato sauce (ketchup — Adam's stand-in for red wine)</li>
+      <li>2 bay leaves, 1 tsp dried oregano, 1 tsp salt (plus extra to taste)</li>
+      <li>500 g spaghetti (or fresh pappardelle — see Step 6), 25 g butter (optional)</li>
+      <li>To serve: shredded parsley and freshly grated parmesan (pantry) — or try Truffet's asiago-style from our cheese counter</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Onion - Brown</strong>, <strong>Carrots - Local bag (1kg)</strong>, <strong>Zucchini - Green</strong>, <strong>Mushrooms - Cups</strong>, <strong>Celery</strong>, <strong>Garlic</strong>, <strong>Parsley - Continental (bunch)</strong> — all in the shop</li>
+      <li><strong>Island Pasta Pappardelle (320 g)</strong> and <strong>Island Pasta Salsa Di Pomodoro (500 g)</strong> — made by our pasta makers on the Mornington Peninsula</li>
+      <li><strong>Our beef</strong> — grass-fed &amp; finished on the Mornington Peninsula, sold as monthly pre-order packs</li>
+      <li><strong>Lievito sourdough</strong> (Peasant or White Sour batard) — from our baker, for mopping up</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A large heavy-based saucepan, a very large frying pan, a wooden spoon — and a <strong>box grater</strong> for our hidden-veg version</li>
+      <li>About <strong>30 minutes hands-on</strong>, then a <strong>2½–3 hour</strong> gentle simmer (mostly unattended)</li>
+      <li>Serves 6 — and the sauce makes roughly a double batch, so freeze half for next week's dinner win</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide drafted from Adam Liaw's written recipe on SBS Food (video has no transcript — timestamps are estimates).<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=jGN_Ar8VqTk" target="_blank">SBS Food — youtube.com/watch?v=jGN_Ar8VqTk</a> · Written recipe: <a href="https://www.sbs.com.au/food/the-cook-up-with-adam-liaw/recipe/adams-homestyle-spaghetti-bolognese/u9jk1rmao" target="_blank">sbs.com.au/food</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "jGN_Ar8VqTk";
+
+// DRAFT: no transcript available (captions disabled on this video) — every step is drafted from
+// Adam's written recipe on SBS Food, and every timestamp below is approximate (approx: true).
+// Replace t/end values after a manual timing pass against the 8:16 video.
+const STEPS = [
+  { t: 0,   end: 35,  num: "Overview", approx: true,
+    title: "What you're making",
+    detail: "Adam Liaw's family bolognese: a big soffritto with extra vegetables, beef mince, and a hint of ketchup for richness instead of red wine. Half an hour of hands-on work, then the stove does the rest. Serves 6 with sauce to spare.",
+    ours: "Short on time? Island Pasta's ready-made Salsa Bolognese over fresh pappardelle is the 15-minute version — either way you're supporting our makers." },
+  { t: 35,  end: 95,  num: "Step 1", approx: true,
+    title: "Chop (or grate) the vegetables",
+    detail: "Finely chop 2 celery stalks, 2 carrots and 2 large brown onions; roughly chop 4 garlic cloves. Then prep 500 g of mixed vegetables — Adam uses whatever's around: broccoli stems, mushrooms, zucchini, eggplant.",
+    ours: "The hidden-veg twist — our family upgrade: finely GRATE a carrot, a zucchini and a handful of cup mushrooms straight off the box grater (three of our top-selling veg, all in the box). Grated veg melts into the sauce completely — nobody under 10 will ever know." },
+  { t: 95,  end: 175, num: "Step 2", approx: true,
+    title: "Sweat the soffritto — about 20 minutes",
+    detail: "Heat the oil in a large heavy-based saucepan over medium heat. Add all the vegetables and cook, stirring regularly, for about 20 minutes until soft, sweet and fragrant.",
+    warn: "Don't rush this or let it brown — soft and slow is where the flavour of the whole dish is built." },
+  { t: 175, end: 235, num: "Step 3", approx: true,
+    title: "Brown the mince",
+    detail: "Add 1 kg beef mince. Fry until lightly browned, breaking up the lumps with a big spoon as you go.",
+    ours: "Use the mince from your Jointly beef pack — grass-fed & finished right here on the Mornington Peninsula, sold as monthly pre-order packs — or 1 kg beef mince from your butcher. Adam's original uses 500 g beef + 500 g pork; add butcher pork if you fancy it." },
+  { t: 235, end: 300, num: "Step 4", approx: true,
+    title: "Build the sauce",
+    detail: "Add the 3 jars of Island Pasta Salsa di Pomodoro (≈1.5 L), 2 tbsp tomato ketchup (his cheeky stand-in for red wine), 2 bay leaves, 1 tsp dried oregano, 1 tsp salt and 500 ml (2 cups) water. Stir and bring to a simmer.",
+    ours: "Salsa di Pomodoro is made by our own Peninsula pasta makers and comes already seasoned — so go easy on the added salt. (Plain supermarket passata — Adam's original 1.4 L — works as a stand-in if you're caught short.)" },
+  { t: 300, end: 350, num: "Step 5", approx: true,
+    title: "Simmer low and slow — 2½ to 3 hours",
+    detail: "Reduce the heat to low and simmer, stirring occasionally, until reduced and thickened. Taste and adjust the seasoning at the end.",
+    warn: "It should barely bubble — top up with a splash of water whenever it starts looking dry." },
+  { t: 350, end: 405, num: "Step 6", approx: true,
+    title: "Cook the pasta",
+    detail: "Boil the pasta in plenty of salted water, checking about 2 minutes before the packet says it's done. Drain, reserving about 60 ml (¼ cup) of the pasta water.",
+    ours: "Fresh pasta upgrade: Island Pasta Pappardelle (320 g, made on the Mornington Peninsula) instead of dried spaghetti — wide ribbons made for a rich ragù. Fresh pasta cooks in just a few minutes, so don't drop it in until the sauce is done. One pack serves about 3; grab 2 × 320 g packs for the full family batch (to confirm with Island Pasta)." },
+  { t: 405, end: 455, num: "Step 7", approx: true,
+    title: "Marry the pasta and sauce",
+    detail: "Heat a very large frying pan over medium heat with a good drizzle of olive oil and the butter (if using). Add ⅓–½ of the bolognese (you can add more later), then the pasta and the reserved pasta water. Toss until every strand is coated — the pasta drinks in the sauce.",
+    warn: "Don't tip in all the sauce — the rest freezes brilliantly for a second dinner." },
+  { t: 455, end: 496, num: "Step 8", approx: true,
+    title: "Serve",
+    detail: "Divide between bowls. Finish with a drizzle of olive oil, a generous snowfall of grated parmesan and a little shredded parsley.",
+    ours: "Serve with warm Lievito sourdough from our baker — a Peasant or White Sour batard — for mopping the bowl clean." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

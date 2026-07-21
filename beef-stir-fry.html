@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Beef Stir-Fry — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #7a3419;          /* seared beef & dark soy */
+    --accent-soft: #f6e9e2;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel ul ul { margin-top: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Steps and ▶ times come from the video's own transcript, and quantities from Jack's written list in the video description — needs one human watch-through before going live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=biLk-ku6sig" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Beef Stir-Fry</h1>
+    <div class="byline">Guide generated from: <em>“Pepper Beef Stir Fry | Easy Beef Stir Fry In Less Than 30 Minutes”</em> — Chef Jack Ovens (Adelaide) · 6 min 26 s · Steps and ▶ times built from the video's transcript; quantities checked against Jack's written ingredient list in the video description. Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 19 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Jack's written list in the video description (serves 2–3)</span></h2>
+    <ul>
+      <li><strong>Jasmine rice</strong>: 1 cup (200 g) jasmine rice, washed · 1½ cups (375 ml) cold water · salt to taste · 10 g coriander, roughly chopped (folded through at the end)</li>
+      <li><strong>Steak &amp; seasoning</strong>: 400 g flank, skirt, rump, fillet or scotch steak, thinly sliced · salt to taste · cracked black pepper to taste (roughly 1 tsp / 2 g)</li>
+      <li><strong>Stir-fry</strong>:
+        <ul>
+          <li>3 tbsp (60 ml) peanut oil, split 2 tbsp (40 ml) + 1 tbsp (20 ml) — vegetable oil if peanuts are an allergy issue (Jack's own swap)</li>
+          <li>1 large brown onion, sliced · 1 small red capsicum, sliced · 100 g snow peas, stalks and rib removed (the video grabs 120 g — see Step 3)</li>
+          <li>3 garlic cloves, grated · 10 g ginger, grated</li>
+          <li>1 tbsp (20 ml) soy sauce · 1 tbsp (20 ml) dark soy sauce (gluten-free: tamari works for both — check the oyster/hoisin label too)</li>
+          <li>1½ tbsp (30 ml) oyster or hoisin sauce</li>
+          <li>1¼ tbsp (25 ml) Shaoxing wine (contains alcohol — Jack's note: substitute stock, or leave it out)</li>
+          <li>¼ cup (60 ml) beef or chicken stock, or water (the video pours ~100 ml — see Step 9)</li>
+          <li>1½ tbsp (6 g) cornflour · 1 tsp (2 g) cracked black pepper</li>
+          <li>Coriander (optional) · 1 long red chilli, sliced (optional)</li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>The beef:</strong> stir-fry strips from your <strong>Jointly beef pack</strong> — or from your butcher. Slicing your own? This month's range has <strong>Beef - Skirt Steak 500g</strong> and <strong>Beef - Scotch Fillet 2-pack</strong> — both straight off Jack's cut list — or let us choose for you with <strong>Beef - The Premium Steak Box</strong>. Grass fed &amp; finished on the Mornington Peninsula. Cuts rotate monthly, so check what's current when you order — rump and eye fillet (Jack's other two options) aren't in this month's line-up, but your butcher will have them.</li>
+      <li><strong>Pack the wok</strong> — the box's seven best-selling veg all belong in this one: <strong>Mushrooms - Cups</strong> · <strong>Capsicum - Red</strong> · <strong>Beans - Green - Premium hand-picked</strong> · <strong>Broccoli - Regular</strong> (or <strong>Broccolini bunch</strong>) · <strong>Snowpeas</strong> · <strong>Carrots - Local</strong> · <strong>Onion - Brown</strong> — all in the shop (Steps 4 &amp; 12–13 slot them in by cook time)</li>
+      <li>Aromatics: <strong>Garlic - Imported</strong> (or <strong>Peeled Garlic 1kg</strong>) and <strong>Ginger - New Season</strong></li>
+      <li>The optionals: <strong>Chillies - Hot red - long</strong> · <strong>Coriander (bunch)</strong> — one bunch covers the rice and the garnish</li>
+      <li>The sauce is pure pantry — nothing extra to add to your box order</li>
+      <li>Cooking meat-free tonight? This dish's sister guide — the <strong>Veggie-Loaded Stir-Fry</strong> — runs the same wok logic with no beef</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A wok on your hottest burner (or your biggest heavy-based frypan), plus a small saucepan with a lid for the rice</li>
+      <li>Microplane or fine grater for the garlic-ginger paste · mortar and pestle for the peppercorns — a pepper grinder does the same job (Jack's own alternative)</li>
+      <li>A jug or bowl and a whisk for the sauce</li>
+      <li><strong>Under 30 minutes all-in</strong> (the title's promise): rice 12 min + 6 min steam off the heat; the wok work itself is about 8 minutes end to end</li>
+      <li>Serves 2–3 as written (stated in the video) — feeding four: scale everything up and sear the beef in extra batches (Step 11) so the wok stays ripping hot</li>
+      <li>Kitchen win: the sauce is a pantry-shelf formula, and Jack's own recipe note says it's just as good with chicken, seafood or fish — learn it once, repeat it forever</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide built from the video's transcript and Jack's written ingredient list in the video description.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=biLk-ku6sig" target="_blank">Chef Jack Ovens — youtube.com/watch?v=biLk-ku6sig</a> · More of Jack's recipes: <a href="https://chefjackovens.com" target="_blank">chefjackovens.com</a> · Sister guide: Veggie-Loaded Stir-Fry (same wok, no meat).<br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "biLk-ku6sig";
+
+// Timestamps are REAL: taken from the video's auto-generated transcript (youtube-transcript-api,
+// 217 snippets, runtime 386 s). Quantities are verbatim from the written ingredient list in the
+// video description. approx stays false throughout; the dashed approx style is kept for reuse.
+const STEPS = [
+  { t: 0,   end: 16,  num: "Overview", approx: false,
+    title: "What you're making",
+    detail: "Jack's pepper beef stir-fry — tender strips of beef seared hard, a pile of veg kept al dente, and a glossy black-pepper soy sauce over coriander-flecked jasmine rice. His opening pitch is the whole philosophy: stir-fries are quick, endlessly versatile, and happy to soak up whatever's in the fridge. Under 30 minutes all-in.",
+    ours: "The beef sibling of our Veggie-Loaded Stir-Fry — same wok logic, opposite hero. We pack the wok with the box's best-selling veg (Steps 4 and 12–13) and the beef comes from your Jointly pack (Step 6)." },
+  { t: 16,  end: 31,  num: "Step 1", approx: false,
+    title: "Slice the onion into half-moons",
+    detail: "Jack works in the order the ingredients hit the recipe, starting here: one large brown onion, topped and tailed, halved, skins off — he saves the skins for stock rather than the bin. Then half-moon slices the whole way across, all the same thickness so every piece cooks at the same rate.",
+    ours: "Onion - Brown (approx. 180 g each) — first of the box seven into this wok." },
+  { t: 31,  end: 46,  num: "Step 2", approx: false,
+    title: "Capsicum into thin, even strips",
+    detail: "Slice around the core — Jack's easiest way in — then trim off the bottom so nothing's wasted, tap out the seeds, pull away any pith, and cut thin, even strips. Red or green both work; he's using red.",
+    ours: "Capsicum - Red (approx. 250 g each) is one of our top sellers — Capsicum - Green is in the shop too if you like its sharper bite." },
+  { t: 46,  end: 59,  num: "Step 3", approx: false,
+    title: "Snow peas: stalk off, string gone",
+    detail: "Snap off the stem end and gently pull down the straight spine to unzip the stringy rib — it's the one chewy bit on an otherwise perfect pod. The written list calls for 100 g; in the video Jack grabs 120 g — either is fine, the list is the baseline.",
+    ours: "Snowpeas (per 100g) — one shop unit is exactly the recipe amount." },
+  { t: 59,  end: 81,  num: "Step 4", approx: false,
+    title: "The optionals: chilli and coriander",
+    detail: "Both entirely optional, Jack insists. If you like heat, slice one long red chilli into thin strips. If coriander's your thing (he knows some of you reckon it tastes like soap), roughly chop 10 g with no big leaves or stems left — it's destined for the rice, with a few leaves spared for the top.",
+    ours: "Our version turns the optionals into a full veg load — prep the rest of the box seven now: Mushrooms - Cups sliced, Beans - Green topped and halved, Broccoli - Regular in small bite-size florets (or Broccolini with the stems halved lengthways), Carrots - Local in thin diagonal slices. They join the wok by cook time in Steps 12–13. The optionals themselves are in the shop too: Chillies - Hot red - long and Coriander (bunch)." },
+  { t: 81,  end: 92,  num: "Step 5", approx: false,
+    title: "Grate garlic and ginger into a paste",
+    detail: "Three cloves of garlic and 10 g of peeled ginger, straight down the microplane into one paste — then scrape it all off the back, getting into all the nooks and crannies so nothing's wasted. The paste goes into the sauce, not the wok.",
+    ours: "Garlic - Imported and Ginger - New Season (140g) are in the shop — or Peeled Garlic (1kg) if stir-fries become a weeknight habit." },
+  { t: 92,  end: 112, q: 104, num: "Step 6", approx: false,
+    title: "Slice the beef into strips — across the grain",
+    detail: "Jack's using 400 g of eye fillet — a barely-worked muscle, so it's extremely tender and very lean — but his written list is just as happy with flank, skirt, rump or scotch. Whatever the cut, the technique is the point: slice across the grain to shorten the muscle fibres, in small even strips, halving any big ones lengthways. That cross-grain cut is what keeps beef tender at wok heat.",
+    ours: "Use the stir-fry strips from your Jointly beef pack — or from your butcher. Slicing your own? This month's range has Beef - Skirt Steak 500g and Beef - Scotch Fillet 2-pack — both straight off Jack's cut list — or let us choose for you with Beef - The Premium Steak Box. Grass fed & finished on the Mornington Peninsula. Cuts rotate monthly, so check what's current when you order — rump and eye fillet (Jack's other two options) aren't in this month's line-up, but your butcher will have them." },
+  { t: 112, end: 131, num: "Step 7", approx: false,
+    title: "Crush the peppercorns",
+    detail: "The dish's namesake. Four grams of whole black peppercorns into the mortar and pestle, worked to a fine powder with a little coarseness left in it. No mortar? A pepper grinder does the same job — and toasting the peppercorns first deepens the flavour. Both are Jack's own suggestions, both optional." },
+  { t: 131, end: 146, num: "Step 8", approx: false,
+    title: "Season the beef — gently",
+    detail: "Salt plus 2 g (about half) of the crushed pepper over the strips, then massage it in with a light touch so the slices don't break apart.",
+    warn: "Go easy on the salt — the sauce brings plenty of sodium of its own, and it all lands on this beef later." },
+  { t: 146, end: 176, num: "Step 9", approx: false,
+    title: "Whisk the sauce together",
+    detail: "Into a jug or bowl: 20 ml soy sauce, 20 ml dark soy, 25 ml Shaoxing wine, 30 ml oyster sauce (hoisin works instead — Jack's own swap), the garlic-ginger paste, 60 ml of beef or chicken stock (water at a pinch) to mellow it out, the remaining crushed pepper, and 6 g of cornflour to thicken. Whisk until nothing's sitting on the bottom. (In the video Jack pours about 100 ml of stock; his written list says ¼ cup / 60 ml — start with the list and loosen the sauce later if you want more of it.)",
+    ours: "All pantry — nothing extra on the box order. Gluten-free: swap both soys for tamari and check the oyster/hoisin label (many contain wheat). Cooking alcohol-free? Jack's note: replace the Shaoxing with more stock, or just leave it out." },
+  { t: 176, end: 202, q: 182, num: "Step 10", approx: false,
+    title: "Get the rice on",
+    detail: "Doing noodles instead? Skip this step entirely — Jack says so. Otherwise: saucepan over high heat, 200 g of washed jasmine rice, 375 ml of cold water and a nice big pinch of salt. One stir to head off clumps, bring it to the boil, then lid on, heat to low, 12 minutes.",
+    warn: "Lid stays on and the spoon stays out for the whole 12 minutes — and the steam finish in Step 16 needs that lid untouched too." },
+  { t: 202, end: 228, num: "Step 11", approx: false,
+    title: "Ripping-hot wok: sear the beef in batches",
+    detail: "Wok over high heat until it's at smoking point, then in with 2 tablespoons (40 ml) of peanut oil — vegetable oil if peanuts are a problem in your house (Jack's own swap). Slide the beef in and let it brown, about 2–3 minutes, working in batches if your wok isn't huge. You want colour and only-just-cooked — then out onto a plate, handled gently.",
+    warn: "Don't overcook it here — the beef gets one more minute in the sauce at Step 15. And don't overcrowd the wok: crowded beef stews instead of sears; batches are faster than they feel." },
+  { t: 228, end: 252, num: "Step 12", approx: false,
+    title: "Char the onion and capsicum",
+    detail: "Wok back over high heat with the last tablespoon (20 ml) of oil. In with the onions and capsicum for 3–4 minutes — you're chasing real colour here, the charred smoky edge Jack raves about at the end, while the veg stays al dente. Keep it all moving; colour, not mush.",
+    ours: "Wok-packing, firm squad first: Carrots - Local, Beans - Green and small Broccoli florets (or Broccolini) go in with the onion and capsicum — hardest veg gets the most time, the same cook-time logic as our veggie guide. Full load crowding the wok? Char the veg in two rounds — crowding steams, searing chars." },
+  { t: 252, end: 270, num: "Step 13", approx: false,
+    title: "Snow peas for the final minute and a bit",
+    detail: "Snow peas in, still on high, for 1 to 1½ minutes — enough to pick up flavour and a little colour while staying snappy. No seasoning at any point here: the sauce is about to arrive carrying pepper and plenty of sodium of its own.",
+    ours: "Quick squad: Mushrooms - Cups slide in here with the snow peas — they only need the minute." },
+  { t: 270, end: 279, num: "Step 14", approx: false,
+    title: "Sauce in — watch it turn glossy",
+    detail: "Pour the sauce over everything and keep it all moving for 1 to 1½ minutes while it bubbles, thickens and turns glossy, coating every piece.",
+    warn: "Whisk the jug again just before you pour — the cornflour settles into a layer at the bottom within minutes, and that layer is the thickener." },
+  { t: 279, end: 293, num: "Step 15", approx: false,
+    title: "The beef comes home",
+    detail: "Seared beef back in — with every drop of its resting juices, which Jack counts as free flavour. Fold it all through and give it one more minute for the flavours to, in his words, become friends. Then off the heat." },
+  { t: 293, end: 316, num: "Step 16", approx: false,
+    title: "Finish the rice: steam, fluff, coriander",
+    detail: "The rice has had its 12 minutes: heat off, lid ON for 6 more minutes to finish on pure steam. Then lid off — mind the escaping steam — fluff with a fork or spatula, and fold the chopped coriander through gently so the grains stay whole. Nothing stuck to the pan? Jack's benchmark: absolutely perfect rice.",
+    ours: "One Coriander (bunch) covers the rice fold-through and the garnish — and skipping it entirely is fine by Jack." },
+  { t: 316, end: 351, num: "Step 17", approx: false,
+    title: "Plate up — or let the table serve itself",
+    detail: "Rice into bowls or one big serving plate, stir-fry piled into another. This serves 2 to 3, and Jack's happy for you to put both dishes in the middle of the table and let everyone share. Garnish with the sliced chilli and a few coriander leaves for colour." },
+  { t: 351, end: 386, num: "Step 18", approx: false,
+    title: "Dig in — what you're tasting",
+    detail: "Jack's own scorecard: smoky char on the capsicum and onion, veg with real crunch still in it, soft fluffy rice under a sauce that's a little salty and a little smoky — and the black pepper landing as a gentle tingle on the tongue, not a punch. That's the dish working." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

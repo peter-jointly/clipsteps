@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Slow-Cooked Beef Ragù with Pappardelle — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #a83226;          /* ragù red */
+    --accent-soft: #f8e9e6;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Step timings are real — taken from this video's own transcript and chapter markers — but the draft still
+    needs one human watch-through (content + timings) before it goes live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=pff6r8LE5Wc" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Slow-Cooked Beef Ragù with Pappardelle</h1>
+    <div class="byline">Guide generated from: <em>“Slow Cooked Beef Ragu: The Ultimate Pasta Recipe”</em> — Vincenzo's Plate (Sydney) · 17 min 48 s · Quantities checked against Vincenzo's written recipe on vincenzosplate.com; step times taken from the video's transcript and chapter markers. Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 14 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Vincenzo's written recipe</span></h2>
+    <ul>
+      <li>800 g beef chuck steak</li>
+      <li>1 carrot, ½ onion, 1 celery stalk — all diced (<strong>keep the celery leaves</strong> — they go in whole later, like parsley)</li>
+      <li>1 rosemary stalk, a handful of bay leaves, a handful of fresh basil (for the very end)</li>
+      <li>1 bottle tomato passata</li>
+      <li>1 L vegetable stock (only about ½ L gets used — the rest is insurance for top-ups)</li>
+      <li>1 small glass of red wine + 3 Tbsp plain flour (together they make the creamy base)</li>
+      <li>Extra virgin olive oil (4–5 Tbsp), salt &amp; pepper</li>
+      <li>250 g fettucce pasta (Vincenzo's pick — <strong>we use fresh pappardelle</strong>, see Step 10)</li>
+      <li>To serve: grated pecorino</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Onion - Brown</strong>, <strong>Carrots - Local bag (1kg)</strong>, <strong>Celery</strong> (whole or half), <strong>Basil (bunch)</strong>, <strong>Rosemary (bunch)</strong> — all in the shop</li>
+      <li><strong>Island Pasta Pappardelle (320 g)</strong> — grab two packs for the full sauce batch — and <strong>Island Pasta Salsa Di Pomodoro (500 g)</strong>, made by our pasta makers on the Mornington Peninsula</li>
+      <li><strong>Our beef</strong> — grass-fed &amp; finished on the Mornington Peninsula, sold as monthly pre-order packs; the chuck / gravy-beef cuts in the slow-cook packs are made for exactly this dish</li>
+      <li><strong>Lievito sourdough</strong> (Peasant or White Sour batard) — from our baker, for mopping the plate</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A heavy casserole or Dutch oven (it has to hold a gentle 4-hour simmer), a large frying pan for tossing, a big pasta pot, wooden spoon and tongs</li>
+      <li>About <strong>30 minutes hands-on</strong>, then a <strong>4-hour minimum</strong> slow simmer (Vincenzo: 5–6 hours is even better) — just a stir every half hour, lid off for the last 30 minutes</li>
+      <li>Serves: the video cooks 250 g of pasta for <strong>2 generous plates</strong> and still banks sauce for several more meals — the full batch over <strong>2 × 320 g pappardelle packs feeds about 6</strong></li>
+      <li>The dinner-party trick: <strong>make the ragù a day ahead</strong> — it's even better reheated, and party night becomes just pasta + toss. Leftover sauce freezes in portions (or keeps 4–5 days in the fridge)</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide built from Vincenzo's Plate's video (timings from its transcript and chapters) and his written recipe.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=pff6r8LE5Wc" target="_blank">Vincenzo's Plate — youtube.com/watch?v=pff6r8LE5Wc</a> · Written recipe: <a href="https://www.vincenzosplate.com/slow-cooked-beef-ragu-pasta/" target="_blank">vincenzosplate.com</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "pff6r8LE5Wc";
+
+// Timestamps are REAL: taken from the video's auto-transcript and its official chapter markers
+// (0:19 ingredients, 1:59 cooking, 9:49 pasta, 10:44 combining, 14:13 serving, 15:13 eating).
+// approx: false throughout — one human watch-through still wanted before publish.
+const STEPS = [
+  { t: 0,    end: 86,   q: 19,  num: "Overview", approx: false,
+    title: "What you're making",
+    detail: "Vincenzo's case: a slow-cooked beef ragù that's even better than bolognese. One cheap 800 g chuck cut, a classic soffritto, a bottle of passata and four unhurried hours, until the beef shreds at a touch. From 0:19 he lays out every ingredient — note his trick of saving the celery leaves to flavour the sauce later." },
+  { t: 86,   end: 119,  num: "Step 1", approx: false,
+    title: "Cube the beef",
+    detail: "Cut the 800 g of chuck steak into bite-size cubes. They shrink a little over the long cook, and Vincenzo wants a proper piece of meat riding on every ribbon of pasta — so don't dice too small.",
+    ours: "Use the chuck / gravy-beef cut from your Jointly beef pack — grass-fed & finished on the Mornington Peninsula, sold as monthly pre-order packs (The Ultimate Slow Cook pack is built around cuts like this) — or 800 g of chuck from your butcher. Vincenzo says it himself at the end: a very cheap cut, taken to the next level." },
+  { t: 119,  end: 218,  q: 130,  num: "Step 2", approx: false,
+    title: "Sweat the soffritto — about 10 minutes",
+    detail: "Set the casserole over medium heat with 4–5 tablespoons of extra virgin olive oil and add the diced carrot, onion and celery with a splash of water. Cover and cook about 10 minutes. At the halfway check, stir in the rosemary leaves. It's ready when the vegetables are soft, sweet and almost mushy.",
+    warn: "Don't let it catch — add another splash of water whenever it threatens to burn. Soft and sweet, never browned." },
+  { t: 218,  end: 241,  num: "Step 3", approx: false,
+    title: "Brown the beef",
+    detail: "Add the beef cubes to the soffritto — still on medium heat — and brown them lightly on each side, turning them through the vegetables as you go." },
+  { t: 241,  end: 289,  num: "Step 4", approx: false,
+    title: "Flour, then the red wine",
+    detail: "Sprinkle the 3 tablespoons of plain flour over the beef and work it around with a wooden spoon. When the meat starts to look dry — “thirsty”, as Vincenzo puts it — pour in the small glass of red wine and keep stirring. The flour and wine turn into the creamy base of the whole sauce.",
+    warn: "The wine goes in NOW, at the flour stage — not later into the finished sauce." },
+  { t: 289,  end: 352,  q: 299,  num: "Step 5", approx: false,
+    title: "A splash of stock, then the passata",
+    detail: "Once the wine has evaporated, add just a little of the vegetable stock to keep everything moist. Then pour in the bottle of passata and cook for about 2 minutes, stirring.",
+    ours: "No passata in the pantry? Use Island Pasta Salsa Di Pomodoro (500 g jars) from our Peninsula pasta makers — a standard passata bottle is about 700 g, so 1½ jars covers it (two if you like it extra saucy). It comes already seasoned, so go easy on the salt in the next step." },
+  { t: 352,  end: 401,  num: "Step 6", approx: false,
+    title: "Half the stock, herbs in, season",
+    detail: "When the sauce starts to thicken and dry, add ½ litre of stock (keep the rest for top-ups). Drop in the bay leaves, the reserved celery leaves and the rosemary — left whole, so they're easy to fish out later — then season with salt and pepper.",
+    warn: "Season lightly — vegetable stock is already salty. You can always adjust at the end." },
+  { t: 401,  end: 477,  num: "Step 7", approx: false,
+    title: "Lid on — 4 hours, low and slow",
+    detail: "Cover and simmer on low for 4 hours minimum — Vincenzo says 5 or 6 is even better. Your only job: lift the lid every half hour, stir, and add a splash of stock if it's drying. His suggestion for the wait: The Godfather is a three-hour movie. At the 30-minute check the meat still looks stiff — that's normal, it hasn't relaxed yet.",
+    warn: "It should stay wet and soupy the whole way — if it ever looks dry, add more stock.",
+    ours: "No four spare hours tonight? Island Pasta Salsa Bolognese (500 g) is the cheat-night shortcut — warm, toss, done. Either way you're supporting our makers." },
+  { t: 477,  end: 541,  q: 493,  num: "Step 8", approx: false,
+    title: "Last half hour — lid off, herbs out",
+    detail: "Around the 3½-hour mark the sauce is nearly there. Remove the lid, fish out the celery leaves, bay leaves and the rosemary branch, and let it bubble uncovered for the final 30 minutes to thicken. You'll spot beef already falling into shreds — exactly what you want." },
+  { t: 541,  end: 589,  q: 552,  num: "Step 9", approx: false,
+    title: "Off the heat — basil in, lid back on",
+    detail: "At the 4-hour mark, switch off the stove. Tear in a handful of fresh basil and stir it through — right at the end, so its perfume lifts the sauce without being cooked away. Lid back on to keep everything hot while the pasta cooks." },
+  { t: 589,  end: 644,  num: "Step 10", approx: false,
+    title: "Boil the pasta",
+    detail: "Bring a large pot of water to a rolling boil and salt it generously. Vincenzo's dried fettucce takes 8 minutes for al dente, 9 for softer — always check your packet's time, and give it the odd stir.",
+    ours: "Fresh pasta upgrade: Island Pasta Pappardelle (320 g, made on the Mornington Peninsula) — the classic ragù ribbon. Vincenzo's own logic applies: wide ribbons hold the meat, “spaghetti can't give you this”. Fresh pasta cooks in just a few minutes, not 8 — don't drop it in until the sauce is finished. One pack serves about 3; two packs for the full batch (cook times and serving maths to confirm with Island Pasta)." },
+  { t: 644,  end: 717,  q: 672,  num: "Step 11", approx: false,
+    title: "Warm the sauce — freeze the rest",
+    detail: "While the pasta boils, heat a little olive oil in a large frying pan and ladle in a few scoops of ragù to warm through — you won't need the whole pot. The rest freezes beautifully in portions, or keeps 4–5 days in the fridge: next week's showpiece dinner, already done." },
+  { t: 717,  end: 853,  q: 729,  num: "Step 12", approx: false,
+    title: "Marry the pasta and sauce",
+    detail: "Just before the pasta is done, scoop out a mug of pasta water. Lift the pasta straight into the sauce pan and toss with tongs, adding extra ladles of ragù — be generous — and a splash of the pasta water at the end so every ribbon is coated and silky.",
+    warn: "Vincenzo's rule: mix the pasta and sauce together in the pan FIRST. Never plate plain pasta and spoon sauce on top." },
+  { t: 853,  end: 1068, q: 859,  num: "Step 13", approx: false,
+    title: "Serve — e ora si mangia",
+    detail: "Twirl into a nest on each plate, spoon one more ladle of ragù over the top and shower with grated pecorino. Then the best part of the video — e ora si mangia. Watch 16:58 for the payoff: the beef falls apart at the touch of a fork.",
+    ours: "Put warm Lievito sourdough (Peasant or White Sour batard, from our baker) on the table for mopping — this sauce demands it. No pecorino in the house? Truffet Emp Asiago-style (140 g) from our cheesemakers grates over it beautifully." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

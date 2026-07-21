@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Zucchini Slice — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #4f7d2c;          /* zucchini green */
+    --accent-soft: #ecf4e2;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Step times come from the video's own transcript, so tap-to-jump is accurate — this draft just needs
+    a human watch-through and product sign-off before it goes live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=am6O76_rWHQ" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Zucchini Slice</h1>
+    <div class="byline">Guide generated from: <em>“Julie Goodwin cooks Zucchini Slice”</em> — Julie Goodwin's own channel · 6 min 30 s · Step times come from the video's transcript; quantities checked against her written recipe (from her book <em>Classic</em>, on juliegoodwin.com.au). Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 12 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Julie's written recipe (makes 12 pieces)</span></h2>
+    <ul>
+      <li>2 zucchini, grated — you're after <strong>about 3 cups of grated veg</strong> all up besides the onion (her on-camera rule)</li>
+      <li>1 large brown onion, finely diced</li>
+      <li>3 rashers bacon, finely chopped — from your butcher, or leave it out (see Step 3)</li>
+      <li>1 cup (120 g) tasty cheese, grated</li>
+      <li>1 cup (150 g) self-raising flour — gluten-free SR flour swaps in cup-for-cup (see Step 7)</li>
+      <li>1 tsp salt · ½ tsp ground white pepper</li>
+      <li>½ cup (125 ml) vegetable or olive oil</li>
+      <li>5 eggs</li>
+      <li>Optional mix-ins from her note: corn kernels (she adds corn in the video), grated carrot, spring onion, shredded beans</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Zucchini - Green</strong> (ea, approx. 200 g) — our #2 best-selling veg; two from the box is spot on</li>
+      <li><strong>Free-range Eggs - Somerville Egg Farm</strong> (12 eggs, 700 g) — a dozen covers Julie's usual double batch</li>
+      <li><strong>Onion - Brown</strong> (ea, approx. 180 g)</li>
+      <li><strong>Capsicum - Red</strong> (ea, approx. 250 g) — our pick for the veggie-drawer mix-ins</li>
+      <li>Her other mix-ins are all in the shop too: <strong>Corn Cobb - Local</strong> (ea), <strong>Carrots - Local - bag (1kg)</strong>, <strong>Spring Onion</strong> (bunch), <strong>Beans - Green - Premium hand-picked</strong> (per 100 g)</li>
+      <li>Bacon isn't a Jointly line — your butcher has you covered, or go vegetarian (see Step 3)</li>
+      <li>Cheese is a pantry item — or try <strong>Boatshed Cheese - Cheddar</strong> (170 g, aged 12 months) from our makers</li>
+      <li><strong>Lievito - Peasant S/Dough Batard</strong> or <strong>White Sour Batard</strong> — the “good bread” for the dinner serve</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A lamington tin, about 30 × 20 cm (her written recipe: 18 × 28 cm base) · spray oil + baking paper · a box grater, big bowl and whisk · a cooling rack</li>
+      <li>About <strong>10 minutes hands-on</strong>, then <strong>170°C for 35–40 minutes</strong> (the video says 25–30 — see Step 9)</li>
+      <li>Makes <strong>12 generous pieces</strong> — breakfast, lunchbox or dinner. Freezer win: it defrosts beautifully, so Julie usually makes a double or triple batch</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide generated from the video's transcript and checked against Julie Goodwin's written recipe.<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=am6O76_rWHQ" target="_blank">Julie Goodwin — youtube.com/watch?v=am6O76_rWHQ</a> · Written recipe: <a href="https://juliegoodwin.com.au/zucchini-slice/" target="_blank">juliegoodwin.com.au/zucchini-slice</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "am6O76_rWHQ";
+
+// Step data from the video's timed transcript (real timestamps — no approx flags needed);
+// quantities cross-checked against Julie Goodwin's written recipe on juliegoodwin.com.au.
+const STEPS = [
+  { t: 0,   end: 32,  num: "Overview", approx: false,
+    title: "What you're making",
+    detail: "Julie Goodwin's most-cooked recipe: a cheesy, veg-packed slice that fussy kids actually eat — \"if they really don't like zucchini, tell them it's cheese slice and they'll love it anyway.\" Very simple, very fast, great for lunches, and it freezes well." },
+  { t: 32,  end: 52,  num: "Step 1", approx: false,
+    title: "Prepare the tray",
+    detail: "A lamington-size tray, around 30 × 20 cm (her written recipe: 18 × 28 cm base). Quick spray with oil, then line the base with baking paper — no need to be fussy, it's not prone to sticking, but the paper gives you a handle to lift the slice out later. Her written recipe starts here with: preheat the oven to 170°C." },
+  { t: 52,  end: 83,  num: "Step 2", approx: false,
+    title: "Dice the onion — and raid the veggie drawer",
+    detail: "One large brown onion, finely diced — \"it's quite forgiving in its measurements, this recipe.\" You can fold in almost anything floating around the veggie drawer: grate in a carrot, or add corn like Julie does today.",
+    ours: "Onion - Brown, straight from the box. Our pick for the mix-ins: finely dice some Capsicum - Red — sweetness and colour the kids won't argue with. Carrots - Local and Spring Onion are in the shop too." },
+  { t: 83,  end: 116, q: 96, num: "Step 3", approx: false,
+    title: "Dice the bacon",
+    detail: "3 rashers, finely chopped (her written recipe). To de-rind, give the rind a little pinch and it peels straight off. Most efficient way to cut: stack the rashers and slice them all at once rather than double-handling. Into the bowl with the onion.",
+    ours: "Bacon isn't a Jointly line — grab it from your butcher, or leave it out for a vegetarian slice. Julie's tip if you do: the bacon brings a bit of the saltiness, so add an extra pinch of salt." },
+  { t: 116, end: 146, num: "Step 4", approx: false,
+    title: "Grate the zucchini",
+    detail: "Two zucchini, grated. Her rule: about 3 cups of grated veg all up beyond the onion — so two zucchinis, one and a half if they're huge, or just one if it's a real monster.",
+    ours: "Zucchini - Green (approx. 200 g each) — our #2 best-selling veg, and two from the box is spot on for the 3-cup total." },
+  { t: 146, end: 165, num: "Step 5", approx: false,
+    title: "Corn and cheese in, then a good stir",
+    detail: "In with the corn — \"buy the Australian stuff if you can, support our farmers\" — and 1 cup (120 g) of grated tasty cheese. Give it all a real good stir so it's thoroughly mixed. Nearly done — it's that simple.",
+    ours: "Corn Cobb - Local: slice the kernels straight off the cob. Julie says support our farmers — that's rather the point of the box. Cheese is a pantry item, or make it a makers' slice with Boatshed Cheddar (170 g — a cup is 120 g)." },
+  { t: 165, end: 206, num: "Step 6", approx: false,
+    title: "Eggs into oil — and the freezer trick",
+    detail: "Crack 5 eggs into ½ cup (125 ml) vegetable or olive oil. Julie normally makes a double or triple batch: cook it, cut it up, then freeze in snap-lock bags or between little layers of baking paper — \"it defrosts absolutely beautifully.\" School lunches, your lunches, or a quick brekky.",
+    ours: "Free-range Eggs - Somerville Egg Farm (12 eggs, 700 g) — one dozen covers her usual double batch with a couple left for breakfast. Lunchbox families, this one's your make-ahead hero." },
+  { t: 206, end: 249, num: "Step 7", approx: false,
+    title: "Whisk, then flour through the veg",
+    detail: "Whisk the eggs and oil together. Stir 1 cup (150 g) self-raising flour through the vegetable bowl so everything's coated — and as with anything, once the flour's in, handle it nice and gently. Gluten-free? Swap cup-for-cup with store-bought GF self-raising flour — it takes a bit longer to cook and won't go as golden on top, but you still get a really good result." },
+  { t: 249, end: 297, num: "Step 8", approx: false,
+    title: "Pour in the egg mix and season",
+    detail: "In you go with the egg-and-oil mixture, and mix it through. Season — her written recipe says 1 tsp salt and ½ tsp ground white pepper (on camera it's \"a little bit of salt, a bit of pepper\").",
+    warn: "Don't leave out the oil to cut fat — a friend of Julie's tried it and the slice was \"very dry, not very nice to eat.\" It's needed for the chemistry, and it's only half a cup across 12 generous pieces." },
+  { t: 297, end: 329, num: "Step 9", approx: false,
+    title: "Into the tin and bake",
+    detail: "Pour into the prepared tin and level it out. Bake at 170°C for 35–40 minutes until golden and set (that's her written recipe; in the video she says a moderate oven, 170–180°C, for 25–30 minutes — so peek from 25 minutes, but trust the look: golden brown and set). Gluten-free takes a little longer." },
+  { t: 329, end: 374, num: "Step 10", approx: false,
+    title: "Lift out and cool",
+    detail: "Use the baking-paper handle to lift it neatly out onto a cooling rack. Let it cool slightly before cutting." },
+  { t: 374, end: 390, num: "Step 11", approx: false,
+    title: "Slice and serve — any meal of the day",
+    detail: "Cut into 12 generous pieces. Really inexpensive, really simple — breakfast, lunchbox or dinner. Julie's even been known to serve it with a salad and some good bread for dinner.",
+    ours: "The good bread: a Lievito batard from our baker — Peasant Sourdough or White Sour — alongside a salad, and dinner's done." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

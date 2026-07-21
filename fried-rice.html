@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Family Egg Fried Rice — Step-by-Step Guide [DRAFT]</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #b3831d;          /* egg-gold / toasted soy */
+    --accent-soft: #f8efdb;
+    --ours: #00437a;            /* blue "our version" note */
+    --ours-soft: #e4eef7;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+
+  .draft-banner {
+    background: #fff3cd; border: 1px dashed #b58900; color: #7a5c00;
+    border-radius: 10px; padding: 10px 14px; margin: 10px 0 0;
+    font-size: .84rem;
+  }
+
+  .video-shell {
+    position: sticky; top: 0; z-index: 10;
+    background: var(--bg); padding: 10px 0 8px;
+  }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    background: #000;
+  }
+  .video-frame iframe, .video-frame #player {
+    position: absolute; inset: 0; width: 100%; height: 100%; border: 0;
+  }
+
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+
+  .progress-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px;
+  }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn {
+    font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 8px; cursor: pointer;
+  }
+  .reset-btn:hover { color: var(--ink); }
+
+  .panel {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; margin-bottom: 14px;
+  }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .panel.ours-panel { border-left: 4px solid var(--ours); }
+  .panel.ours-panel h2 { color: var(--ours); }
+
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff;
+    transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp {
+    font-size: .75rem; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 5px; padding: 1px 7px;
+  }
+  .timestamp.approx {
+    background: #fff; border: 1px dashed var(--accent);
+  }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-warn {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step-ours {
+    font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: var(--ours-soft); color: var(--ours); border-radius: 8px;
+  }
+
+  .flag-btn {
+    margin-left: auto; flex: none; background: none; border: none; cursor: pointer;
+    font-size: .9rem; opacity: .35; padding: 2px 4px;
+  }
+  .flag-btn:hover { opacity: .8; }
+  .quick-btn {
+    font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent);
+    border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer;
+  }
+  .quick-btn:hover { opacity: .85; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note {
+    display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px;
+    background: #fdf1f1; color: #a33; border-radius: 8px;
+  }
+  .step.flagged .flag-note { display: block; }
+
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+
+  /* Landscape / wide screens: video pinned left, steps scroll on the right */
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; display: grid; grid-template-columns: minmax(360px, 46%) 1fr; column-gap: 26px; }
+    .wrap > * { grid-column: 2; }
+    .video-shell { grid-column: 1; grid-row: 1 / span 60; align-self: start; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="draft-banner">
+    <strong>DRAFT — internal review only, not published.</strong>
+    Step timestamps are real — taken from this video's own transcript — but the guide still needs
+    its human watch-through and product sign-off before going live.
+  </div>
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=CEMdcIEDfJo" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Family Egg Fried Rice</h1>
+    <div class="byline">Guide generated from: <em>“Fried Rice | Restaurant Style Fried Rice Recipe”</em> — Chef Jack Ovens (Adelaide) · 8 min 0 s · Timestamps come straight from the video's transcript; quantities from Jack's written recipe (in the video description). Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds.</div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 16 done</span>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients <span style="font-weight:400; color:var(--muted); font-size:.8rem;">— ✓ from Jack's written recipe (serves 4)</span></h2>
+    <ul>
+      <li>2¾ cups white long grain rice, cooked and <strong>dried</strong> — Jack cooks 1 cup of raw rice in 475 ml water (Steps 1–2), or use <strong>last night's leftover rice</strong> (the day-old rule, Step 2)</li>
+      <li>3 cloves garlic · 1 small brown onion, finely diced · 2 small carrots, peeled and diced · 3 spring onions, thinly sliced</li>
+      <li>3 rashers (100 g) bacon, medium diced — <strong>from your butcher</strong> (we don't stock bacon; ham or prawns work too — see Step 7)</li>
+      <li>½ cup corn — Jack uses frozen; <strong>we slice ours straight off a local cob</strong> (Step 8)</li>
+      <li>½ cup peas — Jack uses frozen; <strong>our swap: green beans diced to pea size</strong> (Step 8)</li>
+      <li>3 free-range eggs, beaten — <strong>Somerville Egg Farm, just up the road</strong></li>
+      <li>2 tbsp vegetable oil · 1 tsp sesame oil · ¼ tsp white pepper</li>
+      <li>1 tbsp oyster sauce · 1½ tbsp dark or light soy sauce — <strong>gluten-free? use tamari</strong> (Jack's own callout) and a GF-labelled oyster sauce</li>
+      <li>1½ tbsp sake — no-alcohol swap straight from Jack's recipe: 1 tbsp vegetable stock</li>
+    </ul>
+  </div>
+
+  <div class="panel ours-panel">
+    <h2>🥕 From your box &amp; our makers</h2>
+    <ul>
+      <li><strong>Free-range Eggs - Somerville Egg Farm (12 eggs, 700g)</strong> — the heart of egg fried rice, laid minutes from our hubs</li>
+      <li><strong>Corn Cobb - Local - (ea)</strong> — kernels sliced straight off the cob beat frozen for sweetness and pop</li>
+      <li><strong>Carrots - Local - bag (1kg)</strong> — two small ones from the bag, diced fine</li>
+      <li><strong>Beans - Green - Premium hand-picked (per 100g)</strong> — diced to pea size, our stand-in for frozen peas (same trick as our cottage pie)</li>
+      <li><strong>Spring Onion (bunch)</strong> — the bunch covers the 3 you need, with change for tomorrow's eggs</li>
+      <li><strong>Onion - Brown (ea)</strong> and <strong>Garlic - Imported (ea)</strong> (or the weeknight-saver <strong>Peeled Garlic 1kg</strong> tub) — all in the shop</li>
+      <li>Optional finisher: <strong>Basketcase Gourmet - Roasted Veggie Sprinkle (100g)</strong> — savoury crunch over the bowls, made by our makers</li>
+      <li>The bacon's from your butcher; rice and sauces are pantry — <strong>the box does everything else</strong></li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment · ⏱ Timing</h2>
+    <ul>
+      <li>A large frying pan or skillet — Jack recommends it <em>over</em> a wok on a home stove (Step 9 explains why) — plus a small lidded saucepan for the rice, a board and sharp knife, a spatula or wooden spoon, and a fork for the eggs</li>
+      <li>Rice: ~25 minutes to cook + 20 minutes cooling + <strong>3–4 hours uncovered in the fridge</strong> — or zero minutes if you're using last night's rice (do that!)</li>
+      <li>The actual fried rice: about <strong>15 minutes of knife work</strong>, then roughly <strong>10 minutes at the stove</strong> — dinner speed</li>
+      <li>Serves 4 as a main or side (from Jack's recipe). Leftover win: keeps 3 days in the fridge, freezes up to 3 months — tomorrow's lunchboxes, sorted</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    DRAFT prototype: interactive video guide generated from the video's transcript and checked against Jack's written recipe (published in the video description).<br>
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=CEMdcIEDfJo" target="_blank">Chef Jack Ovens — youtube.com/watch?v=CEMdcIEDfJo</a> · All Jack's recipes: <a href="https://chefjackovens.com/" target="_blank">chefjackovens.com</a><br>
+    Videos play through YouTube's official player — full credit (and ad revenue) stays with their creators.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "CEMdcIEDfJo";
+
+// Timestamps are REAL: taken from the video's own auto-generated transcript (178 snippets, full
+// 0:00–7:55 coverage of the 8:00 video). Quantities come verbatim from Jack's written recipe in
+// the video description. No approx flags needed on this guide.
+// Quick-steps (⚡) infrastructure is wired in per the addendum, but NO step earned a q: Jack's
+// editing is voiceover-over-action — every step opens on the action itself (see notes.md).
+const STEPS = [
+  { t: 0,   end: 9,   num: "Overview",
+    title: "The takeaway classic, done properly at home",
+    detail: "Chef Jack Ovens' restaurant-style fried rice: proper chewy grains, a savoury sauce that coats every one of them, and egg scrambled right in the pan. He reckons it “will easily beat the flavour of any takeaway restaurant” — and it's about 10 minutes at the stove once your rice is cold. Serves 4 as a main or a side.",
+    ours: "Our Asian-night pick — chosen because it's the takeaway dish that genuinely moves veg: eggs, corn, carrots, beans, spring onions and more, all out of your box, hiding in plain sight in a bowl kids ask for twice. Rice and sauces are pantry; the bacon's from your butcher." },
+  { t: 9,   end: 72,  num: "Step 1",
+    title: "Cook the rice — the fried-rice way",
+    detail: "Rinse 1 cup of white long grain rice under cold water for about a minute — washing off the surface starch that makes rice gummy — then drain 5 minutes. Jack's nutty upgrade: toast the drained rice in the dry saucepan over high heat for 1 minute, until slightly transparent. Pour in 475 ml cold water, bring to the boil, then lid on, heat to low, 18 minutes exactly. Off the heat, lid still on, 5 more minutes to steam. Fluff with a fork.",
+    warn: "Lid stays on and the pan stays put for the whole 18 + 5 minutes — no stirring, no peeking. Lost the lid? Jack says foil works great." },
+  { t: 72,  end: 100, num: "Step 2",
+    title: "Dry it out — the day-old rice rule",
+    detail: "Tip the rice out onto a plate or tray and spread it thin for airflow. Cool on the bench 20 minutes, then into the fridge uncovered for 3–4 hours to properly dry out. Or skip Steps 1–2 entirely: “any leftover rice you may have from the night before” is exactly what fried rice was invented for. Either way you want about 2¾ cups of cooked, dried rice.",
+    warn: "THE golden rule of fried rice: hot, fresh, sticky rice makes soggy fried rice. Cold, dry, day-old grains stay separate and chewy — so cook the rice the night before (or at least that morning). It's the one bit of planning this dinner asks of you." },
+  { t: 100, end: 135, num: "Step 3",
+    title: "Garlic — slice, dice, smear to a paste",
+    detail: "Thinly slice 3 cloves of garlic, then rough-chop to a small dice. Jack's cheffy finisher: a tiny pinch of sea salt flakes to act as a grinder, then scrape the flat of the knife across at about 15° until the garlic smears into a smooth paste — it melts into the rice instead of sitting in bits.",
+    ours: "All of tonight's fresh veg is in the shop: Garlic - Imported (ea) — or keep a Peeled Garlic (1kg) tub in the fridge for weeknights — plus Onion - Brown (ea), Carrots - Local - bag (1kg) and Spring Onion (bunch), with the corn, beans and Somerville eggs coming up in Step 8." },
+  { t: 135, end: 172, num: "Step 4",
+    title: "Dice the brown onion",
+    detail: "Slice off the end opposite the root, halve through the root, peel. Thin slices up to the root, one cut down the centre stopping short of it, then dice fine and trim the last flesh off the root. Jack banks the skins and root for stock — copy that habit tonight (onion skins, carrot ends, spring onion roots) and next week's stock is free." },
+  { t: 172, end: 212, num: "Step 5",
+    title: "Dice the carrots",
+    detail: "Peel 2 small–medium carrots and top-and-tail them (scraps to the stock bag). Halve, then slice a thin strip off one side so each piece sits flat and safe on the board. Cut into four even strips, then batons, then a neat small dice — small enough to cook through in seconds in the hot pan." },
+  { t: 212, end: 230, num: "Step 6",
+    title: "Finely slice the spring onions",
+    detail: "Roots off 3 spring onions (stock bag again), then slice the lot as finely as you can, whites and greens together, into a bowl. They're used at two moments later — two-thirds stirred through at the end, the rest scattered over the served bowls — so keep them by the stove." },
+  { t: 230, end: 253, num: "Step 7",
+    title: "Dice the bacon",
+    detail: "Stack 3 rashers of streaky bacon (about 100 g), slice into even strips, rotate 90° and cut into medium dice. Onto the plate with the onion and garlic — those three hit the pan together.",
+    ours: "We don't stock bacon — grab 3 rashers from your butcher, or dice up leftover ham from the fridge. No meat at all works too: with our extra veg nobody misses it. Feeling fancy? A handful of peeled prawns (your fishmonger) tossed in with the corn at Step 11 turns this into special fried rice." },
+  { t: 253, end: 272, num: "Step 8",
+    title: "Corn, peas — and beat the eggs",
+    detail: "Into one bowl: ½ cup of corn and ½ cup of peas — Jack uses frozen (“you don't have to use frozen, it just makes this recipe easier and cheaper”). Into another: crack 3 free-range eggs and whisk smooth with a fork. That's the mise en place done — from here it's all heat, so get everything within arm's reach of the stove.",
+    ours: "The box upgrade: eggs are Free-range Eggs - Somerville Egg Farm — laid just up the road. Swap the frozen corn for kernels sliced straight off a Corn Cobb - Local (one cob covers the half-cup with a bit to spare), and swap the frozen peas for Beans - Green - Premium hand-picked diced to pea size — the same trick as our cottage pie. Frozen still works on a rushed night; Jack says so himself." },
+  { t: 272, end: 293, num: "Step 9",
+    title: "Get the pan properly hot",
+    detail: "Skillet or wok onto high heat — and Jack recommends the skillet at home: its flat base puts a big surface in contact with a domestic burner, where a wok only heats the small circle at the bottom and cooks unevenly. Wait until the pan is genuinely smoking hot, then pour in 2 tablespoons of vegetable oil and swirl to coat." },
+  { t: 293, end: 319, num: "Step 10",
+    title: "Carrots first — then onion, garlic and bacon",
+    detail: "Diced carrots in for a 20-second head start with a quick mix. Then in with the onion, the garlic paste and the bacon — break up any bacon pieces stuck together — and stir-fry about 3 minutes, until the bacon is lightly golden and the onion translucent." },
+  { t: 319, end: 345, num: "Step 11",
+    title: "Peas and corn, then the rice — break up every clump",
+    detail: "Peas and corn in for 20 seconds — toss the pan if you're comfortable, otherwise a spatula or wooden spoon does the same job. Then add the cold cooked rice and break it right up: sauce can't get inside a clump, and an uncoated chunk of plain rice is the difference between homemade-good and takeaway-great.",
+    ours: "Using our fresh cob kernels and diced green beans instead of frozen? Give them a minute or so here before the rice goes in — they only need to lose their rawness, and the corn just gets sweeter. Want extra crunch? A handful of sliced Snowpeas from the shop can join them." },
+  { t: 345, end: 379, num: "Step 12",
+    title: "Sauce it — oyster, soy, sake",
+    detail: "In with 1 tablespoon of oyster sauce, 1½ tablespoons of dark or light soy sauce — gluten-free? Jack's own callout: make sure the soy is GF; tamari is the easy swap (and check the oyster sauce label too) — and 1½ tablespoons of sake, Japanese rice wine. No alcohol? Jack's written swap is 1 tablespoon of vegetable stock. Mix thoroughly so every grain is coated, and cook 1 minute." },
+  { t: 379, end: 411, num: "Step 13",
+    title: "Push aside, sesame oil, scramble the eggs",
+    detail: "Shove the fried rice to one side of the pan. Into the empty half: 1 teaspoon of sesame oil, then pour in the beaten eggs and scramble for about a minute, keeping them moving until fully cooked.",
+    warn: "Cook the egg right through before it meets the rice — “runny egg will result in our fried rice becoming soggy.” Soft-scramble is for breakfast, not fried rice." },
+  { t: 411, end: 428, num: "Step 14",
+    title: "Fold together — white pepper and most of the spring onion",
+    detail: "Mix the scrambled egg through the rice (“make sure not to make a mess like I did here”), then add ¼ teaspoon of ground white pepper and two-thirds of the sliced spring onion. One last toss so everything's fully incorporated." },
+  { t: 428, end: 480, num: "Step 15",
+    title: "Serve — topped with the rest of the spring onion",
+    detail: "Spoon into bowls and scatter the remaining third of the spring onion over the top. “Rich, savoury umami flavour… fresh, fragrant and just incredibly tasty.” Serves 4 as a main or a side — and it keeps 3 days in the fridge or freezes for up to 3 months, so tomorrow's lunchboxes are already done.",
+    ours: "Maker's finisher: a dusting of Basketcase Gourmet - Roasted Veggie Sprinkle (100g) over the bowls adds a savoury crunch — and supports our makers while it's at it." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+// build the step list
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step";
+  div.id = "step-" + i;
+  const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        <span class="timestamp${s.approx ? " approx" : ""}" ${s.approx ? 'title="Approximate — needs manual timing against the video"' : ""}>▶ ${s.approx ? "~" : ""}${mins}:${secs}</span>
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.ours ? `<div class="step-ours">🥕 Our version: ${s.ours}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => {
+    e.stopPropagation();
+    toggle(i);
+  });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+// highlight the step currently playing
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+// YouTube refuses embeds from file:// pages (error 153) — warn immediately
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+// YouTube IFrame API
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
