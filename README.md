@@ -12,6 +12,7 @@ Each step in the `STEPS` array supports:
 | `t` | Start time (seconds) — where the step's explanation begins. `null` = text-only step (grey "📝 not in clip" chip, no video jump) |
 | `end` | End time — used for the yellow "now playing" highlight |
 | `q` | **Quick-step**: the second the *action* starts, skipping intro chat. Renders the "⚡ straight to it" button. Only add when there's ≥ ~8s of chat worth skipping — no `q` on already-tight steps |
+| `brief` | **Short-&-sharp version**: array of bullet strings (2–3, imperative, no filler). Shown instead of `detail` when the reader turns on the "⚡ Short & sharp" toggle (`localStorage` key `howto-brief`, shared across guides). `warn`/`adapt` boxes are NEVER hidden by brief mode — safety text always shows. Write both versions at capture time |
 | `num` / `title` / `detail` | Step label, bold title, body text |
 | `warn` | Red ⚠ box — safety or common-mistake warnings |
 | `adapt` | Blue/green box — "your car / our desk / your box" adaptations to the user's exact gear |
@@ -24,6 +25,7 @@ Each step in the `STEPS` array supports:
 - **Single tap** on a step: jump video there / pause / resume (280 ms tap timer)
 - **Double-tap** left half = back 5 s, right half = forward 5 s (`touch-action: manipulation` prevents zoom)
 - **⚡ quick button**: seek to `q` and play
+- **⚡ Short & sharp toggle** (progress row): swaps `detail` prose for `brief` bullets on steps that have them; preference persists across guides
 - **🚩 flag button**: marks "doesn't match mine" (localStorage; demo of the feedback loop)
 - **Tick circle**: done state + progress bar; persists in localStorage keyed per guide
 - **Landscape/wide (≥900 px or landscape ≥640 px)**: two-column grid — video pinned left, steps scroll right

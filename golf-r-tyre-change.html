@@ -95,6 +95,15 @@
   .timestamp.textonly { color: var(--muted); background: var(--border); }
   .step-title { font-weight: 600; margin-top: 2px; }
   .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn {
+    font-size: .78rem; font-weight: 600; color: var(--muted); background: none;
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap;
+  }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .step-warn {
     font-size: .84rem; margin-top: 6px; padding: 6px 10px;
     background: #fdf1f1; color: #a33; border-radius: 8px;
@@ -158,6 +167,7 @@
   <div class="progress-row">
     <div class="bar"><div id="bar-fill"></div></div>
     <span class="progress-label" id="progress-label">0 of 13 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
     <button class="reset-btn" id="reset">Reset</button>
   </div>
 
@@ -196,52 +206,66 @@ const VIDEO_ID = "rSSPGUCBEzY";
 const STEPS = [
   { t: 12,  end: 44,  num: "Overview",
     title: "What you're doing",
+    brief: ["Flat off, space-saver on, factory kit only"],
     detail: "Swapping a flat wheel for the space-saver spare using only the factory tool kit. The clip is a Mk7 Golf GTI — same boot layout, tools and jack as your Golf R." },
   { t: 44,  end: 88,  num: "Step 1",
     title: "Open the boot and find the kit",
+    brief: ["Boot floor up, prop on its hooks", "Spare + tool kit in the wheel trough"],
     detail: "Lift the boot floor panel and prop it on its hooks. The space-saver sits in the wheel trough with the tool kit packed beside it — exactly as in your car." },
   { t: 88,  end: 135, num: "Step 2",
     title: "Take out the spare and the tool kit",
+    brief: ["Unscrew centre spin-lock, spare out", "Undo strap; pull the jack handle to free the kit"],
     detail: "Unscrew the central spin-lock and lift the spare out. For the tool kit, undo the strap — the jacking handle holds the package together, so pull it out first.",
     adapt: "Your spare is stored ready-inflated (4.2 bar). Press it to confirm it's firm before you commit — if it's soft, call roadside assistance rather than fitting it." },
   { t: 135, end: 213, q: 176, num: "Step 3",
     title: "Know your tools",
+    brief: ["Jack + hook handle, wheel wrench, locking-bolt adapter, screwdriver"],
     detail: "The kit: the scissor jack, the separate jacking handle with a hook on the end, the wheel wrench (tyre iron), the locking-bolt adapter, a two-in-one screwdriver (also pulls the bolt caps), and the tow hook (not needed today)." },
   { t: 217, end: 234, num: "Step 4",
     title: "Secure the car",
+    brief: ["Handbrake on, car in P", "Block the diagonally-opposite wheel"],
     detail: "Parking brake firmly on and the car in P. If you can, block the wheel diagonally opposite the flat — a rock or a kerb works; the Golf kit has no chocks." },
   { t: 229, end: 240, num: "Step 5",
     title: "Loosen the wheel bolts — while the car is on the ground",
+    brief: ["Bolt caps off", "All 5 bolts: half a turn only, car still on the ground"],
     detail: "Pull the bolt caps off with the puller end of the screwdriver, then crack each of the five bolts just half a turn. Loosening now stops you rocking the car off the jack later.",
     adapt: "Locking bolt: fit your adapter between the wrench and the bolt." },
   { t: 240, end: 270, q: 255, num: "Step 6",
     title: "Find the jacking point",
+    brief: ["Arrows under the sill — hidden by the R's skirts", "Use the wider section of the chassis seam"],
     detail: "Look for the moulded arrows under the sill near each wheel. On cars with side skirts — like your R and the GTI in the clip — the arrows are hidden, so find the wider section of the chassis seam instead. That reinforced section is the lifting point." },
   { t: 270, end: 306, num: "Step 7",
     title: "Seat the jack and crank it up",
+    brief: ["Hand-wind jack up to the seam, seat it snug", "Hook the handle through the lever eye, crank"],
     detail: "Wind the jack open by hand until its groove nearly reaches the seam, push it in so the wider section sits snugly in the groove, then thread the hook of the jacking handle through the jack's lever eye and crank.",
     warn: "This is the step people get wrong, and it's how cars fall off jacks. The base must sit flat on firm ground — on soft ground put a solid board under it." },
   { t: 306, end: 314, num: "Step 8",
     title: "Raise the car — just enough",
+    brief: ["Tyre just clear of the ground — stop there"],
     detail: "Crank until the flat tyre is only just clear of the ground, then stop. Higher is not safer." },
   { t: 312, end: 325, num: "Step 9",
     title: "Swap the wheel and snug the bolts",
+    brief: ["Bolts out — brace the wheel for the last one", "Flat off, spare on, line up the holes", "All 5 bolts by hand, then snug — not tight"],
     detail: "Undo the five bolts fully — before the last one, brace the wheel with your foot and a hand so it can't drop. Lift the flat off, lift the spare on, line up the holes, and start all five bolts by hand before snugging them with the wrench.",
     warn: "As the clip says: don't crank the bolts hard while the wheel is in the air — it strains the brakes and drivetrain. Firm is enough for now.",
     adapt: "VWs use bolts, not studs, so there's nothing to hang the wheel on — take its weight and line the holes up carefully. The spare is much lighter than your 19-inch wheel." },
   { t: 324, end: 335, num: "Step 10",
     title: "Lower the car and remove the jack",
+    brief: ["Crank down until the spare takes the weight", "Jack out"],
     detail: "Crank the jack back down until the spare takes the car's weight, wind it clear, and remove it." },
   { t: null, end: null, num: "Step 11",
     title: "Tighten the bolts properly, in a star pattern",
+    brief: ["Star pattern, pull firmly on each", "120 Nm — no grease on bolts, torque-check at the shop"],
     detail: "Now the wheel is on the ground, go around the five bolts in a star (criss-cross) pattern — not around the circle — pulling firmly on the wrench for each. The clip mentions this but doesn't demonstrate it.",
     adapt: "Golf torque spec is 120 Nm (about 89 ft-lb) — confirmed in the owner's manual. Get them properly tight by hand, then have them torque-checked at the tyre shop. Never grease or oil the bolts." },
   { t: null, end: null, num: "Step 12",
     title: "Pack everything away",
+    brief: ["Jack fully closed, handle tucked in", "Full wheel rides in the boot, not the well"],
     detail: "Wind the jack fully closed and tuck the handle in or it won't fit back in the well. Tools back in their slots, spin-lock back on the well, boot floor down. Not shown in the clip — it's the reverse of steps 1–3.",
     adapt: "Your full-size wheel won't fit in the space-saver's well — it rides in the boot." },
   { t: null, end: null, num: "Step 13",
     title: "Drive gently to a tyre shop",
+    brief: ["Max 80 km/h · max 200 km on the front axle", "Check spare's pressure ASAP", "Proper tyre fixed soon"],
     detail: "The space-saver is strictly temporary. Owner's-manual limits: maximum 80 km/h, no hard acceleration, braking or cornering, no more than 200 km if it's on the front (drive) axle, and check its pressure at the first opportunity. Get the proper tyre repaired or replaced as soon as you can." },
 ];
 
@@ -256,7 +280,7 @@ const stepsEl = document.getElementById("steps");
 STEPS.forEach((s, i) => {
   const div = document.createElement("div");
   const textOnly = s.t === null;
-  div.className = "step" + (textOnly ? " textonly" : "");
+  div.className = "step" + (textOnly ? " textonly" : "") + (s.brief ? " has-brief" : "");
   div.id = "step-" + i;
   let chip;
   if (textOnly) {
@@ -276,6 +300,7 @@ STEPS.forEach((s, i) => {
       </div>
       <div class="step-title">${s.title}</div>
       <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
       ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
       ${s.adapt ? `<div class="step-adapt">🚗 Your Golf R: ${s.adapt}</div>` : ""}
       <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt: a better-matching clip, corrected text, or a check against the manual. Tap the flag again to undo.</div>
@@ -342,6 +367,19 @@ function render() {
   document.getElementById("progress-label").textContent =
     done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
 }
+
+// short & sharp mode — one preference shared across all guides on this device
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
 
 document.getElementById("reset").addEventListener("click", () => {
   ticks = [];

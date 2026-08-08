@@ -91,6 +91,15 @@
   }
   .step-title { font-weight: 600; margin-top: 2px; }
   .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn {
+    font-size: .78rem; font-weight: 600; color: var(--muted); background: none;
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap;
+  }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .step-warn {
     font-size: .84rem; margin-top: 6px; padding: 6px 10px;
     background: #fdf1f1; color: #a33; border-radius: 8px;
@@ -150,6 +159,7 @@
   <div class="progress-row">
     <div class="bar"><div id="bar-fill"></div></div>
     <span class="progress-label" id="progress-label">0 of 11 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
     <button class="reset-btn" id="reset">Reset</button>
   </div>
 
@@ -183,46 +193,58 @@
 <script>
 const VIDEO_ID = "vkcHmpKxFwg";
 
-// step data extracted from the timed transcript
+// step data extracted from the timed transcript; brief = short-&-sharp bullet version
 const STEPS = [
   { t: 0,   end: 33,  num: "Overview",
     title: "What you're making",
-    detail: "Pancakes 101 with a professional chef-instructor: light, fluffy, crispy-edged pancakes from ingredients already in your pantry — and the techniques that stop them coming out flat." },
+    detail: "Pancakes 101 with a professional chef-instructor: light, fluffy, crispy-edged pancakes from ingredients already in your pantry — and the techniques that stop them coming out flat.",
+    brief: ["Fluffy pancakes from pantry staples", "Three rules: don't overmix, don't rush the flip, never press"] },
   { t: 33,  end: 58,  num: "Step 1",
     title: "Whisk the dry ingredients",
-    detail: "Flour, sugar, salt, baking powder AND baking soda into a bowl. Whisk so there are no pockets of any one ingredient — the two raising agents are what make the bubbles." },
+    detail: "Flour, sugar, salt, baking powder AND baking soda into a bowl. Whisk so there are no pockets of any one ingredient — the two raising agents are what make the bubbles.",
+    brief: ["Flour, sugar, salt, baking powder + soda in a bowl", "Whisk out any pockets"] },
   { t: 58,  end: 107, q: 99, num: "Step 2",
     title: "Mix the wet ingredients",
-    detail: "Milk plus a splash of apple cider vinegar makes an instant buttermilk (no half-used carton dying in the fridge). Add oil, vanilla and the eggs, then whisk until the yolks are fully broken up and combined." },
+    detail: "Milk plus a splash of apple cider vinegar makes an instant buttermilk (no half-used carton dying in the fridge). Add oil, vanilla and the eggs, then whisk until the yolks are fully broken up and combined.",
+    brief: ["Milk + splash of cider vinegar (instant buttermilk)", "Add oil, vanilla, eggs", "Whisk until fully combined"] },
   { t: 107, end: 146, q: 122, num: "Step 3",
     title: "Fold together — then STOP",
     detail: "Pour wet into dry and fold gently — Frank does roughly 20–25 strokes, no more. The liquid is already activating the raising agents. The batter should be thick, and lumps are fine.",
+    brief: ["Wet into dry", "Fold 20–25 strokes maximum", "Thick and lumpy = correct. Stop."],
     warn: "Overmixing is the #1 cause of flat, rubbery pancakes. Once it's combined, do not stir again — not now, not when scooping." },
   { t: 146, end: 189, q: 183, num: "Step 4",
     title: "Heat your griddle or pan, with plenty of butter",
-    detail: "Electric griddle, cast-iron plate or a non-stick pan — all fine. Melt a generous knob of salted butter; if it browns a little, that's flavour, not a problem." },
+    detail: "Electric griddle, cast-iron plate or a non-stick pan — all fine. Melt a generous knob of salted butter; if it browns a little, that's flavour, not a problem.",
+    brief: ["Heat griddle or non-stick pan", "Generous knob of salted butter", "Browned butter is fine"] },
   { t: 189, end: 252, q: 218, num: "Step 5",
     title: "Scoop the batter — without stirring it",
-    detail: "Scoop from the side of the bowl and pour onto the hot butter, keeping the bubbles in the remaining batter intact. Don't chase perfect circles — chase fluffiness. Get everything you need next to you first; it moves quickly from here." },
+    detail: "Scoop from the side of the bowl and pour onto the hot butter, keeping the bubbles in the remaining batter intact. Don't chase perfect circles — chase fluffiness. Get everything you need next to you first; it moves quickly from here.",
+    brief: ["Everything within reach first", "Scoop from the side — no stirring", "Pour onto the hot butter"] },
   { t: 252, end: 280, num: "Step 6",
     title: "Let the edges fry — hands off",
-    detail: "The butter should almost fry the edges crisp. Resist the urge to fiddle or flip early. As Frank says: stop, relax, cleansing breath." },
+    detail: "The butter should almost fry the edges crisp. Resist the urge to fiddle or flip early. As Frank says: stop, relax, cleansing breath.",
+    brief: ["Let the edges fry crisp", "Hands off"] },
   { t: 280, end: 296, num: "Step 7",
     title: "Watch for the bubbles to pop through",
-    detail: "Flip only when bubbles are popping up through the surface of the pancake and the top looks set — that's the leavening doing its work." },
+    detail: "Flip only when bubbles are popping up through the surface of the pancake and the top looks set — that's the leavening doing its work.",
+    brief: ["Wait for bubbles popping through the top", "Surface set = ready to flip"] },
   { t: 296, end: 322, q: 306, num: "Step 8",
     title: "Flip — quickly, and away from you",
-    detail: "Get the plastic spatula fully under in one quick push (no chasing it around the pan) and flip away from yourself so hot butter can't splatter you." },
+    detail: "Get the plastic spatula fully under in one quick push (no chasing it around the pan) and flip away from yourself so hot butter can't splatter you.",
+    brief: ["Spatula fully under in one push", "Flip away from you"] },
   { t: 322, end: 341, num: "Step 9",
     title: "Never press down",
     detail: "Pressing squeezes out the bubbles you've worked to create. The most you should do is slide the pancake around a little to soak up butter.",
+    brief: ["Never press down", "Slide to soak up butter — that's all"],
     warn: "No pressing. Ever. That's the whole reason they're fluffy." },
   { t: 341, end: 369, q: 352, num: "Step 10",
     title: "The spring-back doneness test",
-    detail: "Gently press the top: if it springs back, it's done. If it squishes and shows wet batter, give it longer. First batch is usually the best of the day — crispiest edges, best colour." },
+    detail: "Gently press the top: if it springs back, it's done. If it squishes and shows wet batter, give it longer. First batch is usually the best of the day — crispiest edges, best colour.",
+    brief: ["Gentle press: springs back = done", "Squishes = longer"] },
   { t: 369, end: 460, q: 417, num: "Step 11",
     title: "Stack, butter every layer, douse in syrup",
-    detail: "Butter on the plate, a knob between every layer, a schmear on top, then real maple syrup — don't be shy. Salt from the butter plus sweet syrup is the combination. Eat while the butter's melting." },
+    detail: "Butter on the plate, a knob between every layer, a schmear on top, then real maple syrup — don't be shy. Salt from the butter plus sweet syrup is the combination. Eat while the butter's melting.",
+    brief: ["Stack", "Butter every layer", "Real maple syrup — plenty"] },
 ];
 
 const KEY = "howto-ticks-" + VIDEO_ID;
@@ -235,7 +257,7 @@ let player, ready = false;
 const stepsEl = document.getElementById("steps");
 STEPS.forEach((s, i) => {
   const div = document.createElement("div");
-  div.className = "step";
+  div.className = "step" + (s.brief ? " has-brief" : "");
   div.id = "step-" + i;
   const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
   div.innerHTML = `
@@ -249,6 +271,7 @@ STEPS.forEach((s, i) => {
       </div>
       <div class="step-title">${s.title}</div>
       <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
       ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
       <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
     </div>`;
@@ -312,6 +335,19 @@ function render() {
   document.getElementById("progress-label").textContent =
     done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
 }
+
+// short & sharp mode — one preference shared across all guides on this device
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
 
 document.getElementById("reset").addEventListener("click", () => {
   ticks = []; flags = [];
