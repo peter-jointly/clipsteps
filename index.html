@@ -20,62 +20,71 @@
     font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     background: var(--bg); color: var(--ink); line-height: 1.55;
   }
-  .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 60px; }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 16px 60px; }
 
-  /* Hero */
-  .hero { text-align: center; padding: 48px 8px 8px; }
+  .hero { text-align: center; padding: 40px 8px 6px; }
   .logo {
     display: inline-flex; align-items: center; gap: 10px;
-    font-size: 1.9rem; font-weight: 800; letter-spacing: -.02em;
+    font-size: 1.8rem; font-weight: 800; letter-spacing: -.02em;
   }
   .logo .mark {
-    width: 44px; height: 44px; border-radius: 12px; background: var(--accent);
+    width: 42px; height: 42px; border-radius: 12px; background: var(--accent);
     color: #fff; display: inline-flex; align-items: center; justify-content: center;
-    font-size: 1.3rem;
+    font-size: 1.25rem;
   }
-  .tagline { font-size: 1.15rem; color: var(--ink); margin-top: 14px; font-weight: 600; }
-  .sub { color: var(--muted); font-size: .95rem; margin-top: 8px; max-width: 540px; margin-left: auto; margin-right: auto; }
+  .tagline { font-size: 1.05rem; color: var(--ink); margin-top: 12px; font-weight: 600; }
+  .sub { color: var(--muted); font-size: .9rem; margin-top: 6px; max-width: 560px; margin-left: auto; margin-right: auto; }
 
-  /* How it works */
-  .how { display: flex; gap: 10px; margin: 28px 0 8px; }
-  .how .card {
-    flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 14px 12px; text-align: center;
+  .searchbar {
+    display: flex; gap: 8px; max-width: 560px; margin: 22px auto 0;
   }
-  .how .n {
-    width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff;
-    font-size: .8rem; font-weight: 700; display: inline-flex; align-items: center; justify-content: center;
-    margin-bottom: 8px;
+  .searchbar input {
+    flex: 1; font-size: 1rem; padding: 12px 16px; border-radius: 12px;
+    border: 1.5px solid var(--border); background: var(--card); color: var(--ink);
+    outline: none;
   }
-  .how .t { font-weight: 600; font-size: .88rem; }
-  .how .d { color: var(--muted); font-size: .8rem; margin-top: 4px; }
-  @media (max-width: 560px) { .how { flex-direction: column; } }
+  .searchbar input:focus { border-color: var(--accent); }
 
-  h2.section { font-size: 1.05rem; margin: 34px 4px 12px; }
+  .cats { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 14px 0 6px; }
+  .cat {
+    font-size: .85rem; font-weight: 600; border: 1.5px solid var(--border); background: var(--card);
+    color: var(--muted); border-radius: 999px; padding: 5px 14px; cursor: pointer;
+  }
+  .cat.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-  /* Guide cards */
+  .count { text-align: center; color: var(--muted); font-size: .8rem; margin: 8px 0 14px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 640px) { .grid { grid-template-columns: 1fr; } }
+
   a.guide {
-    display: flex; gap: 14px; align-items: center; text-decoration: none; color: inherit;
+    display: flex; gap: 12px; align-items: center; text-decoration: none; color: inherit;
     background: var(--card); border: 1px solid var(--border); border-radius: 12px;
-    padding: 14px 16px; margin-bottom: 12px; transition: border-color .15s, box-shadow .15s;
+    padding: 12px 14px; transition: border-color .15s, box-shadow .15s;
   }
   a.guide:hover { border-color: var(--accent); box-shadow: 0 2px 10px rgba(0,0,0,.06); }
-  .thumb { flex: none; width: 120px; border-radius: 8px; overflow: hidden; background: #000; }
-  .thumb img { width: 100%; display: block; }
-  .g-title { font-weight: 600; }
-  .g-meta { color: var(--muted); font-size: .82rem; margin-top: 2px; display: block; }
-  .arrow { margin-left: auto; color: var(--muted); font-size: 1.1rem; flex: none; }
+  .thumb { flex: none; width: 104px; border-radius: 8px; overflow: hidden; background: #000; }
+  .thumb img { width: 100%; display: block; aspect-ratio: 16/9; object-fit: cover; }
+  .g-body { flex: 1; min-width: 0; }
+  .g-title { font-weight: 600; font-size: .93rem; line-height: 1.3; }
+  .g-meta { color: var(--muted); font-size: .78rem; margin-top: 3px; }
+  .g-progress { display: flex; align-items: center; gap: 8px; margin-top: 7px; }
+  .g-bar { flex: 1; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; max-width: 130px; }
+  .g-bar > div { height: 100%; background: var(--accent); border-radius: 3px; }
+  .g-pct { font-size: .72rem; font-weight: 600; color: var(--accent); white-space: nowrap; }
+  .g-pct.zero { color: var(--muted); font-weight: 400; }
+  .g-done-badge { font-size: .72rem; font-weight: 700; color: var(--accent); }
 
-  /* Request */
+  .empty { text-align: center; color: var(--muted); padding: 40px 0; display: none; }
+
   .request {
     background: var(--accent-soft); border: 1px dashed var(--accent); border-radius: 12px;
-    padding: 18px; text-align: center; margin-top: 8px;
+    padding: 16px; text-align: center; margin-top: 26px; font-size: .9rem;
   }
-  .request .big { font-weight: 700; }
-  .request p { font-size: .9rem; color: var(--ink); margin-top: 6px; }
-  .request .note { color: var(--muted); font-size: .8rem; margin-top: 8px; }
+  .request b { display: block; margin-bottom: 4px; }
+  .request .note { color: var(--muted); font-size: .8rem; margin-top: 6px; }
 
-  .footer { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 40px; }
+  .footer { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 36px; }
 </style>
 </head>
 <body>
@@ -84,96 +93,21 @@
   <div class="hero">
     <div class="logo"><span class="mark">✓</span>ClipSteps</div>
     <div class="tagline">The best how-to videos, turned into step-by-step guides you tick off as you go.</div>
-    <div class="sub">YouTube shows you how — then you scrub back and forth trying to find the bit you're up to, with dirty hands. ClipSteps breaks the video into steps: tap a step to play exactly that moment, tick it off when it's done, and pick up where you left off.</div>
-  </div>
-
-  <div class="how">
-    <div class="card">
-      <span class="n">1</span>
-      <div class="t">Tell us the job</div>
-      <div class="d">What you're trying to do, and exactly what gear you have.</div>
-    </div>
-    <div class="card">
-      <span class="n">2</span>
-      <div class="t">We find the best clip</div>
-      <div class="d">The highest-rated video that matches your exact situation — with steps, warnings and a kit list pulled out.</div>
-    </div>
-    <div class="card">
-      <span class="n">3</span>
-      <div class="t">Follow and tick</div>
-      <div class="d">Tap a step to play that moment. Tap to pause. Tick it off. Your progress is saved.</div>
+    <div class="sub">Tap a step to play exactly that moment · tick it off when it's done · double-tap to skip ±5s · ⚡ jumps straight past the chat. Your progress is saved on this device.</div>
+    <div class="searchbar">
+      <input id="q" type="search" placeholder="Search guides — try “pancakes”, “tyre”, “sound desk”…" autocomplete="off">
     </div>
   </div>
 
-  <h2 class="section">Guides</h2>
+  <div class="cats" id="cats"></div>
+  <div class="count" id="count"></div>
 
-  <a class="guide" href="wing-sound-desk-basics.html">
-    <span class="thumb"><img src="https://i.ytimg.com/vi/0eMiWAVb-aQ/mqdefault.jpg" alt=""></span>
-    <span>
-      <span class="g-title">Know Your Sound Desk: Behringer WING Basics</span>
-      <span class="g-meta">10 steps · beginner volunteers · adapted to our desk · Alan Hamilton Audio</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
+  <div class="grid" id="grid"></div>
+  <div class="empty" id="empty">Nothing matches that search — but that's what requests are for 👇</div>
 
-  <a class="guide" href="fluffy-pancakes.html">
-    <span class="thumb"><img src="https://i.ytimg.com/vi/vkcHmpKxFwg/mqdefault.jpg" alt=""></span>
-    <span>
-      <span class="g-title">Light, Fluffy Pancakes From Scratch</span>
-      <span class="g-meta">11 steps · pantry staples · Epicurious 101 with chef Frank Proto</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
-
-  <a class="guide" href="pumpkin-soup.html">
-    <span class="thumb"><img src="https://i.ytimg.com/vi/BGnbwh6LH9M/mqdefault.jpg" alt=""></span>
-    <span>
-      <span class="g-title">No-Chop Roast Pumpkin Soup</span>
-      <span class="g-meta">10 steps · no knife, no pot · RecipeTin Eats</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
-
-  <a class="guide" href="apple-rhubarb-crumble.html">
-    <span class="thumb"><img src="media/crumble/IMG_3328.JPEG" alt=""></span>
-    <span>
-      <span class="g-title">Apple &amp; Rhubarb Crumble, Two Ways</span>
-      <span class="g-meta">11 steps · 5 chapters · Mrs Forrest's own clips — no YouTube</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
-
-  <a class="guide" href="golf-r-tyre-change.html">
-    <span class="thumb"><img src="https://i.ytimg.com/vi/rSSPGUCBEzY/mqdefault.jpg" alt=""></span>
-    <span>
-      <span class="g-title">Change a Tyre on Your 2018 Golf R</span>
-      <span class="g-meta">13 steps · factory jack kit · adapted for the Golf R</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
-
-  <a class="guide" href="roast-pork-crackling.html">
-    <span class="thumb"><img src="https://i.ytimg.com/vi/eKzQCUq4Xa0/mqdefault.jpg" alt=""></span>
-    <span>
-      <span class="g-title">Roast Pork with Perfect Crackling</span>
-      <span class="g-meta">10 steps · 4 ingredients · ~4½ hours</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
-
-  <a class="guide" href="thetford-pump-repair.html">
-    <span class="thumb"><img src="https://i.ytimg.com/vi/3Pv535g-Wqo/mqdefault.jpg" alt=""></span>
-    <span>
-      <span class="g-title">Fix a Thetford C402 Toilet Flush Pump</span>
-      <span class="g-meta">10 steps · multimeter + spare fuse · camper van repair</span>
-    </span>
-    <span class="arrow">›</span>
-  </a>
-
-  <h2 class="section">Need a guide that isn't here?</h2>
   <div class="request">
-    <div class="big">Guides are made to order during the pilot.</div>
-    <p>Tell us what you're trying to do and what equipment you have — we'll find the best clip and build your guide, usually the same day.</p>
+    <b>Need a guide that isn't here?</b>
+    Tell us what you're trying to do and what equipment you have — we'll find the best clip and build your guide, usually the same day.
     <div class="note">Request form coming soon — for now, ask the person who sent you this link.</div>
   </div>
 
@@ -182,5 +116,89 @@
     Guides are generated with AI from the video and checked by a human. Always put safety first and use your own judgement.
   </div>
 </div>
+
+<script>
+// guide index — steps counts match each guide's own progress denominator
+const GUIDES = [
+  { file:"fluffy-pancakes.html", title:"Light, Fluffy Pancakes From Scratch", cat:"Cooking", steps:12, key:"howto-ticks-vkcHmpKxFwg", thumb:"https://i.ytimg.com/vi/vkcHmpKxFwg/mqdefault.jpg", meta:"Epicurious 101 · pantry staples", kw:"breakfast pancakes frank proto weekend" },
+  { file:"pumpkin-soup.html", title:"No-Chop Roast Pumpkin Soup", cat:"Cooking", steps:10, key:"howto-ticks-BGnbwh6LH9M", thumb:"https://i.ytimg.com/vi/BGnbwh6LH9M/mqdefault.jpg", meta:"RecipeTin Eats · no knife, no pot", kw:"soup butternut winter nagi easy" },
+  { file:"apple-rhubarb-crumble.html", title:"Apple & Rhubarb Crumble, Two Ways", cat:"Cooking", steps:11, key:"howto-ticks-crumble", thumb:"media/crumble/IMG_3328.JPEG", meta:"Mrs Forrest's own clips · 5 chapters", kw:"dessert crumble rhubarb apple baking school" },
+  { file:"roast-pork-crackling.html", title:"Roast Pork with Perfect Crackling", cat:"Cooking", steps:11, key:"howto-ticks-eKzQCUq4Xa0", thumb:"https://i.ytimg.com/vi/eKzQCUq4Xa0/mqdefault.jpg", meta:"Katie Home Cook · 4 ingredients", kw:"pork roast crackling sunday dinner" },
+  { file:"spag-bol.html", title:"Homestyle Spaghetti Bolognese", cat:"Cooking", steps:9, key:"howto-ticks-jGN_Ar8VqTk", thumb:"https://i.ytimg.com/vi/jGN_Ar8VqTk/mqdefault.jpg", meta:"family dinner classic", kw:"pasta spaghetti bolognese mince italian" },
+  { file:"butter-chicken.html", title:"Butter Chicken from Scratch", cat:"Cooking", steps:18, key:"howto-ticks-9mpPyy_257I", thumb:"https://i.ytimg.com/vi/9mpPyy_257I/mqdefault.jpg", meta:"curry night from scratch", kw:"curry indian chicken butter" },
+  { file:"beef-ragu.html", title:"Slow-Cooked Beef Ragù with Pappardelle", cat:"Cooking", steps:14, key:"howto-ticks-pff6r8LE5Wc", thumb:"https://i.ytimg.com/vi/pff6r8LE5Wc/mqdefault.jpg", meta:"slow-cooked comfort", kw:"pasta ragu beef slow cook italian" },
+  { file:"cottage-pie.html", title:"Cottage Pie", cat:"Cooking", steps:13, key:"howto-ticks-wSCOHIll1rM", thumb:"https://i.ytimg.com/vi/wSCOHIll1rM/mqdefault.jpg", meta:"winter comfort classic", kw:"mince potato mash pie winter" },
+  { file:"roast-chicken.html", title:"Roast Chicken with Winter Tray Vegetables", cat:"Cooking", steps:15, key:"howto-ticks-Vs_FDwBcUck", thumb:"https://i.ytimg.com/vi/Vs_FDwBcUck/mqdefault.jpg", meta:"one tray, whole dinner", kw:"chicken roast vegetables tray dinner" },
+  { file:"roast-beef.html", title:"Classic Roast Beef with Gravy", cat:"Cooking", steps:15, key:"howto-ticks-lh40UrH35sk", thumb:"https://i.ytimg.com/vi/lh40UrH35sk/mqdefault.jpg", meta:"with proper gravy", kw:"beef roast gravy sunday" },
+  { file:"steak-night.html", title:"Steak Night", cat:"Cooking", steps:8, key:"howto-ticks-rgXtLVFzFmo", thumb:"https://i.ytimg.com/vi/rgXtLVFzFmo/mqdefault.jpg", meta:"get it right every time", kw:"steak beef pan rest butter" },
+  { file:"lamb-chops.html", title:"Hunan-Style Grilled Lamb Cutlets", cat:"Cooking", steps:9, key:"howto-ticks-Wf00WOiNtps", thumb:"https://i.ytimg.com/vi/Wf00WOiNtps/mqdefault.jpg", meta:"cumin-spiced, big flavour", kw:"lamb chops cutlets grill spice" },
+  { file:"taco-night.html", title:"Taco Night", cat:"Cooking", steps:12, key:"howto-ticks-gU2kb7vIqkI", thumb:"https://i.ytimg.com/vi/gU2kb7vIqkI/mqdefault.jpg", meta:"build-your-own family dinner", kw:"tacos mexican mince family kids" },
+  { file:"fried-rice.html", title:"Family Egg Fried Rice", cat:"Cooking", steps:16, key:"howto-ticks-CEMdcIEDfJo", thumb:"https://i.ytimg.com/vi/CEMdcIEDfJo/mqdefault.jpg", meta:"better than takeaway", kw:"rice egg wok fried asian leftovers" },
+  { file:"beef-stir-fry.html", title:"Beef Stir-Fry", cat:"Cooking", steps:19, key:"howto-ticks-biLk-ku6sig", thumb:"https://i.ytimg.com/vi/biLk-ku6sig/mqdefault.jpg", meta:"fast, glossy, restaurant-style", kw:"stir fry beef wok quick asian" },
+  { file:"veggie-stir-fry.html", title:"Veggie-Loaded Stir-Fry", cat:"Cooking", steps:8, key:"howto-ticks-M06onbYNfVo", thumb:"https://i.ytimg.com/vi/M06onbYNfVo/mqdefault.jpg", meta:"use up the veggie drawer", kw:"vegetables stir fry vegetarian quick" },
+  { file:"zucchini-slice.html", title:"Zucchini Slice", cat:"Cooking", steps:12, key:"howto-ticks-am6O76_rWHQ", thumb:"https://i.ytimg.com/vi/am6O76_rWHQ/mqdefault.jpg", meta:"lunchbox hero", kw:"zucchini slice bake eggs lunchbox" },
+  { file:"golf-r-tyre-change.html", title:"Change a Tyre on Your 2018 Golf R", cat:"Repairs", steps:14, key:"howto-ticks-golfr-tyre-v3", thumb:"https://i.ytimg.com/vi/rSSPGUCBEzY/mqdefault.jpg", meta:"factory jack kit · manual-checked", kw:"car tyre wheel jack vw golf volkswagen flat" },
+  { file:"thetford-pump-repair.html", title:"Fix a Thetford C402 Toilet Flush Pump", cat:"Repairs", steps:10, key:"howto-ticks-3Pv535g-Wqo", thumb:"https://i.ytimg.com/vi/3Pv535g-Wqo/mqdefault.jpg", meta:"camper van repair · multimeter", kw:"camper caravan toilet pump fuse repair thetford" },
+  { file:"wing-sound-desk-basics.html", title:"Know Your Sound Desk: Behringer WING Basics", cat:"Training", steps:10, key:"howto-ticks-0eMiWAVb-aQ", thumb:"https://i.ytimg.com/vi/0eMiWAVb-aQ/mqdefault.jpg", meta:"beginner volunteers · adapted to our desk", kw:"sound desk audio mixer wing behringer church volunteer" },
+];
+
+const CATS = ["All", "Cooking", "Repairs", "Training"];
+let activeCat = "All", query = "";
+
+function progress(g) {
+  try {
+    const ticks = JSON.parse(localStorage.getItem(g.key) || "[]");
+    return Math.min(ticks.filter(Boolean).length, g.steps);
+  } catch (e) { return 0; }
+}
+
+function render() {
+  const grid = document.getElementById("grid");
+  const q = query.trim().toLowerCase();
+  const shown = GUIDES.filter(g =>
+    (activeCat === "All" || g.cat === activeCat) &&
+    (!q || (g.title + " " + g.meta + " " + g.kw + " " + g.cat).toLowerCase().includes(q))
+  );
+  grid.innerHTML = shown.map(g => {
+    const done = progress(g);
+    const pct = Math.round(done / g.steps * 100);
+    let prog;
+    if (done >= g.steps) prog = `<span class="g-done-badge">✓ All ${g.steps} steps done</span>`;
+    else prog = `<div class="g-bar"><div style="width:${pct}%"></div></div>
+                 <span class="g-pct ${done ? "" : "zero"}">${done ? done + " of " + g.steps : g.steps + " steps"}</span>`;
+    return `<a class="guide" href="${g.file}">
+      <span class="thumb"><img src="${g.thumb}" alt="" loading="lazy"></span>
+      <span class="g-body">
+        <span class="g-title">${g.title}</span>
+        <div class="g-meta">${g.cat} · ${g.meta}</div>
+        <div class="g-progress">${prog}</div>
+      </span>
+    </a>`;
+  }).join("");
+  document.getElementById("empty").style.display = shown.length ? "none" : "block";
+  document.getElementById("count").textContent =
+    shown.length === GUIDES.length ? `${GUIDES.length} guides` : `${shown.length} of ${GUIDES.length} guides`;
+}
+
+const catsEl = document.getElementById("cats");
+CATS.forEach(c => {
+  const b = document.createElement("button");
+  b.className = "cat" + (c === "All" ? " active" : "");
+  b.textContent = c === "Cooking" ? "🍳 Cooking" : c === "Repairs" ? "🔧 Repairs" : c === "Training" ? "🎚 Training" : "All";
+  b.addEventListener("click", () => {
+    activeCat = c;
+    document.querySelectorAll(".cat").forEach(x => x.classList.remove("active"));
+    b.classList.add("active");
+    render();
+  });
+  catsEl.appendChild(b);
+});
+
+document.getElementById("q").addEventListener("input", (e) => { query = e.target.value; render(); });
+
+render();
+// re-render when returning from a guide (bfcache) so progress bars are fresh
+window.addEventListener("pageshow", render);
+</script>
 </body>
 </html>
