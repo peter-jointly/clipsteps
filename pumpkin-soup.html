@@ -91,6 +91,15 @@
   }
   .step-title { font-weight: 600; margin-top: 2px; }
   .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn {
+    font-size: .78rem; font-weight: 600; color: var(--muted); background: none;
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap;
+  }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .step-warn {
     font-size: .84rem; margin-top: 6px; padding: 6px 10px;
     background: #fdf1f1; color: #a33; border-radius: 8px;
@@ -148,6 +157,7 @@
   <div class="progress-row">
     <div class="bar"><div id="bar-fill"></div></div>
     <span class="progress-label" id="progress-label">0 of 10 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
     <button class="reset-btn" id="reset">Reset</button>
   </div>
 
@@ -186,37 +196,47 @@ const VIDEO_ID = "BGnbwh6LH9M";
 const STEPS = [
   { t: 0,   end: 32,  num: "Overview",
     title: "What you're making",
+    brief: ["Roast pumpkin soup — no knife, no pot, 5 min hands-on"],
     detail: "Creamy roasted pumpkin soup with no knife work and no pot — the oven and the blender do everything. About 5 minutes of actual hands-on time.",
     adapt: "As Nagi says: buy your pumpkin already cut in half and 'let your greengrocer do the muscle work' — that's the half butternut in your Jointly box." },
   { t: 32,  end: 47,  num: "Step 1",
     title: "Load the tray",
+    brief: ["Pumpkin half, peeled onion, whole garlic head on a tray", "Oil, salt, pepper"],
     detail: "Pumpkin half (skin on, cut side up), a peeled onion, and a whole head of garlic straight onto a baking tray. Drizzle everything with olive oil and season with salt and pepper." },
   { t: 47,  end: 54,  num: "Step 2",
     title: "Wrap the garlic in foil",
+    brief: ["Garlic gets its own foil parcel"],
     detail: "The garlic head gets its own little foil parcel.",
     warn: "Don't skip this — unwrapped, the garlic burns long before the pumpkin is cooked." },
   { t: 54,  end: 64,  num: "Step 3",
     title: "Roast: 180°C for 70–80 minutes",
+    brief: ["180°C · 70–80 min · until completely soft"],
     detail: "Into the oven until the pumpkin is completely soft and caramelised at the edges. That caramelisation is free flavour — it's why this recipe doesn't need stock. (Temperature and time are from her written recipe; the video just says '70 minutes'.)" },
   { t: 64,  end: 87,  num: "Step 4",
     title: "Milk in the blender, then scoop the pumpkin",
+    brief: ["2 cups milk into the blender first", "Seeds out and binned, flesh scooped in"],
     detail: "Pour the milk into the blender first (start with 2 cups; her written recipe allows 3–4 — you can thin later). Scoop out and discard the seeds, then spoon the soft flesh straight into the blender until only the empty skin is left." },
   { t: 87,  end: 98,  num: "Step 5",
     title: "Add the onion",
+    brief: ["Bitter dark layer off, halve, in"],
     detail: "Peel off the dark-brown outer layer of the roasted onion — it's bitter — then halve it with the spoon and drop it in." },
   { t: 98,  end: 122, num: "Step 6",
     title: "Squeeze in the roasted garlic",
+    brief: ["Break the head, squeeze the cloves in", "Salt, pepper, lid on"],
     detail: "Unwrap the foil, break the head in half (Nagi's wrestle with it is the best bit of the video), and squeeze the soft roasted cloves straight into the blender. Add a little more salt and pepper. Lid on." },
   { t: 122, end: 148, num: "Step 7",
     title: "Blitz until silky",
+    brief: ["Blend until smooth — no brown bits left"],
     detail: "Blend until completely smooth and the brown caramelised bits have disappeared.",
     warn: "Blending hot food safely: fill the blender no more than half full, hold the lid down with a tea towel, and start slow. Or skip the risk entirely — tip everything into a pot and use a stick blender.",
     adapt: "No high-powered blender? Fine — her written recipe confirms any blender or a stick blender works. A regular blender won't heat the soup like her Vitamix does, so just reheat it in a pot (or microwave) after blending." },
   { t: 148, end: 163, num: "Step 8",
     title: "Pour and check the thickness",
+    brief: ["Into bowls (reheat if needed)", "Too thick? Splash more milk"],
     detail: "Straight into bowls if it's piping hot; otherwise reheat first. Too thick? Stir in a splash more milk or water until it's the way you like it." },
   { t: 163, end: 196, num: "Step 9",
     title: "Finish and serve",
+    brief: ["Cream swirl, herbs, buttery bread for dunking"],
     detail: "A swirl of cream, a scatter of parsley or thyme, and — most importantly — hunks of hot buttery bread for dunking.",
     adapt: "Parsley and thyme bunches are both in the box this week." },
 ];
@@ -231,7 +251,7 @@ let player, ready = false;
 const stepsEl = document.getElementById("steps");
 STEPS.forEach((s, i) => {
   const div = document.createElement("div");
-  div.className = "step";
+  div.className = "step" + (s.brief ? " has-brief" : "");
   div.id = "step-" + i;
   const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
   div.innerHTML = `
@@ -244,6 +264,7 @@ STEPS.forEach((s, i) => {
       </div>
       <div class="step-title">${s.title}</div>
       <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
       ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
       ${s.adapt ? `<div class="step-adapt">🥕 Your box: ${s.adapt}</div>` : ""}
       <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full version this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
@@ -301,6 +322,19 @@ function render() {
   document.getElementById("progress-label").textContent =
     done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
 }
+
+// short & sharp mode — one preference shared across all guides on this device
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
 
 document.getElementById("reset").addEventListener("click", () => {
   ticks = []; flags = [];

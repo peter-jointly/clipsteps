@@ -98,6 +98,15 @@
   }
   .step-title { font-weight: 600; margin-top: 2px; }
   .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn {
+    font-size: .78rem; font-weight: 600; color: var(--muted); background: none;
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap;
+  }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .step-warn {
     font-size: .84rem; margin-top: 6px; padding: 6px 10px;
     background: #fdf1f1; color: #a33; border-radius: 8px;
@@ -153,6 +162,7 @@
   <div class="progress-row">
     <div class="bar"><div id="bar-fill"></div></div>
     <span class="progress-label" id="progress-label">0 of 11 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
     <button class="reset-btn" id="reset">Reset</button>
   </div>
 
@@ -191,42 +201,53 @@ const MEDIA = "media/crumble/";
 const STEPS = [
   { chapter: "Part 1 — The plan", file: "IMG_3316.MP4", t: 0, end: 16, num: "Overview",
     title: "The design brief",
+    brief: ["Fruit crumble from whatever's at home — big tin + ramekins"],
     detail: "A fruit crumble made from whatever you've got at home — one big tin, or little individual ones. This demo makes both at once." },
   { file: "IMG_3316.MP4", t: 16, end: 51, num: "Step 1",
     title: "Raid the pantry",
+    brief: ["Fruit, two sugars, flour, oats, nuts, butter, cinnamon, vanilla"],
     detail: "Gather your fruit (rhubarb, apples, pears — tinned fruit is fine), caster and raw sugar, flour, oats, nuts, butter, cinnamon and vanilla. Whatever you've got in the house can work — that's the brief." },
 
   { chapter: "Part 2 — The filling", file: "IMG_3320.MP4", t: 0, end: 17, num: "Step 2",
     title: "Start the filling on the stove",
+    brief: ["Rhubarb + chopped apples + sugar + splash of water", "Cook down gently"],
     detail: "Rhubarb, chopped apples and sugar into a saucepan with a splash of water. Onto the stove to cook down gently." },
   { file: "IMG_3321.MP4", t: 0, end: 37, num: "Step 3",
     title: "Cook down and add the flavours",
+    brief: ["Soft and thick? Add raspberries, cinnamon, vanilla", "Stir through"],
     detail: "When the fruit has softened to a nice thick consistency, stir in a few frozen raspberries, a shake of cinnamon, and a little vanilla. Mix through — that's the filling done." },
 
   { chapter: "Part 3 — The topping, two ways", file: "IMG_3322.MP4", t: 0, end: 23, num: "Step 4",
     title: "Set up the topping — two methods",
+    brief: ["Nuts, flour, raw sugar, oats, butter", "Half by hand, half in the processor"],
     detail: "Same ingredients, two techniques: by hand (the rub-in method) and in the food processor. Into each: nuts (pistachios here), flour, raw sugar, oats and butter." },
   { file: "IMG_3323.MP4", t: 0, end: 36, num: "Step 5",
     title: "The rub-in method (by hand)",
+    brief: ["Fingertips until it looks like breadcrumbs"],
     detail: "Work the butter in with your fingertips until the mix looks like breadcrumbs. Keep going until the butter has blended through all the dry ingredients.",
     warn: "Don't add too much butter — the topping stops being crumbly and won't crisp up." },
   { file: "IMG_3323.MP4", t: 36, end: 48, num: "Step 6",
     title: "The food-processor method",
+    brief: ["Nuts first, everything else in, blitz"],
     detail: "Same ingredients into the processor — nuts first, then everything else — and blitz until it comes together as a crumble." },
   { file: "IMG_3326.MP4", t: 0, end: 16, num: "Step 7",
     title: "Compare your two toppings",
+    brief: ["Hand version coarser — both bake the same"],
     detail: "Side by side they look slightly different — the hand-rubbed one is coarser — but once baked they come out much the same. Use whichever method you prefer." },
 
   { chapter: "Part 4 — Assemble and bake", file: "IMG_3326.MP4", t: 16, end: 59, num: "Step 8",
     title: "Fill the tins and top them",
+    brief: ["Filling into big tin + ramekins", "Crumble sprinkled loose — don't press"],
     detail: "Spoon the filling into the big tin and the little ones. Sprinkle the crumble mixture loosely over the top — keep it nice and crumbly, don't press it down." },
   { file: "IMG_3326.MP4", t: 59, end: 73, num: "Step 9",
     title: "Bake at 180°C for 20–30 minutes",
+    brief: ["180°C until golden and bubbling at the edges"],
     detail: "Into the oven at about 180°C until the topping is golden and the filling is bubbling at the edges.",
     warn: "Little ramekins are ready before a big tin — check the small ones early." },
 
   { chapter: "Part 5 — Serve", file: "IMG_3327.MP4", t: 0, end: 49, num: "Step 10",
     title: "Plate up and serve",
+    brief: ["Plate, maple syrup, icing sugar, ice cream"],
     detail: "Pull a little crumble out (the big one can have a few more minutes), tip it onto a plate, drizzle with a little maple syrup, dust with icing sugar, and add a scoop of vanilla ice cream.",
     photo: "IMG_3328.JPEG",
     photoCaption: "The finished plate — crumble, icing-sugar dusting, and ice cream on the side." },
@@ -252,7 +273,7 @@ STEPS.forEach((s, i) => {
     stepsEl.appendChild(ch);
   }
   const div = document.createElement("div");
-  div.className = "step";
+  div.className = "step" + (s.brief ? " has-brief" : "");
   div.id = "step-" + i;
   const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
   div.innerHTML = `
@@ -265,6 +286,7 @@ STEPS.forEach((s, i) => {
       </div>
       <div class="step-title">${s.title}</div>
       <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
       ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
       ${s.photo ? `<img class="step-photo" src="${MEDIA}${s.photo}" alt="" loading="lazy"><div class="photo-caption">📷 ${s.photoCaption || ""}</div>` : ""}
       <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
@@ -337,6 +359,19 @@ function render() {
   document.getElementById("progress-label").textContent =
     done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
 }
+
+// short & sharp mode — one preference shared across all guides on this device
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
 
 document.getElementById("reset").addEventListener("click", () => {
   ticks = []; flags = [];

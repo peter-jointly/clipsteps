@@ -93,6 +93,15 @@
   }
   .step-title { font-weight: 600; margin-top: 2px; }
   .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn {
+    font-size: .78rem; font-weight: 600; color: var(--muted); background: none;
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap;
+  }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .step-warn {
     font-size: .84rem; margin-top: 6px; padding: 6px 10px;
     background: #fdf1f1; color: #a33; border-radius: 8px;
@@ -150,6 +159,7 @@
   <div class="progress-row">
     <div class="bar"><div id="bar-fill"></div></div>
     <span class="progress-label" id="progress-label">0 of 10 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
     <button class="reset-btn" id="reset">Reset</button>
   </div>
 
@@ -188,40 +198,50 @@ const VIDEO_ID = "0eMiWAVb-aQ";
 const STEPS = [
   { t: 1,   end: 17,  num: "Overview",
     title: "What this guide teaches",
+    brief: ["The chain: mic → channel → gain → sends → faders → speakers"],
     detail: "How sound travels through the WING: mic → channel → gain → sends → faders → speakers. Learn this chain and the desk stops being scary — everything on the surface is just one of these pieces.",
     warn: "Skip past 0:17–0:48 of the video — that's the factory reset we never do (see the red box above)." },
   { t: 48,  end: 107, num: "Step 1",
     title: "How sound gets in: inputs feed channels",
+    brief: ["Every input feeds a numbered, named channel strip"],
     detail: "Every mic or instrument arrives at an input, and each input feeds a numbered channel — the strips with faders you see on the surface. The video shows this on the routing page purely so you understand the idea.",
     adapt: "On our desk each channel is already named on its little screen (BASS, KEYS, PREACH…) — you never need the routing page to know what's what." },
   { t: 119, end: 159, num: "Step 2",
     title: "Select a channel and check its gain",
+    brief: ["Home → select the channel", "Meter strong and steady, never in the red (~−18 dBFS)"],
     detail: "Press Home, select a channel, and the touchscreen shows its controls — gain is the input volume from the mic itself. Speak into the mic and watch the input meter: you want a strong, steady signal with peaks staying well out of the red (around −18 dBFS average is the usual digital target).",
     warn: "Clipping (hitting the red) distorts permanently — no fader can fix a clipped input. If a meter is slammed into the red, ease the gain down." },
   { t: 159, end: 187, num: "Step 3",
     title: "M1 — the invisible wire to the main speakers",
+    brief: ["Channel → M1 send → main mix (our MAIN FOH)"],
     detail: "Each channel has a send called M1, on by default, which feeds the main left/right mix. That's why raising a channel fader makes it louder in the room: channel → M1 → main outputs.",
     adapt: "On our desk the main mix is the fader labelled MAIN FOH. The STREAM output is a separate mix — a channel can be loud in the room but missing from the stream, and vice versa." },
   { t: 187, end: 208, num: "Step 4",
     title: "Fader order: main up first, then the channel",
+    brief: ["Main fader up, then channel fader", "Dead channel? Check both faders + both mutes"],
     detail: "To hear anything: main fader up to its normal position, then bring the channel fader up. If a channel seems dead, check this chain in order — channel fader, main fader, and the mute buttons on both." },
   { t: 208, end: 240, num: "Step 5",
     title: "The Bus Masters layer",
+    brief: ["Bus Master button = faders show bus levels", "Press again to get channels back"],
     detail: "The Bus Master button flips the fader bank to show the bus masters — the overall level of each monitor mix and effects bus. Same faders, different job; press it again to get back to channels.",
     warn: "If the faders suddenly 'aren't the channels anymore', you're probably on a different layer. Look at the layer buttons and go back — nothing is broken." },
   { t: 240, end: 262, num: "Step 6",
     title: "What the buses are for",
+    brief: ["1–8 monitors · 9–10 subgroups · 11–16 effects (our REVERB)"],
     detail: "Out of the box: buses 1–8 are monitor sends (what the musicians hear in their wedges/ears), 9–10 are subgroups, 11–16 are effects sends like reverb.",
     adapt: "That's why our desk has a REVERB group — vocals are sent to a reverb bus and that fader controls how much comes back. Pull it down and the vocals go dry." },
   { t: 445, end: 503, num: "Step 7",
     title: "Send a channel to a monitor mix",
+    brief: ["Home → channel → sends page", "Turn on their monitor bus, raise the send"],
     detail: "Home → select the channel → open its sends page → turn on the send for that monitor bus and raise its level. This is how you give the worship leader more of their own vocal without changing the room at all — sends are independent of the main fader.",
     adapt: "Each musician's 'can I have more X' request is exactly this operation: their monitor bus, the channel they want, raise the send." },
   { t: 503, end: 527, num: "Step 8",
     title: "Send it to the room",
+    brief: ["Master up, channel up", "Talk and watch the main meters move"],
     detail: "Master fader up, channel fader up, and the channel is in the house. Watch the main meters move as you talk — that's your confirmation the whole chain is working." },
   { t: 527, end: 580, num: "Step 9",
     title: "The desk is friendlier than it looks",
+    brief: ["Sunday job = faders, mutes, monitor sends — never setup"],
     detail: "As the video says: these desks are closer to show-ready than you might think — and ours IS show-ready, every Sunday. Your job on the day is faders, mutes and monitor sends, not configuration. (The video's middle section, 4:00–7:20, is physical output wiring — already done on ours, so this guide skips it.)" },
 ];
 
@@ -235,7 +255,7 @@ let player, ready = false;
 const stepsEl = document.getElementById("steps");
 STEPS.forEach((s, i) => {
   const div = document.createElement("div");
-  div.className = "step";
+  div.className = "step" + (s.brief ? " has-brief" : "");
   div.id = "step-" + i;
   const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
   div.innerHTML = `
@@ -248,6 +268,7 @@ STEPS.forEach((s, i) => {
       </div>
       <div class="step-title">${s.title}</div>
       <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
       ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
       ${s.adapt ? `<div class="step-adapt">🎚 Our desk: ${s.adapt}</div>` : ""}
       <div class="flag-note">🚩 Flagged as “doesn't match ours” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
@@ -305,6 +326,19 @@ function render() {
   document.getElementById("progress-label").textContent =
     done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
 }
+
+// short & sharp mode — one preference shared across all guides on this device
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
 
 document.getElementById("reset").addEventListener("click", () => {
   ticks = []; flags = [];

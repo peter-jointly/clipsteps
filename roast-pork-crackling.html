@@ -91,6 +91,15 @@
   }
   .step-title { font-weight: 600; margin-top: 2px; }
   .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn {
+    font-size: .78rem; font-weight: 600; color: var(--muted); background: none;
+    border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap;
+  }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
   .step-warn {
     font-size: .84rem; margin-top: 6px; padding: 6px 10px;
     background: #fdf1f1; color: #a33; border-radius: 8px;
@@ -144,6 +153,7 @@
   <div class="progress-row">
     <div class="bar"><div id="bar-fill"></div></div>
     <span class="progress-label" id="progress-label">0 of 10 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
     <button class="reset-btn" id="reset">Reset</button>
   </div>
 
@@ -181,38 +191,49 @@ const VIDEO_ID = "eKzQCUq4Xa0";
 const STEPS = [
   { t: 0,   end: 21,  num: "Overview",
     title: "What you're making",
+    brief: ["Pork joint + crackling: dry → oil → salt → hot, slow, hot"],
     detail: "A slow-roasted pork joint with crisp, blistered crackling — four ingredients, one tin, and a method that works every time." },
   { t: 21,  end: 40,  num: "Step 1",
     title: "Pat the joint dry",
+    brief: ["Kitchen paper: skin bone dry"],
     detail: "Dry the skin thoroughly with kitchen paper — dry skin is the foundation of good crackling. (This is also why choosing a joint with a good skin at the shop matters.)" },
   { t: 40,  end: 45,  num: "Step 2",
     title: "Oil the skin",
+    brief: ["Light coat of rapeseed oil"],
     detail: "Drizzle over a little rapeseed oil, ready to carry the salt and crisp the skin." },
   { t: 45,  end: 69,  num: "Step 3",
     title: "Season and rub in",
+    brief: ["Generous sea salt flakes, just a little pepper", "Rub in, pat extra salt onto the skin"],
     detail: "A generous pinch of sea salt flakes and a little pepper. Rub the oil and salt in, then pat extra salt onto the skin so it stays put. Wash your hands after.",
     warn: "Go easy on the pepper — it burns in a hot oven." },
   { t: 69,  end: 78,  num: "Step 4",
     title: "Blast it: 220°C fan for 20 minutes",
+    brief: ["220°C fan · 20 min · uncovered"],
     detail: "Straight into a very hot oven, uncovered, to get the crackling started." },
   { t: 78,  end: 93,  num: "Step 5",
     title: "Turn right down: 140°C fan for ~3 hours",
+    brief: ["140°C fan · ~3 h (adjust for size)", "Walk away"],
     detail: "Drop the oven to 140°C fan and slow-roast. About 3 hours suits a joint this size — adjust for yours. Walk away; this part looks after itself." },
   { t: 93,  end: 100, num: "Step 6",
     title: "Check the internal temperature",
+    brief: ["Probe the centre: over 63°C (video reads 66°C)"],
     detail: "Probe the centre with a meat thermometer: you're looking for mid-60s °C (the video reads 66°C — anything over 63°C is safe and still juicy)." },
   { t: 100, end: 145, num: "Step 7",
     title: "Crackling finish: back up to 220°C for 20 minutes",
+    brief: ["Brush on oil + more salt", "220°C fan · final 20 min"],
     detail: "Brush a little more oil over the skin, scatter on more salt, and return to a 220°C fan oven for a final 20 minutes to blister the crackling." },
   { t: 145, end: 157, num: "Step 8",
     title: "Rest for 30 minutes",
+    brief: ["Out of the tin, rest 30 min, uncovered"],
     detail: "Lift the joint out of the tin and rest it, uncovered so the crackling stays crisp.",
     warn: "Don't skip the rest — it's what keeps the meat moist when you carve. Resist temptation!" },
   { t: 157, end: 246, num: "Step 9",
     title: "Untie, remove crackling, trim the fat",
+    brief: ["Ties off, crackling off in a piece, trim the fat"],
     detail: "Snip off the string ties, lift the crackling away in a piece, and trim off the excess fat underneath it. Break the crackling up and have a taste — you've earned it." },
   { t: 246, end: 300, num: "Step 10",
     title: "Carve and serve",
+    brief: ["Slice and serve — crispy edges, juicy middle"],
     detail: "Slice the joint — crispy edges from the hot blasts, succulent slow-cooked meat inside. Perfect Sunday dinner." },
 ];
 
@@ -226,7 +247,7 @@ let player, ready = false;
 const stepsEl = document.getElementById("steps");
 STEPS.forEach((s, i) => {
   const div = document.createElement("div");
-  div.className = "step";
+  div.className = "step" + (s.brief ? " has-brief" : "");
   div.id = "step-" + i;
   const mins = Math.floor(s.t / 60), secs = String(Math.floor(s.t % 60)).padStart(2, "0");
   div.innerHTML = `
@@ -239,6 +260,7 @@ STEPS.forEach((s, i) => {
       </div>
       <div class="step-title">${s.title}</div>
       <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
       ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
       <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt: a better-matching clip, corrected text, or a check against the manual. Tap the flag again to undo.</div>
     </div>`;
@@ -295,6 +317,19 @@ function render() {
   document.getElementById("progress-label").textContent =
     done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
 }
+
+// short & sharp mode — one preference shared across all guides on this device
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
 
 document.getElementById("reset").addEventListener("click", () => {
   ticks = [];
