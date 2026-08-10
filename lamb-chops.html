@@ -154,6 +154,23 @@
       width: 100%; max-width: 880px; margin-left: auto; margin-right: auto;
     }
   }
+
+  /* Print: paper cheat sheet - steps only, empty tick boxes, brief bullets */
+  @media print {
+    body { background: #fff; }
+    .video-shell, .byline, .progress-row, .flag-btn, .flag-note, .footer-note, .quick-btn { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; display: block; }
+    h1 { font-size: 16pt; margin-bottom: 8px; }
+    .panel, .step { break-inside: avoid; box-shadow: none; }
+    .step { border: 1px solid #999; padding: 8px 10px; margin-bottom: 6px; }
+    .step.done { opacity: 1; }
+    .step.done .step-title { text-decoration: none; color: inherit; }
+    .tick { background: #fff !important; border: 2px solid #555 !important; border-radius: 4px; color: transparent !important; width: 22px; height: 22px; }
+    .timestamp { display: none !important; }
+    .step-brief { display: block !important; }
+    .has-brief .step-detail { display: none !important; }
+    .step-photo { max-width: 60%; }
+  }
 </style>
 </head>
 <body>
@@ -183,6 +200,7 @@
     <div class="bar"><div id="bar-fill"></div></div>
     <span class="progress-label" id="progress-label">0 of 9 done</span>
     <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
+    <button class="reset-btn" id="printbtn" title="Print a paper cheat sheet">🖨</button>
     <button class="reset-btn" id="reset">Reset</button>
   </div>
 
@@ -386,6 +404,8 @@ document.getElementById("mode").addEventListener("click", () => {
   applyMode();
 });
 applyMode();
+
+document.getElementById("printbtn").addEventListener("click", () => window.print());
 
 document.getElementById("reset").addEventListener("click", () => {
   ticks = []; flags = [];
