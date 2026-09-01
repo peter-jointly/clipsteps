@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corn & Zucchini Fritters — Step-by-Step Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #7a7a12;
+    --accent-soft: #f5f5dc;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+    --adapt: #275e9e;
+    --adapt-soft: #e5eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+  .video-shell { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 10px 0 8px; }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18); background: #000;
+  }
+  .video-frame iframe, .video-frame #player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+  .serves { margin-top: 6px; }
+  .serves span { display: inline-block; background: #eaf4ec; color: #1f6b33; font-weight: 700; font-size: .78rem; border-radius: 6px; padding: 1px 8px; margin-right: 4px; }
+  .progress-row { display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px; }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn { font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+  .reset-btn:hover { color: var(--ink); }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+  .step.textonly { cursor: default; }
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff; transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp { font-size: .75rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 5px; padding: 1px 7px; }
+  .nochip { font-size: .75rem; font-weight: 600; color: var(--muted); background: var(--border); border-radius: 5px; padding: 1px 7px; }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn { font-size: .78rem; font-weight: 600; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap; }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-warn { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step-adapt { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: var(--adapt-soft); color: var(--adapt); border-radius: 8px; }
+  .quick-btn { font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent); border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer; }
+  .quick-btn:hover { opacity: .85; }
+  .flag-btn { margin-left: auto; flex: none; background: none; border: none; cursor: pointer; font-size: .9rem; opacity: .35; padding: 2px 4px; }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note { display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step.flagged .flag-note { display: block; }
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; }
+    .video-shell { display: flex; flex-direction: column; align-items: center; }
+    .video-frame { width: min(100%, 97vh, 960px); padding-top: 0; aspect-ratio: 16 / 9; }
+    .titleblock, .progress-row, .panel, #steps, .footer-note { width: 100%; max-width: 880px; margin-left: auto; margin-right: auto; }
+  }
+  @media print {
+    body { background: #fff; }
+    .video-shell, .byline, .progress-row, .flag-btn, .flag-note, .footer-note, .quick-btn { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; display: block; }
+    h1 { font-size: 16pt; margin-bottom: 8px; }
+    .panel, .step { break-inside: avoid; box-shadow: none; }
+    .step { border: 1px solid #999; padding: 8px 10px; margin-bottom: 6px; }
+    .step.done { opacity: 1; }
+    .step.done .step-title { text-decoration: none; color: inherit; }
+    .tick { background: #fff !important; border: 2px solid #555 !important; border-radius: 4px; color: transparent !important; width: 22px; height: 22px; }
+    .timestamp, .nochip { display: none !important; }
+    .step-brief { display: block !important; }
+    .has-brief .step-detail { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the ClipSteps website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=gYN1-YSxACM" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Corn &amp; Zucchini Fritters</h1>
+    <div class="byline">Guide generated from: <em>“Corn &amp; Zucchini Fritters”</em> — Todd's Kitchen (Australia) · 5 min 44 s, cooked by Todd's wife in their home kitchen. Golden pan fritters that hide two veg in plain sight — brilliant hot for dinner, brilliant cold in tomorrow's lunchbox. Tap any step to jump the video there; tap again to pause. Double-tap left/right half of a step to skip ±5 seconds.</div>
+    <div class="serves"><span>🥕 2 veg</span><span>🌾 ½ grain</span><span>lunchbox-friendly cold</span></div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 10 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
+    <button class="reset-btn" id="printbtn" title="Print a paper cheat sheet">🖨</button>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients</h2>
+    <ul>
+      <li>2 eggs · 1 cup self-raising flour · ½ cup milk</li>
+      <li>2 cups corn kernels (canned, frozen, or fresh off the cob)</li>
+      <li>~300 g zucchini, grated and squeezed dry</li>
+      <li>½ cup grated cheese (cheddar or whatever's open)</li>
+      <li>2 tbsp chopped chives · 1 tbsp lemon zest</li>
+      <li>Olive oil for the pan · sour cream to serve</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment</h2>
+    <ul>
+      <li>One mixing bowl, a whisk, a frying pan and a spatula — that's it</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=gYN1-YSxACM" target="_blank">Todd's Kitchen — youtube.com/watch?v=gYN1-YSxACM</a>
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "gYN1-YSxACM";
+
+const STEPS = [
+  { t: 0, end: 22, num: "Overview",
+    title: "A home-kitchen classic",
+    detail: "Corn and zucchini fritters from an Australian home kitchen — a simple batter, two cups of veg folded through, and a hot pan. Make a double batch: they're just as good cold in a lunchbox.",
+    brief: ["Batter + 2 cups of veg + hot pan", "Double batch = tomorrow's lunchbox"] },
+  { t: 22, end: 85, q: 26, num: "Step 1",
+    title: "Get everything measured",
+    detail: "Half a cup of milk, two eggs, a cup of self-raising flour, two cups of corn kernels (straight from the can is fine — fresh works too), about 300 g of grated zucchini with the moisture drained off, half a cup of grated cheese, two tablespoons of chopped chives and a tablespoon of lemon zest.",
+    brief: ["Milk, eggs, SR flour", "Corn + grated zucchini (drained!)", "Cheese, chives, lemon zest"] },
+  { t: 85, end: 107, q: 88, num: "Step 2",
+    title: "Eggs and flour into the bowl",
+    detail: "Crack the two eggs in (no shells — she's honest that she's no expert either) and add the flour.",
+    brief: ["2 eggs + 1 cup SR flour"] },
+  { t: 107, end: 129, num: "Step 3",
+    title: "Milk in, whisk smooth",
+    detail: "Add the half cup of milk and whisk until the batter is smooth — trying not to send flour everywhere.",
+    brief: ["½ cup milk", "Whisk until smooth"] },
+  { t: 129, end: 175, q: 132, num: "Step 4",
+    title: "Fold in the good stuff",
+    detail: "Corn, zucchini, lemon zest, cheese and chives — all into the batter.",
+    brief: ["Corn + zucchini + zest", "Cheese + chives"],
+    warn: "Squeeze the grated zucchini hard in your fist (or a clean tea towel) before it goes in. Wet zucchini = soggy fritters that won't crisp." },
+  { t: 175, end: 190, num: "Step 5",
+    title: "Combine thoroughly",
+    detail: "Mix until everything's evenly distributed — every fritter should get its share of corn.",
+    brief: ["Mix until even"] },
+  { t: 190, end: 195, num: "Step 6",
+    title: "Pan on medium, just enough oil",
+    detail: "Medium heat with a sprinkle of olive oil — just enough to cover the bottom of the pan, not a deep-fry.",
+    brief: ["Medium heat", "Thin film of oil"] },
+  { t: 195, end: 215, q: 198, num: "Step 7",
+    title: "Spoon them in — listen for the sizzle",
+    detail: "A large spoonful per fritter. You should hear the sizzle as it lands — that's how you know the pan's ready. Two at a time in a small pan; more if yours is bigger.",
+    brief: ["Big spoonful each", "Sizzle on landing = pan's ready", "Don't crowd the pan"] },
+  { t: 215, end: 260, q: 240, num: "Step 8",
+    title: "3–5 minutes a side — don't rush the flip",
+    detail: "Give them three to five minutes until golden brown underneath. The tell: if you go to move one and it's still a bit runny, it's not ready — leave it a little longer. Flip and match the colour on side two, cooked through in the middle.",
+    brief: ["3–5 min a side to golden", "Runny when nudged = not ready", "Flip, match the colour"] },
+  { t: 260, end: 330, q: 300, num: "Step 9",
+    title: "Serve with sour cream",
+    detail: "Stack them up with a dollop of sour cream — her tip for next time: crush a little garlic into the sour cream. Todd's verdict from the taste test: outstanding.",
+    brief: ["Sour cream on the side", "Garlic through the sour cream = upgrade"],
+    adapt: "Box flex: the 300 g of zucchini is the recipe's engine, but grated carrot or corn cut fresh from box cobs slot straight in. Cold ones go in the lunchbox with a cherry-tomato handful." },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step" + (s.brief ? " has-brief" : "") + (s.t === null ? " textonly" : "");
+  div.id = "step-" + i;
+  const stamp = s.t === null
+    ? `<span class="nochip">📝 not in clip</span>`
+    : `<span class="timestamp">▶ ${Math.floor(s.t / 60)}:${String(Math.floor(s.t % 60)).padStart(2, "0")}</span>`;
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        ${stamp}
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.adapt ? `<div class="step-adapt">🥕 ${s.adapt}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => { e.stopPropagation(); toggle(i); });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready || s.t === null) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
+
+document.getElementById("printbtn").addEventListener("click", () => window.print());
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    if (s.t === null) return;
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>

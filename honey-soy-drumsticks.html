@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honey Soy Chicken Drumsticks — Step-by-Step Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #8a5a00;
+    --accent-soft: #f8f0dc;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+    --adapt: #275e9e;
+    --adapt-soft: #e5eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+  .video-shell { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 10px 0 8px; }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18); background: #000;
+  }
+  .video-frame iframe, .video-frame #player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+  .serves { margin-top: 6px; }
+  .serves span { display: inline-block; background: #eaf4ec; color: #1f6b33; font-weight: 700; font-size: .78rem; border-radius: 6px; padding: 1px 8px; margin-right: 4px; }
+  .progress-row { display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px; }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn { font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+  .reset-btn:hover { color: var(--ink); }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+  .step.textonly { cursor: default; }
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff; transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp { font-size: .75rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 5px; padding: 1px 7px; }
+  .nochip { font-size: .75rem; font-weight: 600; color: var(--muted); background: var(--border); border-radius: 5px; padding: 1px 7px; }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn { font-size: .78rem; font-weight: 600; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap; }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-warn { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step-adapt { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: var(--adapt-soft); color: var(--adapt); border-radius: 8px; }
+  .quick-btn { font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent); border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer; }
+  .quick-btn:hover { opacity: .85; }
+  .flag-btn { margin-left: auto; flex: none; background: none; border: none; cursor: pointer; font-size: .9rem; opacity: .35; padding: 2px 4px; }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note { display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step.flagged .flag-note { display: block; }
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; }
+    .video-shell { display: flex; flex-direction: column; align-items: center; }
+    .video-frame { width: min(100%, 97vh, 960px); padding-top: 0; aspect-ratio: 16 / 9; }
+    .titleblock, .progress-row, .panel, #steps, .footer-note { width: 100%; max-width: 880px; margin-left: auto; margin-right: auto; }
+  }
+  @media print {
+    body { background: #fff; }
+    .video-shell, .byline, .progress-row, .flag-btn, .flag-note, .footer-note, .quick-btn { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; display: block; }
+    h1 { font-size: 16pt; margin-bottom: 8px; }
+    .panel, .step { break-inside: avoid; box-shadow: none; }
+    .step { border: 1px solid #999; padding: 8px 10px; margin-bottom: 6px; }
+    .step.done { opacity: 1; }
+    .step.done .step-title { text-decoration: none; color: inherit; }
+    .tick { background: #fff !important; border: 2px solid #555 !important; border-radius: 4px; color: transparent !important; width: 22px; height: 22px; }
+    .timestamp, .nochip { display: none !important; }
+    .step-brief { display: block !important; }
+    .has-brief .step-detail { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the ClipSteps website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=2qW5TQerhGw" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Honey Soy Drumsticks on a Roast-Veg Tray</h1>
+    <div class="byline">Guide generated from: <em>“How to Make Honey Soy Chicken Drumsticks”</em> — Greg's Kitchen (Australia) · 10 min 11 s. Six-ingredient marinade, one oven hour, maximum sticky. We add a tray of box veg to the same oven. Tap any step to jump the video there; tap again to pause. Double-tap left/right half of a step to skip ±5 seconds.</div>
+    <div class="serves"><span>🥕 2 veg</span><span>🍗 1 protein</span></div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 13 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
+    <button class="reset-btn" id="printbtn" title="Print a paper cheat sheet">🖨</button>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients</h2>
+    <ul>
+      <li><strong>Chicken:</strong> drumsticks, skin on</li>
+      <li><strong>Marinade:</strong> a slick of olive oil + 1 tbsp sesame oil, 5 tbsp honey, ¼ cup soy sauce, 3 cloves garlic, ½ tsp ground ginger (or 1 tsp fresh), cracked pepper</li>
+      <li><strong>Finish:</strong> a knob of butter</li>
+      <li><strong>Our tray:</strong> box roast veg — potato, pumpkin, carrot, onion wedges — plus greens to serve</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment</h2>
+    <ul>
+      <li>An oven-proof baking dish with a lid (or plastic wrap for the fridge)</li>
+      <li>A second oven tray for the veg</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=2qW5TQerhGw" target="_blank">Greg's Kitchen — youtube.com/watch?v=2qW5TQerhGw</a>
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "2qW5TQerhGw";
+
+const STEPS = [
+  { t: 0, end: 43, num: "Overview",
+    title: "The plan",
+    detail: "A six-ingredient honey soy marinade mixed straight in the baking dish, an hour (or overnight) in the fridge, then an hour in the oven with one turn-and-baste. Hands-on time is about ten minutes.",
+    brief: ["Marinade in the dish", "1 hr fridge, 1 hr oven", "Turn + baste at half time"] },
+  { t: 43, end: 86, q: 63, num: "Step 1",
+    title: "Oils into the dish first",
+    detail: "A slick of olive oil plus about a tablespoon of sesame oil straight into the baking dish. Oil goes first so the honey coming next can't stick to the bottom.",
+    brief: ["Olive oil + 1 tbsp sesame oil", "Oil FIRST so honey won't stick"] },
+  { t: 86, end: 118, q: 88, num: "Step 2",
+    title: "Honey and soy",
+    detail: "Five tablespoons of honey on top of the oil, then a quarter of a cup of soy sauce — use one you actually like, it's half the flavour.",
+    brief: ["5 tbsp honey", "¼ cup soy sauce"] },
+  { t: 118, end: 140, q: 121, num: "Step 3",
+    title: "Three cloves of garlic",
+    detail: "Smash the cloves hard to pop the skins off, then crush them straight in.",
+    brief: ["3 cloves, smashed and crushed in"] },
+  { t: 140, end: 186, q: 146, num: "Step 4",
+    title: "Ginger and pepper",
+    detail: "Half a teaspoon of ground ginger (a teaspoon of fresh if you have it) and a good grind of pepper.",
+    brief: ["½ tsp ground ginger (or 1 tsp fresh)", "Good grind of pepper"] },
+  { t: 186, end: 203, num: "Step 5",
+    title: "Mix it with a fork",
+    detail: "Whisk it together right there in the dish — a fork does the job fine.",
+    brief: ["Fork-whisk in the dish"] },
+  { t: 203, end: 240, q: 210, num: "Step 6",
+    title: "Drumsticks in, coat everything",
+    detail: "Drumsticks in (skin on — lay them alternating ends so more fit), and turn them through the marinade until every piece is coated.",
+    brief: ["Drumsticks in, skin on", "Alternate ends to fit more", "Coat every piece"] },
+  { t: 240, end: 264, q: 243, num: "Step 7",
+    title: "Marinate — 1 hour, or overnight",
+    detail: "Cover with the lid or plastic wrap and into the fridge for about an hour. If you want this recipe to really pop, leave it overnight.",
+    brief: ["Cover, fridge 1 hr", "Overnight = better"],
+    warn: "Wash hands and anything that touched raw chicken before you touch anything else." },
+  { t: null, num: "Step 8",
+    title: "Our tray of box veg",
+    detail: "The oven's about to run for an hour — don't waste it. Chop potato, pumpkin, carrot and onion wedges from the box, toss with olive oil and salt on a second tray, and they'll roast below the chicken in the same oven, done at the same time.",
+    brief: ["Second tray: box veg in oil + salt", "Same oven, same hour"],
+    adapt: "This step isn't in the clip — it's the Jointly version, and it's most of the plate's 2 veg serves. Any roastable box veg works." },
+  { t: 264, end: 304, q: 283, num: "Step 9",
+    title: "Re-baste and preheat to 190 °C",
+    detail: "Out of the fridge, spoon the sauce back over the chicken so it's nicely coated, and preheat the oven to 190 °C (375 °F).",
+    brief: ["Spoon sauce back over", "Oven to 190 °C"] },
+  { t: 304, end: 390, q: 325, num: "Step 10",
+    title: "One hour in the oven, turn at half time",
+    detail: "Chicken near the top, veg tray underneath, one hour total. At the 30-minute mark, turn each drumstick and spoon the juices back over — that's where the sticky glaze comes from. Turn the veg while you're there.",
+    brief: ["190 °C, 1 hour total", "30 min: turn + baste chicken", "Turn the veg too"] },
+  { t: 390, end: 432, q: 395, num: "Step 11",
+    title: "Butter into the juices",
+    detail: "Straight out of the oven, melt a knob of butter into the hot pan juices and pour it back over the chicken to refresh the glaze.",
+    brief: ["Knob of butter into hot juices", "Pour back over"],
+    warn: "Check the chicken is cooked through at the bone — juices clear, no pink. Drumsticks near the bone need the full hour." },
+  { t: 432, end: 490, q: 437, num: "Step 12",
+    title: "Plate it up",
+    detail: "Mash or the roast veg down first, drumsticks on top, and spoon that honey-soy pan sauce over everything — it's as good on the veg as on the chicken.",
+    brief: ["Veg/mash → drumsticks → pan sauce over everything"] },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step" + (s.brief ? " has-brief" : "") + (s.t === null ? " textonly" : "");
+  div.id = "step-" + i;
+  const stamp = s.t === null
+    ? `<span class="nochip">📝 not in clip</span>`
+    : `<span class="timestamp">▶ ${Math.floor(s.t / 60)}:${String(Math.floor(s.t % 60)).padStart(2, "0")}</span>`;
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        ${stamp}
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.adapt ? `<div class="step-adapt">🥕 ${s.adapt}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => { e.stopPropagation(); toggle(i); });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready || s.t === null) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
+
+document.getElementById("printbtn").addEventListener("click", () => window.print());
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    if (s.t === null) return;
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
