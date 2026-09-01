@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Week of Lunchboxes — Step-by-Step Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #1f6b8a;
+    --accent-soft: #e2eef4;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+    --adapt: #275e9e;
+    --adapt-soft: #e5eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+  .video-shell { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 10px 0 8px; }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18); background: #000;
+  }
+  .video-frame iframe, .video-frame #player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+  .serves { margin-top: 6px; }
+  .serves span { display: inline-block; background: #eaf4ec; color: #1f6b33; font-weight: 700; font-size: .78rem; border-radius: 6px; padding: 1px 8px; margin-right: 4px; }
+  .progress-row { display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px; }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn { font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+  .reset-btn:hover { color: var(--ink); }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+  .step.textonly { cursor: default; }
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff; transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp { font-size: .75rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 5px; padding: 1px 7px; }
+  .nochip { font-size: .75rem; font-weight: 600; color: var(--muted); background: var(--border); border-radius: 5px; padding: 1px 7px; }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn { font-size: .78rem; font-weight: 600; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap; }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-warn { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step-adapt { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: var(--adapt-soft); color: var(--adapt); border-radius: 8px; }
+  .quick-btn { font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent); border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer; }
+  .quick-btn:hover { opacity: .85; }
+  .flag-btn { margin-left: auto; flex: none; background: none; border: none; cursor: pointer; font-size: .9rem; opacity: .35; padding: 2px 4px; }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note { display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step.flagged .flag-note { display: block; }
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; }
+    .video-shell { display: flex; flex-direction: column; align-items: center; }
+    .video-frame { width: min(100%, 97vh, 960px); padding-top: 0; aspect-ratio: 16 / 9; }
+    .titleblock, .progress-row, .panel, #steps, .footer-note { width: 100%; max-width: 880px; margin-left: auto; margin-right: auto; }
+  }
+  @media print {
+    body { background: #fff; }
+    .video-shell, .byline, .progress-row, .flag-btn, .flag-note, .footer-note, .quick-btn { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; display: block; }
+    h1 { font-size: 16pt; margin-bottom: 8px; }
+    .panel, .step { break-inside: avoid; box-shadow: none; }
+    .step { border: 1px solid #999; padding: 8px 10px; margin-bottom: 6px; }
+    .step.done { opacity: 1; }
+    .step.done .step-title { text-decoration: none; color: inherit; }
+    .tick { background: #fff !important; border: 2px solid #555 !important; border-radius: 4px; color: transparent !important; width: 22px; height: 22px; }
+    .timestamp, .nochip { display: none !important; }
+    .step-brief { display: block !important; }
+    .has-brief .step-detail { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="titleblock">
+    <h1>A Week of Lunchboxes from the Box</h1>
+    <div class="byline">A Jointly original: five school lunchboxes from one Sunday bake and whatever's in this week's box. Australian school rules baked in (nut-free, ice-brick weather, no lolly parade). Tick each day off as the week goes — each day links to the recipe guide that makes its star piece.</div>
+    <div class="serves"><span>🥕 veg + 🍎 fruit in every box, every day</span><span>nut-free by design</span></div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 9 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
+    <button class="reset-btn" id="printbtn" title="Print a paper cheat sheet">🖨</button>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🧺 The formula (every box, every day)</h2>
+    <ul>
+      <li><strong>1 main</strong> — the star piece, usually from Sunday's bake</li>
+      <li><strong>1 fruit</strong> — whatever the box brought, cut so small hands can eat it</li>
+      <li><strong>1 crunch veg</strong> — sticks, rounds or little tomatoes</li>
+      <li><strong>1 extra</strong> — cheese, yoghurt, crackers, popcorn… Friday's extra is the treat</li>
+      <li>Water bottle always · <strong>no nuts</strong> (school rule) · ice brick in warm weather</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Your ticks are saved on this device. A Jointly original — built from this site's own recipe guides.
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "lunchbox-week";
+
+const STEPS = [
+  { t: null, num: "How it works",
+    title: "One Sunday bake runs the whole week",
+    detail: "Pick two batch recipes from this site on Sunday — one savoury, one sweet-ish — and the week's mains are done. The best rotation: <a href='savoury-muffins.html'>savoury muffins</a>, <a href='ham-cheese-scrolls.html'>ham &amp; cheese scrolls</a>, <a href='mini-frittatas.html'>mini frittatas</a>, <a href='corn-zucchini-fritters.html'>corn &amp; zucchini fritters</a> (dinner one night, lunchbox next day) and <a href='banana-bread.html'>banana bread</a>. Everything freezes.",
+    brief: ["Sunday: bake 1 savoury + 1 sweet batch", "Freeze what Monday doesn't need"] },
+  { t: null, num: "Sunday",
+    title: "The bake (about an hour, kids can help)",
+    detail: "One batch of a savoury main and one banana bread (or the sweet half stays fruit-only — that's fine too). Cool everything COMPLETELY, then freeze in pairs so each morning you grab one bag.",
+    brief: ["Bake savoury batch + banana bread", "Cool fully, freeze in day-pairs"],
+    warn: "Warm baking sealed in bags goes soggy and spoils faster — full cool-down first, every time." },
+  { t: null, num: "Monday",
+    title: "Muffin day",
+    detail: "A <a href='savoury-muffins.html'>savoury muffin</a> · mandarin segments or whatever fruit the box brought · carrot sticks with a smear of hummus in the bottom of the cup (the hummus-under-the-sticks trick means no extra container) · a yoghurt.",
+    brief: ["Savoury muffin", "Box fruit + carrot sticks in hummus", "Yoghurt"] },
+  { t: null, num: "Tuesday",
+    title: "Scroll day — packed frozen",
+    detail: "A <a href='ham-cheese-scrolls.html'>ham &amp; cheese scroll</a> straight from the freezer at 7am — it defrosts by little lunch and keeps the box cool on the way · apple slices (squeeze of lemon stops the browning) · cucumber rounds · cheese cubes.",
+    brief: ["Scroll packed FROZEN at 7am", "Apple slices + lemon squeeze", "Cucumber rounds, cheese cubes"] },
+  { t: null, num: "Wednesday",
+    title: "Frittata day",
+    detail: "A <a href='mini-frittatas.html'>mini frittata</a> or two · a banana (or the week's sturdy fruit) · snow peas or beans straight from the box — most kids eat them like chips · plain crackers.",
+    brief: ["Mini frittatas", "Banana + raw snow peas/beans", "Crackers"] },
+  { t: null, num: "Thursday",
+    title: "Fritter day (last night's dinner works twice)",
+    detail: "Cold <a href='corn-zucchini-fritters.html'>corn &amp; zucchini fritters</a> from Wednesday's dinner — cook the double batch on purpose · cherry tomatoes · grapes or box fruit · plain popcorn.",
+    brief: ["Cold fritters from last night's dinner", "Cherry toms + grapes", "Popcorn"] },
+  { t: null, num: "Friday",
+    title: "Their pick + the treat",
+    detail: "The kids assemble their own: a sandwich or wrap they choose and help make · box fruit · capsicum strips · and the week's treat — a slice of <a href='banana-bread.html'>banana bread</a> or an <a href='anzac-biscuits.html'>Anzac biscuit</a>. Treats on Friday aren't a failure; they're the plan.",
+    brief: ["They build their own main", "Box fruit + capsicum strips", "The planned treat — banana bread or an Anzac"] },
+  { t: null, num: "The escape hatch",
+    title: "When the week falls apart",
+    detail: "Sick kid, mad morning, empty freezer — it happens. The fall-back box: cheese and crackers, a boiled egg, any fruit, any crunch veg, done in 4 minutes. One chaotic day changes nothing about the week.",
+    brief: ["Fallback: cheese + crackers + egg + fruit + veg", "4 minutes, zero guilt"] },
+  { t: null, num: "The quiet win",
+    title: "What this week actually adds up to",
+    detail: "Five days of this formula lands roughly 5 veg serves and 5 fruit serves per child before dinner even starts — from one bake and a fruit bowl. That's the national vegetable gap closing at little lunch.",
+    brief: ["~5 veg + 5 fruit serves before dinners count", "One bake did that"] },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player = null, ready = false;
+
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step" + (s.brief ? " has-brief" : "") + (s.t === null ? " textonly" : "");
+  div.id = "step-" + i;
+  const stamp = s.t === null
+    ? `<span class="nochip">📝 not in clip</span>`
+    : `<span class="timestamp">▶ ${Math.floor(s.t / 60)}:${String(Math.floor(s.t % 60)).padStart(2, "0")}</span>`;
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        ${stamp}
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.adapt ? `<div class="step-adapt">🥕 ${s.adapt}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => { e.stopPropagation(); toggle(i); });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready || s.t === null) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
+
+document.getElementById("printbtn").addEventListener("click", () => window.print());
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+
+render();
+</script>
+</body>
+</html>
