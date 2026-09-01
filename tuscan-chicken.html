@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tuscan Chicken — Step-by-Step Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #a3421e;
+    --accent-soft: #f9e7dd;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+    --adapt: #275e9e;
+    --adapt-soft: #e5eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+  .video-shell { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 10px 0 8px; }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18); background: #000;
+  }
+  .video-frame iframe, .video-frame #player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+  .serves { margin-top: 6px; }
+  .serves span { display: inline-block; background: #eaf4ec; color: #1f6b33; font-weight: 700; font-size: .78rem; border-radius: 6px; padding: 1px 8px; margin-right: 4px; }
+  .progress-row { display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px; }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn { font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+  .reset-btn:hover { color: var(--ink); }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+  .step.textonly { cursor: default; }
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff; transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp { font-size: .75rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 5px; padding: 1px 7px; }
+  .nochip { font-size: .75rem; font-weight: 600; color: var(--muted); background: var(--border); border-radius: 5px; padding: 1px 7px; }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn { font-size: .78rem; font-weight: 600; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap; }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-warn { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step-adapt { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: var(--adapt-soft); color: var(--adapt); border-radius: 8px; }
+  .quick-btn { font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent); border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer; }
+  .quick-btn:hover { opacity: .85; }
+  .flag-btn { margin-left: auto; flex: none; background: none; border: none; cursor: pointer; font-size: .9rem; opacity: .35; padding: 2px 4px; }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note { display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step.flagged .flag-note { display: block; }
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; }
+    .video-shell { display: flex; flex-direction: column; align-items: center; }
+    .video-frame { width: min(100%, 97vh, 960px); padding-top: 0; aspect-ratio: 16 / 9; }
+    .titleblock, .progress-row, .panel, #steps, .footer-note { width: 100%; max-width: 880px; margin-left: auto; margin-right: auto; }
+  }
+  @media print {
+    body { background: #fff; }
+    .video-shell, .byline, .progress-row, .flag-btn, .flag-note, .footer-note, .quick-btn { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; display: block; }
+    h1 { font-size: 16pt; margin-bottom: 8px; }
+    .panel, .step { break-inside: avoid; box-shadow: none; }
+    .step { border: 1px solid #999; padding: 8px 10px; margin-bottom: 6px; }
+    .step.done { opacity: 1; }
+    .step.done .step-title { text-decoration: none; color: inherit; }
+    .tick { background: #fff !important; border: 2px solid #555 !important; border-radius: 4px; color: transparent !important; width: 22px; height: 22px; }
+    .timestamp, .nochip { display: none !important; }
+    .step-brief { display: block !important; }
+    .has-brief .step-detail { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the ClipSteps website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=SPum_xK5618" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Tuscan Chicken in Sun-Dried Tomato Cream</h1>
+    <div class="byline">Guide generated from: <em>“Tuscan Chicken | The Ultimate Chicken Dinner?”</em> — Kitchen Sanctuary · 4 min 10 s · 6.9M views. Golden crusted chicken in a rich sun-dried tomato cream with spinach folded through — restaurant date-night at the kitchen table. Tap any step to jump the video there; tap again to pause. Double-tap left/right half of a step to skip ±5 seconds.</div>
+    <div class="serves"><span>🥕 1½ veg</span><span>🍗 1 protein</span><span>date-night for two</span></div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 11 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
+    <button class="reset-btn" id="printbtn" title="Print a paper cheat sheet">🖨</button>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients</h2>
+    <ul>
+      <li><strong>Chicken:</strong> chicken breasts · 1 egg · 3 tbsp plain flour · ¼ tsp each salt + garlic salt · ½ tsp each pepper, oregano, thyme, paprika · olive oil</li>
+      <li><strong>Sauce:</strong> 1 onion · 2 cloves garlic · ½ tsp oregano · 1 tsp paprika · 160 g (1 cup) sun-dried tomatoes · 1 red capsicum · 1 tbsp tomato paste · 90 ml white wine · 240 ml chicken stock · 90 ml cream · 50 g parmesan · baby spinach (we double it — 2 big handfuls each)</li>
+      <li>Fresh parsley · potatoes, pasta or crusty bread to serve</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment</h2>
+    <ul>
+      <li>One large frying pan (chicken, then sauce in the same pan) + an oven tray</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=SPum_xK5618" target="_blank">Kitchen Sanctuary — youtube.com/watch?v=SPum_xK5618</a>
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "SPum_xK5618";
+
+const STEPS = [
+  { t: 0, end: 20, num: "Overview",
+    title: "The ultimate chicken dinner?",
+    detail: "Crusted golden chicken finished in the oven while a sun-dried tomato cream sauce comes together in the same pan — then everything reunites. Rich, creamy, moreish.",
+    brief: ["Crust the chicken, oven finishes it", "Sauce in the same pan, reunite at the end"] },
+  { t: 20, end: 41, q: 26, num: "Step 1",
+    title: "Oven on, egg whisked",
+    detail: "Preheat the oven to 160 °C. Whisk a large egg in a shallow bowl — that's coat number one.",
+    brief: ["Oven 160 °C", "1 egg whisked in a shallow bowl"] },
+  { t: 41, end: 62, q: 43, num: "Step 2",
+    title: "The seasoned flour",
+    detail: "In a second bowl: 3 tablespoons of plain flour, a quarter teaspoon each of salt and garlic salt, and half a teaspoon each of black pepper, oregano, thyme and paprika.",
+    brief: ["3 tbsp flour", "¼ tsp salt + garlic salt", "½ tsp each: pepper, oregano, thyme, paprika"] },
+  { t: 62, end: 82, q: 65, num: "Step 3",
+    title: "Egg, flour, into the hot pan",
+    detail: "Two tablespoons of olive oil over medium-high. Dip each breast in the egg, dredge through the seasoned flour, and into the pan.",
+    brief: ["2 tbsp oil, medium-high", "Egg dip → flour dredge → pan"] },
+  { t: 82, end: 103, num: "Step 4",
+    title: "Golden both sides",
+    detail: "Fry until the crust is golden on both sides — colour now, cooking through comes next.",
+    brief: ["Fry to golden both sides", "Not cooked through yet"] },
+  { t: 103, end: 125, num: "Step 5",
+    title: "Into the oven for 10 minutes",
+    detail: "Chicken onto a tray and into the oven to finish cooking while the sauce happens in the pan it left behind.",
+    brief: ["Tray → oven 10 min", "Same pan stays for the sauce"] },
+  { t: 125, end: 146, q: 128, num: "Step 6",
+    title: "Onion into the flavoured pan",
+    detail: "A tablespoon of olive oil into the same pan, then a sliced onion for 3–4 minutes until it starts to soften among all those golden chicken bits.",
+    brief: ["1 tbsp oil, same pan", "Onion 3–4 min to soften"] },
+  { t: 146, end: 166, q: 148, num: "Step 7",
+    title: "The Tuscan crowd goes in",
+    detail: "Two cloves of minced garlic, half a teaspoon of oregano, a teaspoon of paprika, 160 g of sun-dried tomatoes, a sliced red capsicum and a tablespoon of tomato paste. Two minutes, stirring gently.",
+    brief: ["Garlic, oregano, paprika", "Sun-dried toms + capsicum + tomato paste", "2 min, gentle stir"] },
+  { t: 166, end: 193, q: 169, num: "Step 8",
+    title: "Wine, then stock, then simmer",
+    detail: "90 ml of white wine, bubbled for two minutes to cook the alcohol off, then 240 ml of chicken stock with a pinch of salt and pepper. Up to the boil, then five minutes' simmer.",
+    brief: ["90 ml white wine, bubble 2 min", "240 ml stock, salt + pepper", "Simmer 5 min"],
+    adapt: "Skipping wine? Use extra stock plus a squeeze of lemon at the end — same lift, no bottle." },
+  { t: 193, end: 213, q: 196, num: "Step 9",
+    title: "Cream, parmesan, and ALL the spinach",
+    detail: "90 ml of cream, 50 g of grated parmesan, and the baby spinach — the video uses three cups; we say double it, it wilts to nothing and it's the plate's best veg. A couple of minutes until just wilted.",
+    brief: ["90 ml cream + 50 g parmesan", "Spinach — DOUBLE the video's amount", "Wilt 2 min"],
+    adapt: "The doubled spinach is the Jointly move — six cups looks absurd and wilts into perfection. Box silverbeet (stems out) works too." },
+  { t: 213, end: 250, q: 216, num: "Step 10",
+    title: "Reunite, parsley, serve",
+    detail: "Check the chicken's not pink in the middle, nestle it into the sauce for a couple of minutes, and finish with parsley. Serve with potatoes, pasta, or just a big hunk of bread for the sauce.",
+    brief: ["Chicken checked + into the sauce", "Parsley over", "Bread for the sauce is mandatory-ish"] },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step" + (s.brief ? " has-brief" : "") + (s.t === null ? " textonly" : "");
+  div.id = "step-" + i;
+  const stamp = s.t === null
+    ? `<span class="nochip">📝 not in clip</span>`
+    : `<span class="timestamp">▶ ${Math.floor(s.t / 60)}:${String(Math.floor(s.t % 60)).padStart(2, "0")}</span>`;
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        ${stamp}
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.adapt ? `<div class="step-adapt">🥕 ${s.adapt}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => { e.stopPropagation(); toggle(i); });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready || s.t === null) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
+
+document.getElementById("printbtn").addEventListener("click", () => window.print());
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    if (s.t === null) return;
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
