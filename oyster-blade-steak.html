@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oyster Blade Steak — Step-by-Step Guide</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --card: #ffffff;
+    --ink: #1c2733;
+    --muted: #6b7a8c;
+    --accent: #3c4a7a;
+    --accent-soft: #e3e7f4;
+    --active: #fff7e0;
+    --active-border: #e6b800;
+    --border: #e3e8ee;
+    --done: #9aa8b5;
+    --adapt: #275e9e;
+    --adapt-soft: #e5eef8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg); color: var(--ink); line-height: 1.5;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; padding: 0 12px 60px; }
+  .video-shell { position: sticky; top: 0; z-index: 10; background: var(--bg); padding: 10px 0 8px; }
+  .video-frame {
+    position: relative; width: 100%; padding-top: 56.25%;
+    border-radius: 12px; overflow: hidden; box-shadow: 0 4px 18px rgba(0,0,0,.18); background: #000;
+  }
+  .video-frame iframe, .video-frame #player { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  header.titleblock { padding: 14px 4px 6px; }
+  h1 { font-size: 1.25rem; line-height: 1.3; }
+  .byline { color: var(--muted); font-size: .85rem; margin-top: 4px; }
+  .serves { margin-top: 6px; }
+  .serves span { display: inline-block; background: #eaf4ec; color: #1f6b33; font-weight: 700; font-size: .78rem; border-radius: 6px; padding: 1px 8px; margin-right: 4px; }
+  .progress-row { display: flex; align-items: center; gap: 10px; padding: 10px 4px 14px; }
+  .bar { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .bar > div { height: 100%; width: 0%; background: var(--accent); border-radius: 4px; transition: width .3s; }
+  .progress-label { font-size: .85rem; color: var(--muted); white-space: nowrap; }
+  .reset-btn { font-size: .78rem; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+  .reset-btn:hover { color: var(--ink); }
+  .panel { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; }
+  .panel h2 { font-size: .95rem; margin-bottom: 8px; }
+  .panel ul { padding-left: 20px; font-size: .9rem; }
+  .panel li { margin-bottom: 3px; }
+  .step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px; margin-bottom: 10px; cursor: pointer;
+    transition: background .2s, border-color .2s;
+    touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  }
+  .step:hover { border-color: var(--accent); }
+  .step.playing { background: var(--active); border-color: var(--active-border); }
+  .step.done { opacity: .62; }
+  .step.done .step-title { text-decoration: line-through; color: var(--done); }
+  .step.textonly { cursor: default; }
+  .tick {
+    flex: none; width: 28px; height: 28px; margin-top: 2px;
+    border: 2px solid var(--border); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; color: transparent; background: #fff; transition: all .15s;
+  }
+  .step.done .tick { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-body { flex: 1; }
+  .step-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+  .step-num { font-size: .72rem; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  .timestamp { font-size: .75rem; font-weight: 600; color: var(--accent); background: var(--accent-soft); border-radius: 5px; padding: 1px 7px; }
+  .nochip { font-size: .75rem; font-weight: 600; color: var(--muted); background: var(--border); border-radius: 5px; padding: 1px 7px; }
+  .step-title { font-weight: 600; margin-top: 2px; }
+  .step-detail { font-size: .88rem; color: var(--muted); margin-top: 4px; }
+  .step-brief { display: none; font-size: .88rem; color: var(--muted); margin-top: 4px; padding-left: 18px; }
+  .step-brief li { margin-bottom: 2px; }
+  body.brief .step-brief { display: block; }
+  body.brief .has-brief .step-detail { display: none; }
+  .mode-btn { font-size: .78rem; font-weight: 600; color: var(--muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; white-space: nowrap; }
+  .mode-btn.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .step-warn { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step-adapt { font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: var(--adapt-soft); color: var(--adapt); border-radius: 8px; }
+  .quick-btn { font-size: .72rem; font-weight: 700; color: #fff; background: var(--accent); border: none; border-radius: 5px; padding: 2px 8px; cursor: pointer; }
+  .quick-btn:hover { opacity: .85; }
+  .flag-btn { margin-left: auto; flex: none; background: none; border: none; cursor: pointer; font-size: .9rem; opacity: .35; padding: 2px 4px; }
+  .flag-btn:hover { opacity: .8; }
+  .step.flagged { border-color: #d9534f; }
+  .step.flagged .flag-btn { opacity: 1; }
+  .flag-note { display: none; font-size: .84rem; margin-top: 6px; padding: 6px 10px; background: #fdf1f1; color: #a33; border-radius: 8px; }
+  .step.flagged .flag-note { display: block; }
+  .footer-note { color: var(--muted); font-size: .78rem; text-align: center; margin-top: 24px; }
+  .footer-note a { color: var(--accent); }
+  @media (min-width: 900px), (orientation: landscape) and (min-width: 640px) {
+    .wrap { max-width: 1240px; }
+    .video-shell { display: flex; flex-direction: column; align-items: center; }
+    .video-frame { width: min(100%, 97vh, 960px); padding-top: 0; aspect-ratio: 16 / 9; }
+    .titleblock, .progress-row, .panel, #steps, .footer-note { width: 100%; max-width: 880px; margin-left: auto; margin-right: auto; }
+  }
+  @media print {
+    body { background: #fff; }
+    .video-shell, .byline, .progress-row, .flag-btn, .flag-note, .footer-note, .quick-btn { display: none !important; }
+    .wrap { max-width: 100%; padding: 0; display: block; }
+    h1 { font-size: 16pt; margin-bottom: 8px; }
+    .panel, .step { break-inside: avoid; box-shadow: none; }
+    .step { border: 1px solid #999; padding: 8px 10px; margin-bottom: 6px; }
+    .step.done { opacity: 1; }
+    .step.done .step-title { text-decoration: none; color: inherit; }
+    .tick { background: #fff !important; border: 2px solid #555 !important; border-radius: 4px; color: transparent !important; width: 22px; height: 22px; }
+    .timestamp, .nochip { display: none !important; }
+    .step-brief { display: block !important; }
+    .has-brief .step-detail { display: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="video-shell">
+    <div class="video-frame"><div id="player"></div>
+      <div id="player-error" style="display:none; position:absolute; inset:0; background:#1c2733; color:#fff; padding:24px; font-size:.95rem;">
+        <p><strong>The video can't play here.</strong></p>
+        <p style="margin-top:8px; color:#b8c4d0;">YouTube blocks embeds on pages opened directly from a file. Open this guide via the ClipSteps website instead.</p>
+        <p style="margin-top:12px;"><a href="https://www.youtube.com/watch?v=SopOdVyPLag" target="_blank" style="color:#f0c78a;">Or watch directly on YouTube ↗</a></p>
+      </div>
+    </div>
+  </div>
+
+  <header class="titleblock">
+    <h1>Oyster Blade — the Butcher's Secret Steak</h1>
+    <div class="byline">Guide built from the official Australian Beef &amp; Lamb prep clip (56 s — tap the Overview to watch the sinew trick) plus the standard flat-iron cooking method in written steps. Overseas they rebrand this cut “flat iron” and charge accordingly; butchers have quietly kept it for themselves for years. Also covers your pack's blade and round steaks.</div>
+    <div class="serves"><span>🥕 2 veg (with the sides)</span><span>🍗 1 protein</span><span>the best value steak in the pack</span></div>
+  </header>
+
+  <div class="progress-row">
+    <div class="bar"><div id="bar-fill"></div></div>
+    <span class="progress-label" id="progress-label">0 of 9 done</span>
+    <button class="mode-btn" id="mode" title="Bullet-point steps for when you've done this before">⚡ Short &amp; sharp</button>
+    <button class="reset-btn" id="printbtn" title="Print a paper cheat sheet">🖨</button>
+    <button class="reset-btn" id="reset">Reset</button>
+  </div>
+
+  <div class="panel">
+    <h2>🛒 Ingredients</h2>
+    <ul>
+      <li>Oyster blade steaks (your pack's 400–500 g) · salt, pepper, olive oil · a knob of butter</li>
+      <li>Sides: whatever the box brought — a big salad, or greens + roast veg</li>
+    </ul>
+  </div>
+
+  <div class="panel">
+    <h2>🧰 Equipment</h2>
+    <ul>
+      <li>A heavy pan or BBQ plate, tongs, and a sharp knife for the one bit of prep</li>
+    </ul>
+  </div>
+
+  <div id="steps"></div>
+
+  <p class="footer-note">
+    Your ticks are saved on this device. Original video: <a href="https://www.youtube.com/watch?v=SopOdVyPLag" target="_blank">Australian Beef & Lamb (official) — youtube.com/watch?v=SopOdVyPLag</a>
+  </p>
+</div>
+
+<script>
+const VIDEO_ID = "SopOdVyPLag";
+
+const STEPS = [
+  { t: 0, end: 56, num: "Overview",
+    title: "Watch the prep — 56 seconds from the industry body",
+    detail: "Oyster blade is highly marbled and genuinely tender — with one catch: a line of tough sinew runs through the middle. The clip shows the official prep: skin off, and that centre line removed. Handle the line and you've got one of the best steaks on the beast at half the price.",
+    brief: ["Marbled, tender, cheap — one sinew line", "The clip shows the fix"] },
+  { t: 0, end: 43, q: 8, num: "Step 1",
+    title: "Deal with the sinew line",
+    detail: "If your steaks still show a silvery line running through the centre, run your knife along each side of it and lift it out — you get two smaller, fully tender steaks. Pack steaks are often already cleaned up; if so, skip straight to cooking.",
+    brief: ["Silvery centre line = cut it out", "Two tender steaks result", "Already clean? Skip ahead"],
+    adapt: "Can't be bothered? Leave the line in and slow-cook the lot instead — blade braises beautifully (the ragù guide's method works perfectly)." },
+  { t: null, num: "Step 2",
+    title: "Room temperature, season well",
+    detail: "Out of the fridge 20–30 minutes before cooking. Salt and pepper generously on both sides, a light rub of olive oil on the meat.",
+    brief: ["20–30 min out of the fridge", "Season well, oil the meat"] },
+  { t: null, num: "Step 3",
+    title: "Hot pan, 2–3 minutes a side",
+    detail: "Get the pan properly hot — the steak should sizzle hard on contact. Two to three minutes a side for medium-rare on a typical steak; the marbling wants a touch of pink to melt through.",
+    brief: ["Pan HOT — hard sizzle", "2–3 min a side", "Aim medium-rare to medium"],
+    warn: "Well done is the one way to lose this cut — the marbling seizes and it turns chewy. Pink is where oyster blade shines." },
+  { t: null, num: "Step 4",
+    title: "Butter baste to finish",
+    detail: "A knob of butter into the pan for the last minute, tilting and spooning it over the steaks.",
+    brief: ["Butter in, last minute", "Spoon it over"] },
+  { t: null, num: "Step 5",
+    title: "Rest as long as you cooked",
+    detail: "Onto a warm plate for 4–5 minutes — roughly as long as it cooked. The juices redistribute; the tenderness arrives.",
+    brief: ["Rest 4–5 min", "As long as the cook"] },
+  { t: null, num: "Step 6",
+    title: "Slice across the grain",
+    detail: "Like skirt, blade rewards slicing thin across the grain. Fan it over the box salad or greens.",
+    brief: ["Thin slices, across the grain", "Serve over box salad/greens"] },
+  { t: null, num: "Step 7",
+    title: "The cousins: blade steak and round steak",
+    detail: "Blade steak (with the gristle line through it) is the same shoulder — quick-cook it thin and rare, or better, slow-cook it. Round steak is very lean: cook it fast and thin like a minute steak, or it dries out. Both follow this guide's rules, just with less forgiveness.",
+    brief: ["Blade: thin + quick, or braise", "Round: fast, thin, don't linger"],
+    adapt: "This is the pack's quick-steak family sorted: oyster blade for best results, blade and round with these adjustments." },
+  { t: null, num: "Step 8",
+    title: "Plate it",
+    detail: "Sliced steak, resting juices poured over, big serve of veg alongside. A steak-night plate that cost half of steak night.",
+    brief: ["Juices over the slices", "Half-price steak night"] },
+];
+
+const KEY = "howto-ticks-" + VIDEO_ID;
+const FLAGKEY = "howto-flags-" + VIDEO_ID;
+let ticks = JSON.parse(localStorage.getItem(KEY) || "[]");
+let flags = JSON.parse(localStorage.getItem(FLAGKEY) || "[]");
+let player, ready = false;
+
+const stepsEl = document.getElementById("steps");
+STEPS.forEach((s, i) => {
+  const div = document.createElement("div");
+  div.className = "step" + (s.brief ? " has-brief" : "") + (s.t === null ? " textonly" : "");
+  div.id = "step-" + i;
+  const stamp = s.t === null
+    ? `<span class="nochip">📝 not in clip</span>`
+    : `<span class="timestamp">▶ ${Math.floor(s.t / 60)}:${String(Math.floor(s.t % 60)).padStart(2, "0")}</span>`;
+  div.innerHTML = `
+    <div class="tick">✓</div>
+    <div class="step-body">
+      <div class="step-head">
+        <span class="step-num">${s.num}</span>
+        ${stamp}
+        ${s.q ? `<button class="quick-btn" title="Skip the chat — jump to the action">⚡ straight to it</button>` : ""}
+        <button class="flag-btn" title="This doesn't match what I have">🚩</button>
+      </div>
+      <div class="step-title">${s.title}</div>
+      <div class="step-detail">${s.detail}</div>
+      ${s.brief ? `<ul class="step-brief">${s.brief.map(b => "<li>" + b + "</li>").join("")}</ul>` : ""}
+      ${s.warn ? `<div class="step-warn">⚠ ${s.warn}</div>` : ""}
+      ${s.adapt ? `<div class="step-adapt">🥕 ${s.adapt}</div>` : ""}
+      <div class="flag-note">🚩 Flagged as “doesn't match mine” — in the full ClipSteps this sends your feedback and the step gets rebuilt. Tap the flag again to undo.</div>
+    </div>`;
+  div.querySelector(".tick").addEventListener("click", (e) => { e.stopPropagation(); toggle(i); });
+  div.querySelector(".flag-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    flags[i] = !flags[i];
+    localStorage.setItem(FLAGKEY, JSON.stringify(flags));
+    render();
+  });
+  const qb = div.querySelector(".quick-btn");
+  if (qb) qb.addEventListener("click", (e) => {
+    e.stopPropagation();
+    if (!ready) return;
+    player.seekTo(s.q, true);
+    player.playVideo();
+  });
+  let tapTimer = null;
+  div.addEventListener("click", (e) => {
+    if (!ready || s.t === null) return;
+    if (tapTimer) {
+      clearTimeout(tapTimer); tapTimer = null;
+      const rect = div.getBoundingClientRect();
+      const back = (e.clientX - rect.left) < rect.width / 2;
+      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
+      player.playVideo();
+    } else {
+      tapTimer = setTimeout(() => {
+        tapTimer = null;
+        const state = player.getPlayerState();
+        const now = player.getCurrentTime();
+        const withinStep = now >= s.t && now < s.end;
+        if (withinStep && state === 1) { player.pauseVideo(); }
+        else if (withinStep && state === 2) { player.playVideo(); }
+        else { player.seekTo(s.t, true); player.playVideo(); }
+      }, 280);
+    }
+  });
+  stepsEl.appendChild(div);
+});
+
+function toggle(i) {
+  ticks[i] = !ticks[i];
+  localStorage.setItem(KEY, JSON.stringify(ticks));
+  render();
+}
+
+function render() {
+  let done = 0;
+  STEPS.forEach((s, i) => {
+    const el = document.getElementById("step-" + i);
+    el.classList.toggle("done", !!ticks[i]);
+    el.classList.toggle("flagged", !!flags[i]);
+    if (ticks[i]) done++;
+  });
+  document.getElementById("bar-fill").style.width = (done / STEPS.length * 100) + "%";
+  document.getElementById("progress-label").textContent =
+    done === STEPS.length ? "All done! 🎉" : done + " of " + STEPS.length + " done";
+}
+
+const MODEKEY = "howto-brief";
+function applyMode() {
+  const on = localStorage.getItem(MODEKEY) === "1";
+  document.body.classList.toggle("brief", on);
+  document.getElementById("mode").classList.toggle("on", on);
+}
+document.getElementById("mode").addEventListener("click", () => {
+  localStorage.setItem(MODEKEY, localStorage.getItem(MODEKEY) === "1" ? "0" : "1");
+  applyMode();
+});
+applyMode();
+
+document.getElementById("printbtn").addEventListener("click", () => window.print());
+document.getElementById("reset").addEventListener("click", () => {
+  ticks = []; flags = [];
+  localStorage.setItem(KEY, "[]");
+  localStorage.setItem(FLAGKEY, "[]");
+  render();
+});
+
+setInterval(() => {
+  if (!ready || player.getPlayerState() !== 1) return;
+  const t = player.getCurrentTime();
+  STEPS.forEach((s, i) => {
+    if (s.t === null) return;
+    document.getElementById("step-" + i).classList.toggle("playing", t >= s.t && t < s.end);
+  });
+}, 800);
+
+if (location.protocol === "file:") {
+  document.getElementById("player-error").style.display = "block";
+}
+const tag = document.createElement("script");
+tag.src = "https://www.youtube.com/iframe_api";
+document.head.appendChild(tag);
+function onYouTubeIframeAPIReady() {
+  player = new YT.Player("player", {
+    videoId: VIDEO_ID,
+    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    events: {
+      onReady: () => { ready = true; },
+      onError: () => { document.getElementById("player-error").style.display = "block"; }
+    }
+  });
+}
+
+render();
+</script>
+</body>
+</html>
