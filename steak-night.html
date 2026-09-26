@@ -189,7 +189,7 @@
 
   <header class="titleblock">
     <h1>Steak Night — Pan-Seared, Basted &amp; Rested</h1>
-    <div class="byline">Guide generated from: <em>“The Perfect Steak Every Time With These 3 Techniques”</em> — Andy Cooks (Andy Hearnden, Melbourne) · 13 min 45 s · This guide follows the first of his three techniques (pan-seared). Tap any step to jump the video there; double-tap left/right halves to skip back/forward 5 seconds. Timestamps marked <span class="timestamp approx" style="font-size:.72rem">▶ ~m:ss</span> are approximate — needs manual timing. 🥩 <strong>Beef-pack note:</strong> round steak is the lean budget cousin — cook it HOT and fast like a minute steak, never past medium, and slice thin. (Oyster blade and skirt have their own guides.)</div>
+    <div class="byline">Guide generated from: <em>“The Perfect Steak Every Time With These 3 Techniques”</em> — Andy Cooks (Andy Hearnden, Melbourne) · 13 min 45 s · This guide follows the first of his three techniques (pan-seared). Tap any step to jump the video there; while it plays, tap the left or right side to skip back or forward 10 seconds, or the middle to pause. Timestamps marked <span class="timestamp approx" style="font-size:.72rem">▶ ~m:ss</span> are approximate — needs manual timing. 🥩 <strong>Beef-pack note:</strong> round steak is the lean budget cousin — cook it HOT and fast like a minute steak, never past medium, and slice thin. (Oyster blade and skirt have their own guides.)</div>
   </header>
 
   <div class="progress-row">
@@ -338,27 +338,19 @@ STEPS.forEach((s, i) => {
     player.seekTo(s.q, true);
     player.playVideo();
   });
-  // single tap: jump / pause / resume. Double-tap: left half = back 5s, right half = forward 5s.
-  let tapTimer = null;
-  div.addEventListener("click", (e) => {
-    if (!ready) return;
-    if (tapTimer) {
-      clearTimeout(tapTimer); tapTimer = null;
-      const rect = div.getBoundingClientRect();
-      const back = (e.clientX - rect.left) < rect.width / 2;
-      player.seekTo(Math.max(0, player.getCurrentTime() + (back ? -5 : 5)), true);
-      player.playVideo();
-    } else {
-      tapTimer = setTimeout(() => {
-        tapTimer = null;
-        const state = player.getPlayerState();
-        const now = player.getCurrentTime();
-        const withinStep = now >= s.t && now < s.end;
-        if (withinStep && state === 1) { player.pauseVideo(); }
-        else if (withinStep && state === 2) { player.playVideo(); }
-        else { player.seekTo(s.t, true); player.playVideo(); }
-      }, 280);
-    }
+  // single tap: jump / pause / resume. While a step plays: left third = back 10 s, middle = pause/play, right third = forward 10 s.
+  div.addEventListener("click", (e) => {   // tap = jump to the step; while it plays: left third −10 s, middle pause/play, right third +10 s
+    if (!ready || s.t == null) return;
+    const state = player.getPlayerState();
+    const now = player.getCurrentTime();
+    const within = now >= s.t && now < s.end;
+    if (!within) { player.seekTo(s.t, true); player.playVideo(); return; }
+    const rect = div.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width;
+    if (x < 1 / 3) { player.seekTo(Math.max(0, now - 10), true); player.playVideo(); }
+    else if (x > 2 / 3) { player.seekTo(now + 10, true); player.playVideo(); }
+    else if (state === 1) player.pauseVideo();
+    else player.playVideo();
   });
   stepsEl.appendChild(div);
 });

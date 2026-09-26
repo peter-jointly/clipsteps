@@ -22,8 +22,7 @@ Each step in the `STEPS` array supports:
 
 ## Interaction model (all guides)
 
-- **Single tap** on a step: jump video there / pause / resume (280 ms tap timer)
-- **Double-tap** left half = back 5 s, right half = forward 5 s (`touch-action: manipulation` prevents zoom)
+- **Tap zones** (standard since 26 Sep 2026, same as the private platform): tap a step to jump the video there. While that step is playing: left third = back 10 s, middle = pause / play, right third = forward 10 s. No tap timer, so taps respond instantly (`touch-action: manipulation` prevents zoom)
 - **⚡ quick button**: seek to `q` and play
 - **⚡ Short & sharp toggle** (progress row): swaps `detail` prose for `brief` bullets on steps that have them; preference persists across guides
 - **🚩 flag button**: marks "doesn't match mine" (localStorage; demo of the feedback loop)
