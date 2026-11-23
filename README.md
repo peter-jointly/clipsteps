@@ -22,16 +22,22 @@ Each step in the `STEPS` array supports:
 
 ## Interaction model (all guides)
 
-- **Tap zones** (standard since 26 Sep 2026, same as the private platform): tap a step to jump the video there. While that step is playing: left third = back 10 s, middle = pause / play, right third = forward 10 s. No tap timer, so taps respond instantly (`touch-action: manipulation` prevents zoom)
-- **⚡ quick button**: seek to `q` and play
+- **Tap zones** (standard since 26 Sep 2026; the shared player in `platform/` still uses the older double-tap ∓5 s): tap a step to jump the video there. While that step is playing: left third = back 10 s, middle = pause / play, right third = forward 10 s. No tap timer, so taps respond instantly (`touch-action: manipulation` prevents zoom)
+- **First play comes from YouTube's own play button** (YouTube guides): YouTube counts a view only when playback starts from its native button, so until the video has played once, a step tap or ⚡ tap cues the video at that point (`cueVideoById` with `startSeconds`) and the reader taps YouTube's ▶ to start. An `onStateChange` → playing sets `started`; from then on, taps seek and play directly. Never call `playVideo()` before `started`
+- **⚡ quick button**: seek to `q` and play (cues it instead until the first play, as above)
 - **⚡ Short & sharp toggle** (progress row): swaps `detail` prose for `brief` bullets on steps that have them; preference persists across guides
 - **🚩 flag button**: marks "doesn't match mine" (localStorage; demo of the feedback loop)
 - **Tick circle**: done state + progress bar; persists in localStorage keyed per guide
-- **Landscape/wide (≥900 px or landscape ≥640 px)**: two-column grid — video pinned left, steps scroll right
+- **Landscape/wide (≥900 px or landscape ≥640 px)**: still one column. The video is big and centred (16:9, up to 960 px wide, capped by the viewport height) and stays pinned at the top; the title, progress row and steps sit in a centred column (max 880 px) below it
+
+## Shared player engine (master)
+
+`platform/clipsteps-player.js` + `platform/clipsteps-player.css` are the **master** of the reusable ClipSteps player: a page supplies `window.GUIDE` (video + steps) and mounts it into `<div id="clipsteps-guide"></div>`. They hold no customer content. Other products use synced copies: change the player here first, bump the version line in both headers, then copy both files across unchanged. Never edit a copy.
 
 ## Rules learned in the field
 
 - One video = one coherent world: never intercut different equipment/cars for the same step; patch gaps with text-only steps instead. Same-creator multi-clip chapters are fine.
 - Verify safety-critical numbers (torques, temperatures, pressures) against the official manual/written recipe and label them as such.
 - YouTube embeds refuse to play from `file://` (error 153) — pages must be served (the site, or `Open Guide.cmd` locally).
+- Always set `playsinline: 1` in the YouTube `playerVars` (and the `playsinline` attribute on self-hosted `<video>`). Without it, iPhone Safari opens the clip in native fullscreen and the steps are hidden.
 - Quick-step `q` placement comes from the transcript: the boundary between "let me tell you about..." and "now take your...".

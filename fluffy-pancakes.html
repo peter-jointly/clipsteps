@@ -307,8 +307,7 @@ STEPS.forEach((s, i) => {
   if (qb) qb.addEventListener("click", (e) => {
     e.stopPropagation();
     if (!ready) return;
-    player.seekTo(s.q, true);
-    player.playVideo();
+    cueOrPlay(s.q);
   });
   // single tap: jump / pause / resume. While a step plays: left third = back 10 s, middle = pause/play, right third = forward 10 s.
   div.addEventListener("click", (e) => {   // tap = jump to the step; while it plays: left third −10 s, middle pause/play, right third +10 s
@@ -316,7 +315,7 @@ STEPS.forEach((s, i) => {
     const state = player.getPlayerState();
     const now = player.getCurrentTime();
     const within = now >= s.t && now < s.end;
-    if (!within) { player.seekTo(s.t, true); player.playVideo(); return; }
+    if (!started || !within) { cueOrPlay(s.t); return; }
     const rect = div.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width;
     if (x < 1 / 3) { player.seekTo(Math.max(0, now - 10), true); player.playVideo(); }
@@ -385,12 +384,21 @@ if (location.protocol === "file:") {
 const tag = document.createElement("script");
 tag.src = "https://www.youtube.com/iframe_api";
 document.head.appendChild(tag);
+// Creator credit: YouTube counts a view only when playback starts from its own play button.
+// Until the video has played once, a step tap cues it at that step and leaves the start to
+// YouTube's play button; after that, taps seek and play directly.
+let started = false;
+function cueOrPlay(sec) {
+  if (started) { player.seekTo(sec, true); player.playVideo(); }
+  else player.cueVideoById({ videoId: VIDEO_ID, startSeconds: sec });
+}
 function onYouTubeIframeAPIReady() {
   player = new YT.Player("player", {
     videoId: VIDEO_ID,
-    playerVars: { rel: 0, modestbranding: 1, origin: location.origin },
+    playerVars: { playsinline: 1, rel: 0, modestbranding: 1, origin: location.origin },
     events: {
       onReady: () => { ready = true; },
+      onStateChange: (e) => { if (e.data === 1) started = true; },
       onError: () => { document.getElementById("player-error").style.display = "block"; }
     }
   });
